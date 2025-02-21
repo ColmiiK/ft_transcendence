@@ -32,7 +32,7 @@
           </div>
           <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left"></div>
         </section>
-        <section id="forgot-password" class="flex justify-center"><a href="/passwordrecovery">Forgot password?</a></section>
+        <section data-dialog-target="sign-in-modal" id="forgot-password" class="flex justify-center"><a href="#">Forgot password?</a></section>
         <section id="sign-up-button" class="flex justify-center">
           <p>Don't have an account? <a href="#" class="text-[var(--dark-pink)]">Sign up</a></p>
         </section>
@@ -84,6 +84,36 @@
         <div id="terms-conditions">Privacy and Terms Conditions</div>
       </footer>
     </div>
+    <div
+  data-dialog-backdrop="sign-in-modal"
+  data-dialog-backdrop-close="true"
+  class="pointer-events-none fixed inset-0 z-[999] grid h-screen w-screen place-items-center bg-black bg-opacity-60 opacity-0 backdrop-blur-sm transition-opacity duration-300"
+>
+<div
+  data-dialog="sign-in-modal"
+  class="relative mx-auto w-full max-w-[24rem] rounded-lg overflow-hidden shadow-sm"
+>
+  <div class="relative flex flex-col bg-white">
+    <div class="relative m-2.5 items-center flex justify-center text-white h-24 rounded-md bg-slate-800">
+      <h3 class="text-2xl">
+        Recover your password
+      </h3>
+    </div>
+    <div class="flex flex-col gap-4 p-6">
+      <div class="w-full max-w-sm min-w-[200px]">
+          <label class="block mb-2 text-sm text-slate-600">
+            Email
+          </label>
+          <input type="email" class="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow" placeholder="Your Email" />
+      </div>
+    </div>
+    <div class="p-6 pt-0">
+      <button class="w-full rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" type="button">
+        Send email
+      </button>
+    </div>
+  </div>
+</div>
     <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
   <script src="js/init.js"></script>
   <script src="js/loginPage.js"></script>
