@@ -99,12 +99,12 @@ export default function createAuthRoutes(fastify) {
               .code(400)
               .send({ error: "New password matches the old one" });
         }
-        const result = await verifyUserResetToken(
+        const verified = await verifyUserResetToken(
           user,
           req.body.token,
           req.body.password,
         );
-        if (result == false)
+        if (verified === false)
           return res.code(403).send({ error: "Authorization failed" });
         return res.code(200).send({ success: "Password successfully updated" });
       }),
