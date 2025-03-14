@@ -35,6 +35,7 @@ export default function createUserRoutes(fastify) {
         if (!validateInput(req, res, ["username", "password", "email"])) return;
         const user = await createUser(req.body);
         return res.code(201).send({
+          success: true,
           id: user.id,
           username: user.username,
           email: user.email,

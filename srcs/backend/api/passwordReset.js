@@ -42,6 +42,7 @@ export async function resetUserPassword(user) {
     subject: "Password Reset Request",
     text: link,
     html: html,
+    success: true,
   });
 
   return info;

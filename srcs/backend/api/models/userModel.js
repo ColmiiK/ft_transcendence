@@ -111,7 +111,7 @@ export async function patchUser(id, updates) {
       if (this.changes === 0) {
         return reject(new Error("User not found"));
       }
-      resolve({ id, ...updates });
+      resolve({ success: true, id, ...updates });
     });
   });
 }
@@ -162,7 +162,7 @@ export function addUserFriend(id, friend_id) {
       if (this.changes === 0) {
         return reject(new Error("User not found"));
       }
-      resolve({ user_id: id, friend_id: friend_id });
+      resolve({ success: true, user_id: id, friend_id: friend_id });
     });
   });
 }
@@ -213,7 +213,7 @@ export function addUserBlock(id, blocked_id) {
       if (this.changes === 0) {
         return reject(new Error("User not found"));
       }
-      resolve({ user_id: id, blocked_id: blocked_id });
+      resolve({ success: true, user_id: id, blocked_id: blocked_id });
     });
   });
 }
@@ -320,7 +320,9 @@ export function getUser(identifier, keepCredentials = null) {
         delete user.google_id;
       }
       anonymize(user);
-      resolve(user);
+
+      const result = Object.assign({}, user, { success: true });
+      resolve(result);
     });
   });
 }

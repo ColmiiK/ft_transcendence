@@ -26,7 +26,7 @@ export async function loginUser(user, password, totp_token = null) {
     if (!totpVerified) return { error: "Invalid 2FA code" };
   }
   const token = fastify.jwt.sign({ user: user.id });
-  const result = Object.assign({}, user, { token });
+  const result = Object.assign({}, user, { token, success: true });
   delete result.password;
   delete result.totp_secret;
   // await patchUser(user.id, { is_online: 1 });
@@ -62,7 +62,7 @@ export async function loginGoogleUser(credential) {
     delete user.google_id;
   }
   const token = fastify.jwt.sign({ user: user.id });
-  const result = Object.assign({}, user, { token });
+  const result = Object.assign({}, user, { token, success: true });
   return result;
 }
 
@@ -111,6 +111,6 @@ export async function verify2fa(user, totpCode) {
 export async function registerUser(data) {
   const user = await createUser(data);
   const token = fastify.jwt.sign({ user: user.id });
-  const result = Object.assign({}, user, { token });
+  const result = Object.assign({}, user, { token, success: true });
   return result;
 }
