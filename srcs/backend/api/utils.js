@@ -38,6 +38,18 @@ export function validateInput(req, res, requiredFields) {
       error: `Missing required fields: ${missingFields.join(", ")}`,
     });
   }
+  const password = requiredFields["password"];
+  if (password) {
+    if (pass.length < 9)
+      return res.code(400).send({ error: "Password is too short" });
+    else if (
+      !/[A-Z]/.test(password) ||
+      !/[a-z]/.test(password) ||
+      !/[0-9]/.test(password) ||
+      !/[*\.\-_]/.test(password)
+    )
+      return res.code(400).send({ error: "Password composition is incorrect" });
+  }
 
   return true;
 }
