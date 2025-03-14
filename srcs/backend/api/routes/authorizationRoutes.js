@@ -92,11 +92,13 @@ export default function createAuthRoutes(fastify) {
         if (!user) return res.code(404).send({ error: "User not found" });
         if (!user.reset_token)
           return res.code(403).send({ error: "Reset token has expired" });
-        const isSamePassword = await checkNewPassword(user, req.body.password);
-        if (isSamePassword)
-          return res
-            .code(400)
-            .send({ error: "New password matches the old one" });
+        if (user.password) {
+          const samePassword = await checkNewPassword(user, req.body.password);
+          if (samePassword)
+            return res
+              .code(400)
+              .send({ error: "New password matches the old one" });
+        }
         const result = await verifyUserResetToken(
           user,
           req.body.token,
