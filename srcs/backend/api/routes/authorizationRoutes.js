@@ -22,13 +22,12 @@ export default function createAuthRoutes(fastify) {
         if (!validateInput(req, res, ["username", "password"])) return;
         const user = await getUser(req.body.username, true);
         if (!user) return res.code(404).send({ error: "User not found" });
+        const result = await loginUser(user, req.body.password, req.body.totp);
+        if (result["error"]) return res.code(401).send(result);
         if (!req.body.totp && user.is_2fa_enabled)
           return res
             .code(202)
             .send({ twoFactor: "2FA is enabled, TOTP code required" });
-        const result = await loginUser(user, req.body.password, req.body.totp);
-        if (result == false)
-          return res.code(401).send({ authorization: "failed" });
         return res.code(200).send(result);
       }),
     },
