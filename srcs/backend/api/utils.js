@@ -38,9 +38,9 @@ export function validateInput(req, res, requiredFields) {
       error: `Missing required fields: ${missingFields.join(", ")}`,
     });
   }
-  const password = requiredFields["password"];
-  if (password) {
-    if (pass.length < 9)
+  if (requiredFields.includes("password")) {
+    const password = req.body.password;
+    if (password.length < 9)
       return res.code(400).send({ error: "Password is too short" });
     else if (
       !/[A-Z]/.test(password) ||
