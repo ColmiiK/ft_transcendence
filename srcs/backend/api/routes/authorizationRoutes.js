@@ -55,7 +55,7 @@ export default function createAuthRoutes(fastify) {
         )
           return;
         if (req.body.password != req.body.confirm_password)
-          return res.code(400).send({ error: "passwords don't match" });
+          return res.code(400).send({ error: "Passwords don't match" });
         const result = await registerUser(req.body);
         return res.code(201).send(result);
       }),
@@ -66,10 +66,10 @@ export default function createAuthRoutes(fastify) {
       handler: asyncHandler(async (req, res) => {
         if (!validateInput(req, res, ["email"])) return;
         const user = await getUser(req.body.email);
-        if (!user) return res.code(404).send({ error: "user not found" });
+        if (!user) return res.code(404).send({ error: "User not found" });
         const result = await resetUserPassword(user);
         if (result == null)
-          return res.code(404).send({ error: "user not found" });
+          return res.code(404).send({ error: "User not found" });
         return res.code(200).send(result);
       }),
     },
