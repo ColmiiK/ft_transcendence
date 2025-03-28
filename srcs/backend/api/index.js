@@ -24,10 +24,21 @@ const fastify = Fastify({
 
 /** Plugin registration */
 await fastify.register(cors, {
-  origin: "http://localhost:8000",
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  // origin: "http://localhost:8000",
+  origin: (origin, cb) => {
+    const allowedOrigins = [
+      /^https?:\/\/localhost(:\d+)?$/,
+      /^https?:\/\/([\w\d]+)\.42malaga\.com(:\d+)?$/,
+    ];
+    if (!origin || allowedOrigins.some((regex) => regex.test(origin))) {
+      cb(null, true);
+    } else {
+      cb(new Error("Not allowed"), false);
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cookie", "Set-Cookie"],
 });
 await fastify.register(jwt, {
   secret: process.env.JWT_SECRET,

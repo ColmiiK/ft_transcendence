@@ -5,6 +5,7 @@ services:
     container_name: front
     ports:
       - "8000:80"
+      - "8443:443"
     volumes:
       - ./frontend:/usr/share/nginx/html
     networks:

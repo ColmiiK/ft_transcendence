@@ -11,7 +11,7 @@
  * @param {String} name - Name of user
  */
 
-async function debugRegister(name) {
+async function debugRegister(name, email) {
   process.stdout.write(`Creating test user ${name}...`);
   try {
     let res = await fetch("http://localhost:9000/register", {
@@ -20,8 +20,8 @@ async function debugRegister(name) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        username: name.substring(0, 15),
-        email: `${name}@gmail.com`,
+        username: name,
+        email: `${email}@gmail.com`,
         password: `${name}.Password1`,
         confirm_password: `${name}.Password1`,
       }),
@@ -43,14 +43,14 @@ import { createChat } from "../models/chatModel.js";
 import { createMessage } from "../models/messageModel.js";
 
 setTimeout(async () => {
-  let foo = await debugRegister("alba.sansebastian5b");
-  let foo2 = await debugRegister("2alba.sansebastian5b");
-  let bar = await debugRegister("alvarvg");
-  let bar2 = await debugRegister("2alvarvg");
-  let baz = await debugRegister("nestorcruzgambero");
-  let baz2 = await debugRegister("2nestorcruzgambero");
-  let qux = await debugRegister("estercastellanorios");
-  let qux2 = await debugRegister("2estercastellanorios");
+  let foo = await debugRegister("albagar4", "alba.sansebastian5b");
+  let foo2 = await debugRegister("2albagar4", "2alba.sansebastian5b");
+  let bar = await debugRegister("alvegag", "alvarvg");
+  let bar2 = await debugRegister("2alvegag", "2alvarvg");
+  let baz = await debugRegister("ncruzg", "nestorcruzgambero");
+  let baz2 = await debugRegister("2ncruzg", "2nestorcruzgambero");
+  let qux = await debugRegister("escastel", "estercastellanorios");
+  let qux2 = await debugRegister("2escastel", "2estercastellanorios");
   await patchUser(foo.id, { is_2fa_enabled: true });
 
   console.log(`Adding friendship ${foo.username} - ${bar.username}...`);

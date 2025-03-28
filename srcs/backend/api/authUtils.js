@@ -129,7 +129,7 @@ export function setJWT(res, user) {
     signed: true,
     httpOnly: true,
     secure: true,
-    sameSite: "strict",
+    sameSite: "None",
     maxAge: 3600 * 24 * 1000,
     path: "/",
   });
