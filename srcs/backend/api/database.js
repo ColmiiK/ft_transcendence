@@ -83,8 +83,14 @@ db.serialize(() => {
     `
     CREATE TABLE IF NOT EXISTS tournaments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name VARCHAR(255),
-    player_amount INTEGER NOT NULL DEFAULT 4 CHECK (player_amount >= 4)
+    name VARCHAR(255) NOT NULL,
+    player_limit INTEGER NOT NULL,
+    status VARCHAR(255) NOT NULL,
+    creator_id INTEGER NOT NULL,
+    created_at DATETIME DEFAULT (datetime('now', '+2 hours')),
+    started_at DATETIME,
+    finished_at DATETIME,
+    FOREIGN KEY (creator_id) REFERENCES users(id)
     )`,
     (err) => {
       if (err) {
@@ -93,19 +99,23 @@ db.serialize(() => {
       console.log("Tournament table ready.");
     },
   );
+  // Maybe a tournament_invitations table?
   db.run(
     `
     CREATE TABLE IF NOT EXISTS tournament_players (
-    tournament_id INTEGER,
-    player_id INTEGER,
-    PRIMARY KEY (tournament_id, player_id),
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tournament_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    final_rank INTEGER,
+    status VARCHAR(255) NOT NULL,
     FOREIGN KEY (tournament_id) REFERENCES tournaments(id)
+    FOREIGN KEY (user_id) REFERENCES users(id)
     )`,
     (err) => {
       if (err) {
         return console.error("Error creating table:", err.message);
       }
-      console.log("Tournament table ready.");
+      console.log("Tournament players table ready.");
     },
   );
 });
