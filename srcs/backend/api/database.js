@@ -122,7 +122,7 @@ db.serialize(() => {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     tournament_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
-    status VARCHAR(255) NOT NULL,
+    status VARCHAR(255) NOT NULL DEFAULT 'pending',
     invited_at DATETIME DEFAULT (datetime('now', '+2 hours')),
     FOREIGN KEY (tournament_id) REFERENCES tournaments(id)
     FOREIGN KEY (user_id) REFERENCES users(id)

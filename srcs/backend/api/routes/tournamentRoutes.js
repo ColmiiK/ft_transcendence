@@ -2,10 +2,11 @@ import { asyncHandler, validateInput } from "../utils.js";
 import {
   createTournament,
   getTournamentByID,
-  getTournaments,
-  putTournament,
-  patchTournament,
-  deleteTournament,
+  addInvitationToTournament,
+  // getTournaments,
+  // putTournament,
+  // patchTournament,
+  // deleteTournament,
 } from "../models/tournamentModel.js";
 
 //TODO: Revamp tournaments with new schema
@@ -30,13 +31,33 @@ export default function createTournamentRoutes(fastify) {
         return res.code(201).send(tournament);
       }),
     },
-    // {
+    {
+      preHandler: [fastify.authenticate],
+      method: "GET",
+      url: "/tournaments/:id",
+      handler: asyncHandler(async (req, res) => {
+        const tournament = await getTournamentByID(req.params.id);
+        return res.code(200).send(tournament);
+      }),
+    },
+    {
+      preHandler: [fastify.authenticate],
+      method: "POST",
+      url: "/tournaments/invite",
+      handler: asyncHandler(async (req, res) => {
+        if (!validateInput(req, res, ["tournament_id", "user_id"])) return;
+        const result = await addInvitationToTournament(req.body);
+        return res.code(201).send(result);
+      }),
+    },
+    // { TODO:
     //   preHandler: [fastify.authenticate],
-    //   method: "GET",
-    //   url: "/tournaments/:id",
+    //   method: "POST",
+    //   url: "/tournaments/invite/confirm",
     //   handler: asyncHandler(async (req, res) => {
-    //     const tournament = await getTournamentByID(req.params.id);
-    //     return res.code(200).send(tournament);
+    //     if (!validateInput(req, res, ["tournament_id", "user_id"])) return;
+    //     const result = await confirmInvitationToTournament(req.body);
+    //     return res.code(201).send(result);
     //   }),
     // },
     // {

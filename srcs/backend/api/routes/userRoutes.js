@@ -11,7 +11,7 @@ import {
 import { getMessagesOfUser } from "../models/messageModel.js";
 import { getChatsOfUser } from "../models/chatModel.js";
 import { getMatchesOfUser } from "../models/matchModel.js";
-import { getTournamentsOfUser } from "../models/tournamentModel.js";
+// import { getTournamentsOfUser } from "../models/tournamentModel.js";
 
 export default function createUserRoutes(fastify) {
   return [
