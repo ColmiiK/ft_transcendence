@@ -57,7 +57,10 @@ export default function createTournamentRoutes(fastify) {
       url: "/tournaments/invite",
       handler: asyncHandler(async (req, res) => {
         if (!validateInput(req, res, ["tournament_id", "status"])) return;
-        const result = await modifyInvitationToTournament(req.body, req.userId);
+        await modifyInvitationToTournament(req.body, req.userId);
+        // After setting the invitation to confirmed
+        // addTournamentParticipant
+        const result = await addParticipantToTournament(req.body, req.userId);
         return res.code(201).send(result);
       }),
     },

@@ -57,7 +57,7 @@ export function getTournamentByID(id) {
       FROM
         tournaments t
       LEFT JOIN
-        tournament_players tp ON (t.id = tp.tournament_id)
+        tournament_participants tp ON (t.id = tp.tournament_id)
       LEFT JOIN
         tournament_invitations ti ON (t.id = ti.tournament_id)
       WHERE t.id = ?
@@ -77,7 +77,7 @@ export function getTournamentByID(id) {
         started_at: rows[0].started_at,
         finished_at: rows[0].finished_at,
         tournament_invitations: [],
-        tournament_players: [], //FIX: Finish confirmation before
+        tournament_participants: [], //FIX: Finish confirmation before
       };
       rows.forEach((row) => {
         if (row.invited_user_id) {
@@ -88,7 +88,7 @@ export function getTournamentByID(id) {
         }
         //FIX: works?
         if (row.participant_user_id) {
-          result.tournament_players.push({
+          result.tournament_participants.push({
             user_id: row.participant_user_id,
             final_rank: row.final_rank,
           });
@@ -145,6 +145,32 @@ export function modifyInvitationToTournament(data, user_id) {
         return reject(err);
       }
       resolve({ success: "invitation modified successfully" });
+    });
+  });
+}
+
+export function addParticipantToTournament(data, user_id) {
+  assert(data !== undefined, "data must exist");
+  assert(user_id !== undefined, "user_id must exist");
+  return new Promise((resolve, reject) => {
+    const sql = `
+      INSERT INTO
+        tournament_participants (
+          tournament_id,
+          user_id
+        )
+      VALUES (?, ?)
+    `;
+    db.run(sql, [data.tournament_id, data.user_id], function (err) {
+      if (err) {
+        console.error("Error inserting tournament participant: ", err.message);
+        return reject(err);
+      }
+      resolve({
+        tournament_participant_id: this.lastID,
+        user_id: data.user_id,
+        final_rank: this.final_rank,
+      });
     });
   });
 }
