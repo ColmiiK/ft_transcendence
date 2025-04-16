@@ -4,6 +4,7 @@ import {
   getTournamentByID,
   addInvitationToTournament,
   modifyInvitationToTournament,
+  addParticipantToTournament,
   // getTournaments,
   // putTournament,
   // patchTournament,
@@ -58,8 +59,8 @@ export default function createTournamentRoutes(fastify) {
       handler: asyncHandler(async (req, res) => {
         if (!validateInput(req, res, ["tournament_id", "status"])) return;
         await modifyInvitationToTournament(req.body, req.userId);
-        // After setting the invitation to confirmed
-        // addTournamentParticipant
+        // TODO: only do when the user is confirming the invitation
+        // if (status === confirmed)
         const result = await addParticipantToTournament(req.body, req.userId);
         return res.code(201).send(result);
       }),
