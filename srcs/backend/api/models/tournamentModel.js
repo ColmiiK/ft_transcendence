@@ -36,6 +36,8 @@ export function createTournament(data, creatorId) {
   });
 }
 
+
+//TODO: Check this further, continue working on tournaments
 export function getTournamentByID(id) {
   assert(id !== undefined, "id must exist");
   return new Promise((resolve, reject) => {
