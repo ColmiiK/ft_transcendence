@@ -41,60 +41,78 @@ export function getTournamentByID(id) {
   return new Promise((resolve, reject) => {
     const sql = `
       SELECT
-        t.id AS tournament_id,
-        t.name AS tournament_name,
-        t.player_limit,
-        t.status AS tournament_status,
-        t.creator_id,
-        t.created_at,
-        t.started_at,
-        t.finished_at,
-        ti.user_id AS invited_user_id,
-        ti.status AS invitation_status,
-        ti.invited_at,
-        tp.user_id AS participant_user_id,
-        tp.final_rank
+        id AS tournament_id,
+        name AS tournament_name,
+        player_limit,
+        status AS tournament_status,
+        creator_id,
+        created_at,
+        started_at,
+        finished_at
       FROM
-        tournaments t
-      LEFT JOIN
-        tournament_participants tp ON (t.id = tp.tournament_id)
-      LEFT JOIN
-        tournament_invitations ti ON (t.id = ti.tournament_id)
-      WHERE t.id = ?
+        tournaments
+      WHERE id = ?
     `;
-    db.all(sql, [id], (err, rows) => {
+    db.get(sql, [id], (err, row) => {
       if (err) {
         console.error("error getting tournament", err.message);
         return reject(err);
       }
+      if (!row) return resolve(null);
       const result = {
-        tournament_id: rows[0].tournament_id,
-        name: rows[0].tournament_name,
-        player_limit: rows[0].player_limit,
-        status: rows[0].status,
-        creator_id: rows[0].creator_id,
-        created_at: rows[0].created_at,
-        started_at: rows[0].started_at,
-        finished_at: rows[0].finished_at,
+        tournament_id: row.tournament_id,
+        name: row.tournament_name,
+        player_limit: row.player_limit,
+        status: row.status,
+        creator_id: row.creator_id,
+        created_at: row.created_at,
+        started_at: row.started_at,
+        finished_at: row.finished_at,
         tournament_invitations: [],
-        tournament_participants: [], //FIX: Finish confirmation before
+        tournament_participants: [],
       };
-      rows.forEach((row) => {
-        if (row.invited_user_id) {
-          result.tournament_invitations.push({
-            user_id: row.invited_user_id,
-            status: row.invitation_status,
-          });
+
+      const invitationsSQL = `
+        SELECT
+          user_id,
+          status AS invitation_status,
+          invited_at
+        FROM
+          tournament_invitations
+        WHERE
+          tournament_id = ?
+       `;
+      db.all(invitationsSQL, [id], (err, invitations) => {
+        if (err) {
+          console.error("error getting invitations", err.message);
+          return reject(err);
         }
-        //FIX: works?
-        if (row.participant_user_id) {
-          result.tournament_participants.push({
-            user_id: row.participant_user_id,
-            final_rank: row.final_rank,
-          });
-        }
+        result.tournament_invitations = invitations.map((inv) => ({
+          user_id: inv.user_id,
+          status: inv.invitation_status,
+        }));
+
+        const participantsSQL = `
+          SELECT
+            user_id,
+            final_rank
+          FROM
+            tournament_participants
+          WHERE
+            tournament_id = ?
+        `;
+        db.all(participantsSQL, [id], (err, participants) => {
+          if (err) {
+            console.error("error getting participants", err.message);
+            return reject(err);
+          }
+          result.tournament_participants = participants.map((part) => ({
+            user_id: part.user_id,
+            final_rank: part.final_rank,
+          }));
+          resolve(result);
+        });
       });
-      resolve(result);
     });
   });
 }
@@ -161,16 +179,12 @@ export function addParticipantToTournament(data, user_id) {
         )
       VALUES (?, ?)
     `;
-    db.run(sql, [data.tournament_id, data.user_id], function (err) {
+    db.run(sql, [data.tournament_id, user_id], function (err) {
       if (err) {
         console.error("Error inserting tournament participant: ", err.message);
         return reject(err);
       }
-      resolve({
-        tournament_participant_id: this.lastID,
-        user_id: data.user_id,
-        final_rank: this.final_rank,
-      });
+      resolve({ success: "invitation confirmed" });
     });
   });
 }
