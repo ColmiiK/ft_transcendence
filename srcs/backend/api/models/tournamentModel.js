@@ -80,15 +80,19 @@ export function getTournamentByID(id) {
         tournament_players: [], //FIX: Finish confirmation before
       };
       rows.forEach((row) => {
-        result.tournament_invitations.push({
-          user_id: row.invited_user_id,
-          status: row.invitation_status,
-        });
+        if (row.invited_user_id) {
+          result.tournament_invitations.push({
+            user_id: row.invited_user_id,
+            status: row.invitation_status,
+          });
+        }
         //FIX: works?
-        result.tournament_players.push({
-          user_id: row.participant_user_id,
-          final_rank: row.final_rank,
-        });
+        if (row.participant_user_id) {
+          result.tournament_players.push({
+            user_id: row.participant_user_id,
+            final_rank: row.final_rank,
+          });
+        }
       });
       resolve(result);
     });
@@ -117,6 +121,30 @@ export function addInvitationToTournament(data) {
         status: this.status,
         invited_at: this.invited_at,
       });
+    });
+  });
+}
+
+export function modifyInvitationToTournament(data, user_id) {
+  assert(data !== undefined, "data must exist");
+  assert(user_id !== undefined, "user_id must exist");
+  return new Promise((resolve, reject) => {
+    const sql = `
+      UPDATE
+        tournament_invitations
+      SET
+        status = ?
+      WHERE
+        tournament_id = ?
+      AND
+        user_id = ?
+    `;
+    db.run(sql, [data.status, data.tournament_id, user_id], function (err) {
+      if (err) {
+        console.error("Error inserting tournament invitation: ", err.message);
+        return reject(err);
+      }
+      resolve({ success: "invitation modified successfully" });
     });
   });
 }

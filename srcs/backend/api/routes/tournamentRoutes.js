@@ -3,6 +3,7 @@ import {
   createTournament,
   getTournamentByID,
   addInvitationToTournament,
+  modifyInvitationToTournament,
   // getTournaments,
   // putTournament,
   // patchTournament,
@@ -50,16 +51,16 @@ export default function createTournamentRoutes(fastify) {
         return res.code(201).send(result);
       }),
     },
-    // { TODO:
-    //   preHandler: [fastify.authenticate],
-    //   method: "POST",
-    //   url: "/tournaments/invite/confirm",
-    //   handler: asyncHandler(async (req, res) => {
-    //     if (!validateInput(req, res, ["tournament_id", "user_id"])) return;
-    //     const result = await confirmInvitationToTournament(req.body);
-    //     return res.code(201).send(result);
-    //   }),
-    // },
+    {
+      preHandler: [fastify.authenticate],
+      method: "PATCH",
+      url: "/tournaments/invite",
+      handler: asyncHandler(async (req, res) => {
+        if (!validateInput(req, res, ["tournament_id", "status"])) return;
+        const result = await modifyInvitationToTournament(req.body, req.userId);
+        return res.code(201).send(result);
+      }),
+    },
     // {
     //   preHandler: [fastify.authenticate],
     //   method: "PUT",
