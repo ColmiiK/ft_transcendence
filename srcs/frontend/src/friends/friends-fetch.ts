@@ -219,6 +219,7 @@ async function goToFriendChat(friend_id: number, friend_username: string) {
 }
 
 async function friendInvitations(friendId: string, input: string) {
+  console.log('friendId:', friendId)
 	try {
 		const response = await sendRequest('POST', '/users/friends', {friend_id: friendId});
 		if (!response)
@@ -367,6 +368,7 @@ export async function displayInvitations() {
 
 async function confirmInvitation(friendId: string) {
 	try {
+    // FIX: Se está lanzando esto a pesar de que solo se está mandando la invitation, no confirmandola
 		const response = await sendRequest('POST', 'users/friends/confirm', {friend_id: friendId});
 		if (!response)
 			throw new Error("Error while fetching confirm invitation");
