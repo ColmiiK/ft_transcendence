@@ -89,7 +89,6 @@ function getParticipantsOfTournament(tournament_id) {
   });
 }
 
-//TODO: Check this further, continue working on tournaments
 export function getTournamentByID(id) {
   assert(id !== undefined, "id must exist");
   return new Promise((resolve, reject) => {

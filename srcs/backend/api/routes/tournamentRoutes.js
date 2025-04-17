@@ -14,7 +14,6 @@ import {
   // deleteTournament,
 } from "../models/tournamentModel.js";
 
-//TODO: Revamp tournaments with new schema
 export default function createTournamentRoutes(fastify) {
   return [
     // {
@@ -116,6 +115,8 @@ export default function createTournamentRoutes(fastify) {
         return res.code(200).send(result);
       }),
     },
+    //TODO: What happens when the tournament is completed
+    //      Start tournament, brackets, matchmaking, etc.
     // {
     //   preHandler: [fastify.authenticate],
     //   method: "PUT",
