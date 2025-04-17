@@ -36,6 +36,58 @@ export function createTournament(data, creatorId) {
   });
 }
 
+function getInvitationsOfTournament(tournament_id) {
+  assert(tournament_id !== undefined, "tournament_id must exist");
+  return new Promise((resolve, reject) => {
+    const invitationsSQL = `
+        SELECT
+          user_id,
+          status AS invitation_status,
+          invited_at
+        FROM
+          tournament_invitations
+        WHERE
+          tournament_id = ?
+       `;
+    db.all(invitationsSQL, [tournament_id], (err, invitations) => {
+      if (err) {
+        console.error("error getting invitations", err.message);
+        return reject(err);
+      }
+      const tournament_invitations = invitations.map((inv) => ({
+        user_id: inv.user_id,
+        status: inv.invitation_status,
+      }));
+      resolve(tournament_invitations);
+    });
+  });
+}
+
+function getParticipantsOfTournament(tournament_id) {
+  assert(tournament_id !== undefined, "tournament_id must exist");
+  return new Promise((resolve, reject) => {
+    const participantsSQL = `
+          SELECT
+            user_id,
+            final_rank
+          FROM
+            tournament_participants
+          WHERE
+            tournament_id = ?
+        `;
+    db.all(participantsSQL, [tournament_id], (err, participants) => {
+      if (err) {
+        console.error("error getting participants", err.message);
+        return reject(err);
+      }
+      const tournament_participants = participants.map((part) => ({
+        user_id: part.user_id,
+        final_rank: part.final_rank,
+      }));
+      resolve(tournament_participants);
+    });
+  });
+}
 
 //TODO: Check this further, continue working on tournaments
 export function getTournamentByID(id) {
@@ -73,47 +125,13 @@ export function getTournamentByID(id) {
         tournament_invitations: [],
         tournament_participants: [],
       };
-
-      const invitationsSQL = `
-        SELECT
-          user_id,
-          status AS invitation_status,
-          invited_at
-        FROM
-          tournament_invitations
-        WHERE
-          tournament_id = ?
-       `;
-      db.all(invitationsSQL, [id], (err, invitations) => {
-        if (err) {
-          console.error("error getting invitations", err.message);
-          return reject(err);
-        }
-        result.tournament_invitations = invitations.map((inv) => ({
-          user_id: inv.user_id,
-          status: inv.invitation_status,
-        }));
-
-        const participantsSQL = `
-          SELECT
-            user_id,
-            final_rank
-          FROM
-            tournament_participants
-          WHERE
-            tournament_id = ?
-        `;
-        db.all(participantsSQL, [id], (err, participants) => {
-          if (err) {
-            console.error("error getting participants", err.message);
-            return reject(err);
-          }
-          result.tournament_participants = participants.map((part) => ({
-            user_id: part.user_id,
-            final_rank: part.final_rank,
-          }));
-          resolve(result);
-        });
+      Promise.all([
+        getInvitationsOfTournament(id),
+        getParticipantsOfTournament(id),
+      ]).then(([invitations, participants]) => {
+        result.tournament_invitations = invitations;
+        result.tournament_participants = participants;
+        resolve(result);
       });
     });
   });
@@ -187,6 +205,75 @@ export function addParticipantToTournament(data, user_id) {
         return reject(err);
       }
       resolve({ success: "invitation confirmed" });
+    });
+  });
+}
+
+export function isInvited(tournament_id, user_id) {
+  assert(tournament_id !== undefined, "tournament_id must exist");
+  assert(user_id !== undefined, "user_id must exist");
+  return new Promise((resolve, reject) => {
+    const sql = `
+      SELECT EXISTS (
+        SELECT 1
+        FROM
+          tournament_invitations
+        WHERE
+          user_id = ? AND tournament_id = ?)
+      AS is_invited;`;
+    const params = [user_id, tournament_id];
+    db.get(sql, params, function (err, row) {
+      if (err) {
+        console.error("Error accessing tournament_invitations:", err.message);
+        return reject(err);
+      }
+      resolve(row.is_invited === 1);
+    });
+  });
+}
+
+export function isParticipant(tournament_id, user_id) {
+  assert(tournament_id !== undefined, "tournament_id must exist");
+  assert(user_id !== undefined, "user_id must exist");
+  return new Promise((resolve, reject) => {
+    const sql = `
+      SELECT EXISTS (
+        SELECT 1
+        FROM
+          tournament_participants
+        WHERE
+          user_id = ? AND tournament_id = ?)
+      AS is_participant;`;
+    const params = [user_id, tournament_id];
+    db.get(sql, params, function (err, row) {
+      if (err) {
+        console.error("Error accessing tournament_participants:", err.message);
+        return reject(err);
+      }
+      resolve(row.is_participant === 1);
+    });
+  });
+}
+
+export function getInvitationStatus(tournament_id, user_id) {
+  assert(tournament_id !== undefined, "tournament_id must exist");
+  assert(user_id !== undefined, "user_id must exist");
+  return new Promise((resolve, reject) => {
+    const sql = `
+      SELECT
+        status
+      FROM
+        tournament_invitations
+      WHERE
+        user_id = ? AND tournament_id = ?
+      `;
+    const params = [user_id, tournament_id];
+    db.get(sql, params, function (err, row) {
+      if (err) {
+        console.error("Error accessing tournament_participants:", err.message);
+        return reject(err);
+      }
+      resolve(row.status);
     });
   });
 }

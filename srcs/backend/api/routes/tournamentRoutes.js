@@ -5,6 +5,9 @@ import {
   addInvitationToTournament,
   modifyInvitationToTournament,
   addParticipantToTournament,
+  isInvited,
+  isParticipant,
+  getInvitationStatus,
   // getTournaments,
   // putTournament,
   // patchTournament,
@@ -30,6 +33,24 @@ export default function createTournamentRoutes(fastify) {
       handler: asyncHandler(async (req, res) => {
         if (!validateInput(req, res, ["name", "player_limit"])) return;
         const tournament = await createTournament(req.body, req.userId);
+        const t_id = tournament.tournament_id;
+        await addInvitationToTournament({
+          tournament_id: t_id,
+          user_id: req.userId,
+        });
+        await modifyInvitationToTournament(
+          {
+            status: "confirmed",
+            tournament_id: t_id,
+          },
+          req.userId,
+        );
+        await addParticipantToTournament(
+          {
+            tournament_id: t_id,
+          },
+          req.userId,
+        );
         return res.code(201).send(tournament);
       }),
     },
@@ -48,6 +69,24 @@ export default function createTournamentRoutes(fastify) {
       url: "/tournaments/invite",
       handler: asyncHandler(async (req, res) => {
         if (!validateInput(req, res, ["tournament_id", "user_id"])) return;
+        if (await isInvited(req.body.tournament_id, req.body.user_id)) {
+          const invStatus = await getInvitationStatus(
+            req.body.tournament_id,
+            req.body.user_id,
+          );
+          console.log("invStatus:", invStatus);
+          if (invStatus === "denied") {
+            const result = await modifyInvitationToTournament(
+              {
+                tournament_id: req.body.tournament_id,
+                status: "pending",
+              },
+              req.body.user_id,
+            );
+            return res.code(200).send(result);
+          }
+          return res.code(400).send({ error: "User is already invited" });
+        }
         const result = await addInvitationToTournament(req.body);
         return res.code(201).send(result);
       }),
@@ -58,11 +97,23 @@ export default function createTournamentRoutes(fastify) {
       url: "/tournaments/invite",
       handler: asyncHandler(async (req, res) => {
         if (!validateInput(req, res, ["tournament_id", "status"])) return;
-        await modifyInvitationToTournament(req.body, req.userId);
-        // TODO: only do when the user is confirming the invitation
-        // if (status === confirmed)
-        const result = await addParticipantToTournament(req.body, req.userId);
-        return res.code(201).send(result);
+        let result;
+        if (await isParticipant(req.body.tournament_id, req.userId))
+          return res.code(400).send({
+            error: "User is already a participant in the tournament",
+          });
+        if (req.body.status === "confirmed") {
+          if (!(await isInvited(req.body.tournament_id, req.userId)))
+            return res
+              .code(400)
+              .send({ error: "User is not invited to tournament" });
+          await modifyInvitationToTournament(req.body, req.userId);
+          result = await addParticipantToTournament(req.body, req.userId);
+        }
+        if (req.body.status === "denied") {
+          result = await modifyInvitationToTournament(req.body, req.userId);
+        }
+        return res.code(200).send(result);
       }),
     },
     // {

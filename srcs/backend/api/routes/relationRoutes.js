@@ -47,7 +47,7 @@ export default function createRelationRoutes(fastify) {
       method: "GET",
       url: "/users/friends/:id",
       handler: asyncHandler(async (req, res) => {
-        if (!isFriend(req.userId, req.params.id))
+        if (!(await isFriend(req.userId, req.params.id)))
           return res.code(403).send({ error: "Users are not friends" });
         const data = await getFriendOfUser(req.params.id);
         return res.code(200).send(data);
@@ -78,7 +78,7 @@ export default function createRelationRoutes(fastify) {
       url: "/users/blocks",
       handler: asyncHandler(async (req, res) => {
         if (!validateInput(req, res, ["blocked_id"])) return;
-        if (isFriend(req.userId, req.body.blocked_id))
+        if (await isFriend(req.userId, req.body.blocked_id))
           await removeUserFriend(req.userId, req.body.blocked_id);
         const data = await addUserBlock(req.userId, req.body.blocked_id);
         return res.code(200).send(data);
