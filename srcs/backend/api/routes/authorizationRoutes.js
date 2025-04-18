@@ -75,6 +75,7 @@ export default function createAuthRoutes(fastify) {
           return;
         if (req.body.password != req.body.confirm_password)
           return res.code(400).send({ error: "Passwords don't match" });
+        // TODO: if user already exists, handle it nicely
         const result = await registerUser(req.body);
         setJWT(res, result);
         return res.code(201).send(result);

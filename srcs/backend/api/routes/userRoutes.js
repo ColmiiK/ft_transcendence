@@ -12,7 +12,7 @@ import { getMessagesOfUser } from "../models/messageModel.js";
 import { getChatsOfUser } from "../models/chatModel.js";
 import { getMatchesOfUser } from "../models/matchModel.js";
 import { getTournamentsOfUser } from "../models/tournamentModel.js";
-import { checkCurrentPassword } from"../authUtils.js";
+import { checkCurrentPassword } from "../authUtils.js";
 import { checkNewPassword } from "../passwordReset.js";
 
 export default function createUserRoutes(fastify) {
@@ -72,7 +72,6 @@ export default function createUserRoutes(fastify) {
       }),
     },
     {
-      //TODO: TEST
       preHandler: [fastify.authenticate],
       method: "PATCH",
       url: "/users/password",
@@ -85,18 +84,27 @@ export default function createUserRoutes(fastify) {
           ])
         )
           return;
-        if (req.body.new_password !== req.body.new_password_confirm) return res.code(403).send({error:"New passwords don't match"});
-        const user = getUser(req.userId, true);
-        const isAuthorized = await checkCurrentPassword(user, req.body.current_password);
-        if (isAuthorized["error"]) return res.code(403).send(error: isAuthorized["error"]);
-        const samePassword = await checkNewPassword(user, req.body.password);
+        if (req.body.new_password !== req.body.new_password_confirm)
+          return res.code(403).send({ error: "New passwords don't match" });
+        const user = await getUser(req.userId, true);
+        const isAuthorized = await checkCurrentPassword(
+          user,
+          req.body.current_password,
+        );
+        if (isAuthorized["error"])
+          return res.code(403).send({ error: isAuthorized["error"] });
+        const samePassword = await checkNewPassword(
+          user,
+          req.body.new_password,
+        );
         if (samePassword)
           return res
             .code(400)
             .send({ error: "New password matches the old one" });
-        }
-        const result = await patchUser(req.userId, {password: req.body.new_password});
-        return res.code(200).send(result);
+        await patchUser(req.userId, {
+          password: req.body.new_password,
+        });
+        return res.code(200).send({ success: "Password successfully changed" });
       }),
     },
     {

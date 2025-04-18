@@ -71,8 +71,11 @@ export function validateInput(req, res, requiredFields) {
     });
     return false;
   }
-  if (requiredFields.includes("password")) {
-    const password = req.body.password;
+  if (
+    requiredFields.includes("password") ||
+    requiredFields.includes("new_password")
+  ) {
+    const password = req.body.password || req.body.new_password;
     if (password.length < 9) {
       res.code(400).send({ error: "Password is too short" });
       return false;
