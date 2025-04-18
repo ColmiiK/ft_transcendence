@@ -35,6 +35,15 @@ export async function loginUser(user, password, totp_token = null) {
   return result;
 }
 
+export async function checkCurrentPassword(user, password) {
+  assert(user !== undefined, "user must exist");
+  assert(password !== undefined, "password must exist");
+
+  const isAuthorized = await bcrypt.compare(password, user.password);
+  if (!isAuthorized) return { error: "Incorrect password" };
+  return true;
+}
+
 function parseUsername(email) {
   assert(email !== undefined, "email must exist");
   const name = email.split("@")[0].substring(0, 16);
