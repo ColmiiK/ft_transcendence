@@ -56,6 +56,14 @@ export async function checkNewPassword(user, new_password) {
   return result;
 }
 
+export async function checkCurrentPassword(user, password) {
+  assert(user !== undefined, "user must exist");
+  assert(password !== undefined, "password must exist");
+  const isAuthorized = await bcrypt.compare(password, user.password);
+  if (!isAuthorized) return { error: "Incorrect password" };
+  return true;
+}
+
 /**
  * Completes the change of password, checking the token first
  * @param {Object} user - User to change password
