@@ -114,7 +114,10 @@ function displayDeletedAccount() {
 		If you log-in with your credentials in the next 30 days you'll recover it.
 		We'll miss you!!`
 	logOutButton.classList.remove("hidden");
-	logOutButton.onclick = () => { navigateTo('/login'); };
+	logOutButton.onclick = () => {
+    localStorage.clear();
+    navigateTo('/login');
+  };
 }
 
 export async function displayQR() {

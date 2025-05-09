@@ -1,4 +1,5 @@
 import { navigateTo } from "../index.js";
+import { sendRequest } from "../login-page/login-fetch.js";
 import { initHomeFetches } from "./home-fetch.js"
 
 /**
@@ -61,7 +62,7 @@ function dropDown(){
  * @brief Navigates you to the selected profile picture option
  * @param option The option you choosed (Modify profile, Settings or Log Out)
  */
-function navigateProfileOptions(option: string) {
+async function navigateProfileOptions(option: string) {
 	const dropdownButton = document.getElementById("profile-button");
 	if (!dropdownButton)
 		return;
@@ -72,6 +73,15 @@ function navigateProfileOptions(option: string) {
 	];
 
 	const profileOption = profileOptions.find((elem) => elem.key == option);
-	if (profileOption)
+	if (profileOption) {
+    if (profileOption.label === '/login') {
+      localStorage.clear();
+      sendRequest("GET", "/logout");
+      // Handle error, if it matters
+      // const response = await sendRequest("GET", "/logout");
+      // if (response["error"])
+      //
+    }
 		navigateTo(profileOption.label);
+  }
 }

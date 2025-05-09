@@ -57,6 +57,16 @@ export default function createAuthRoutes(fastify) {
       }),
     },
     {
+      preHandler: [fastify.authenticate],
+      method: "GET",
+      url: "/logout",
+      handler: asyncHandler(async (req, res) => {
+        console.log("Logging out user", req.userId);
+        res.clearCookie("token", { path: "/" });
+        return res.code(200).send({ success: "User successfully logged out" });
+      }),
+    },
+    {
       method: "POST",
       url: "/google/login",
       handler: asyncHandler(async (req, res) => {
