@@ -22,6 +22,12 @@ function setHomeAttributes() {
 		if (username)
 			usernameText.innerText = " " + username;
 	}
+  // Sets the avatar in the profile dropdown
+  const avatarImage = document.getElementById("profile-button");
+  const avatar =  localStorage.getItem("avatar");
+  if (!avatarImage || !avatar)
+    return;
+  avatarImage.style.backgroundImage = `url("${avatar}")`;
 }
 
 /**

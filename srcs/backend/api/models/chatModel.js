@@ -228,9 +228,15 @@ export function getLastChatsOfUser(id) {
         SELECT
           c.id AS chat_id,
           CASE 
-            WHEN c.first_user_id = ? THEN second_user.username
-            ELSE first_user.username
-          END AS friend_username,
+            WHEN c.first_user_id = ?
+              THEN second_user.username
+              ELSE first_user.username
+            END AS friend_username,
+          CASE 
+            WHEN c.first_user_id = ?
+              THEN second_user.avatar
+              ELSE first_user.avatar
+            END AS friend_avatar,
           sender.username AS sender_username,
           sender.is_deleted AS sender_deleted,
           receiver.is_deleted AS receiver_deleted,
@@ -251,6 +257,7 @@ export function getLastChatsOfUser(id) {
         sender_deleted,
         receiver_deleted,
         friend_username,
+        friend_avatar,
         sender_username, 
         body, 
         sent_at,
@@ -259,7 +266,7 @@ export function getLastChatsOfUser(id) {
       WHERE message_rank = 1
       ORDER BY sent_at DESC
 `;
-    db.all(sql, [id, id, id], (err, rows) => {
+    db.all(sql, [id, id, id, id], (err, rows) => {
       if (err) {
         console.error("Error getting chats:", err.message);
         return reject(err);

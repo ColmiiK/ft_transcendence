@@ -71,7 +71,7 @@ async function clickFriendProfile(e: Event) {
 							</div>
 						</div>
 						<div class="flex flex-col items-center lg:mr-4">
-							<img id="friend-profile-photo" class="rounded-full" src="../../resources/img/cat.jpg" alt="Profile photo">
+							<img id="friend-profile-photo" class="rounded-full" src="${friendProfileTyped.avatar}" alt="Profile photo">
 						</div>
 					</div>
 					<div id="friend-statistics" class="flex flex-col items-center p-4 gap-1 mt-4 rounded-[15px] w-full lg:w-9/12 bg-[#7d48778f]">
@@ -199,7 +199,7 @@ export async function showMatches(input: string) {
 			if (matchesTyped[i]){
 				const messageButton = document.getElementById(`friend-chat-${matchesTyped[i].user_id}`);
 				if (messageButton) {
-					messageButton.onclick = () => { goToFriendChat(matchesTyped[i].user_id, matchesTyped[i].username) };
+					messageButton.onclick = () => { goToFriendChat(matchesTyped[i].user_id, matchesTyped[i].username, matchesTyped[i].avatar) };
 				}
 			}
 		}
@@ -215,13 +215,13 @@ export async function showMatches(input: string) {
 	}
 }
 
-async function goToFriendChat(friend_id: number, friend_username: string) {
+async function goToFriendChat(friend_id: number, friend_username: string, friend_avatar: string) {
 	try {
 		const chat_id = await sendRequest('POST', '/chats/identify', {friend_id});
 		if (!chat_id)
 			throw new Error("Error during fetch for navigating to friend chat");
 
-		navigateTo("/messages", {chat_id, friend_username});
+		navigateTo("/messages", {chat_id, friend_username, friend_avatar});
 	}
 	catch (error) {
 		console.error(error);
@@ -321,7 +321,7 @@ export async function displayInvitations() {
 			if (invitation.invitation_type === "sent") {
 				card.innerHTML = `
 					<div class="flex items-center gap-4">
-						<img id="invitation-avatar" class="card-avatar rounded-full m-1.5" src="../../resources/img/cat.jpg" alt="Avatar">
+						<img id="invitation-avatar" class="card-avatar rounded-full m-1.5" src="${invitation.receiver_avatar}" alt="Avatar">
 						<div class="flex flex-col">
 							<h3>${invitation.receiver_username}</h3>
 							<p class="opacity-50 text-sm">${invitation.receiver_status}</p>
@@ -338,7 +338,7 @@ export async function displayInvitations() {
 			else {
 				card.innerHTML = `
 					<div class="flex items-center gap-4">
-						<img id="invitation-avatar" class="card-avatar rounded-full m-1.5" src="../../resources/img/cat.jpg" alt="Avatar">
+						<img id="invitation-avatar" class="card-avatar rounded-full m-1.5" src="${invitation.sender_avatar}" alt="Avatar">
 						<div class="flex flex-col">
 							<h3>${invitation.sender_username}</h3>
 							<p class="opacity-50 text-sm">${invitation.sender_status}</p>

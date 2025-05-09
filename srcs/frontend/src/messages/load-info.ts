@@ -81,9 +81,9 @@ async function displayFirstChat(data: MessageObject) {
 		const recentChatsTyped = recentChats as LastMessage[];
 		if (recentChatsTyped) {
 			if (Object.keys(data).length !== 0)
-				chargeChat(data.chat_id, data.friend_username);
+				chargeChat(data.chat_id, data.friend_username, data.friend_avatar);
 			else
-				chargeChat(recentChatsTyped[0].chat_id, recentChatsTyped[0].friend_username);
+				chargeChat(recentChatsTyped[0].chat_id, recentChatsTyped[0].friend_username, recentChatsTyped[0].friend_avatar);
 		}
 	}
 	catch (error) {
@@ -115,7 +115,7 @@ export async function recentChats() {
 				subDiv.innerHTML = `
 				<div id="chat-${chat.chat_id} "class="flex items-center gap-2 recent-chat-card">
 					<div id="chat-avatar">
-						<img class="rounded-full" src="../../resources/img/cat.jpg" alt="Avatar">
+						<img class="rounded-full aspect-square" src="${chat.friend_avatar}" alt="Avatar">
 					</div>
 					<div class="chat-info overflow-hidden">
 						<h3>${chat.friend_username}</h3>
@@ -127,7 +127,7 @@ export async function recentChats() {
 				subDiv.addEventListener("click", () => {
 					if (last_chat !== chat.chat_id) {
 						last_chat = chat.chat_id;
-						chargeChat(chat.chat_id, chat.friend_username);
+						chargeChat(chat.chat_id, chat.friend_username, chat.friend_avatar);
 					}
 				});
 			})
@@ -139,7 +139,7 @@ export async function recentChats() {
 }
 
 // FIX: sometimes it still mixes messages up
-export async function chargeChat(chat_id: number, friend_username: string, page: number = 1) {
+export async function chargeChat(chat_id: number, friend_username: string, friend_avatar: string, page: number = 1) {
   if (window.innerWidth < 768 && page === 1) toggleMobileDisplay();
   // Check if the chat changed from previous one
   if (actual_chat_id !== chat_id && chat_id !== 0) {
@@ -151,8 +151,10 @@ export async function chargeChat(chat_id: number, friend_username: string, page:
 
   const chatDiv = document.getElementById("message-history");
   let contactName = document.getElementById("chat-friend-username");
+  let contactAvatar = document.getElementById("contact-picture");
 
   if (contactName) contactName.innerText = friend_username;
+  if (contactAvatar) contactAvatar.setAttribute("src", friend_avatar);
 
   await getChatInfo(chat_id);
   if (chatDiv) {
@@ -248,6 +250,7 @@ async function handleScroll() {
     hasMoreMessages = await chargeChat(
       actual_chat_id,
       document.getElementById("chat-friend-username")?.innerText || "",
+      document.getElementById("contact-picture")?.getAttribute("src") || "",
       currentPage,
     );
   }

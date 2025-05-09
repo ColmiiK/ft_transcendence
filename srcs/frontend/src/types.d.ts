@@ -8,6 +8,7 @@ export interface LastMessage {
 	chat_id: number;
 	sender_username: string;
 	friend_username: string;
+	friend_avatar: string;
 	sent_at: string;	
 }
 
@@ -49,6 +50,7 @@ export interface Message {
 export interface MessageObject {
 	chat_id: number;
 	friend_username: string;
+  friend_avatar: string;
 }
 
 export interface User {
