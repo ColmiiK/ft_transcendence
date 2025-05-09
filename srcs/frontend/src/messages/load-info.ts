@@ -140,10 +140,13 @@ export async function recentChats() {
 
 // FIX: sometimes it still mixes messages up
 export async function chargeChat(chat_id: number, friend_username: string, friend_avatar: string, page: number = 1) {
-  if (window.innerWidth < 768 && page === 1) toggleMobileDisplay();
+  if (window.innerWidth < 768 && page === 1)
+    toggleMobileDisplay();
+
   // Check if the chat changed from previous one
   if (actual_chat_id !== chat_id && chat_id !== 0) {
     // console.log(`Switching chats from ${actual_chat_id} to ${chat_id}. Resetting pagination.`);
+
     currentPage = 1;
     hasMoreMessages = true;
     page = 1;
@@ -159,13 +162,13 @@ export async function chargeChat(chat_id: number, friend_username: string, frien
   await getChatInfo(chat_id);
   if (chatDiv) {
     try {
+      const chatHistoryTyped = await sendRequest("GET", `chats/${chat_id}?page=${page}`) as Message[];
       // Delete if it's a new page
-      const chatHistoryTyped = (await sendRequest(
-        "GET",
-        `chats/${chat_id}?page=${page}`,
-      )) as Message[];
-      if (page === 1 && chatDiv.children.length > 0) chatDiv.innerHTML = "";
+      if (page === 1 && chatDiv.children.length > 0)
+        chatDiv.innerHTML = "";
+
       // console.log('chat_id:', chat_id, "page:", page)
+
       if (!chatHistoryTyped) {
         if (page === 1) throw new Error("Error fetching the chat selected");
         else return false;
