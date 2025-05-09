@@ -67,6 +67,22 @@ export default function createAuthRoutes(fastify) {
       }),
     },
     {
+      method: "GET",
+      url: "/islogged",
+      handler: asyncHandler(async (req, res) => {
+        try {
+          const { valid, value } = req.unsignCookie(req.cookies.token);
+          if (!valid)
+            return res.code(401).send({ error: "Invalid cookie signature" });
+          const decoded = fastify.jwt.verify(value);
+          req.userId = decoded.user;
+        } catch (err) {
+          return res.code(200).send({ logged: false });
+        }
+        return res.code(200).send({ logged: true });
+      }),
+    },
+    {
       method: "POST",
       url: "/google/login",
       handler: asyncHandler(async (req, res) => {

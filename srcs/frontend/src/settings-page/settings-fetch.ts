@@ -116,6 +116,7 @@ function displayDeletedAccount() {
 	logOutButton.classList.remove("hidden");
 	logOutButton.onclick = () => {
     localStorage.clear();
+    sendRequest("GET", "/logout");
     navigateTo('/login');
   };
 }

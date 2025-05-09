@@ -1,13 +1,20 @@
 "use strict";
 
 import { initLoginFetches } from "./login-fetch.js";
+import { sendRequest } from "./login-fetch.js";
 
-export function initLoginEvents() {
+export async function initLoginEvents() {
 	dropDown();
 	switchSigns();
 	resetPassword();
 	initLoginFetches();
 	googleSignIn();
+  const res = await sendRequest("GET", "/islogged");
+  if (res["logged"]) {
+    console.log("JWT found, user is already logged");
+  } else {
+    console.log("JWT not found, user is not logged");
+  }
 }
 
 export function dropDown(){
