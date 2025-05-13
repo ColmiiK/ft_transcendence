@@ -193,6 +193,10 @@ export function getMatchesHistory(user_id, type) {
         ELSE u1.username
       END AS rival_username,
       CASE
+        WHEN m.first_player_id = ? THEN u2.is_deleted
+        ELSE u1.is_deleted
+      END AS rival_is_deleted,
+      CASE
         WHEN m.first_player_id = ? THEN u2.avatar
         ELSE u1.avatar
       END AS rival_avatar
@@ -211,11 +215,28 @@ export function getMatchesHistory(user_id, type) {
     `;
     db.all(
       sql,
-      [user_id, user_id, user_id, user_id, user_id, user_id, user_id, type],
+      [
+        user_id,
+        user_id,
+        user_id,
+        user_id,
+        user_id,
+        user_id,
+        user_id,
+        user_id,
+        type,
+      ],
       function (err, rows) {
         if (err) {
           console.error("Error getting matche:", err.message);
           return reject(err);
+        }
+        // TODO: ADD ANONYMOUS AVATAR
+        for (let i = 0; i < rows.length; i++) {
+          if (rows[i].rival_is_deleted) {
+            rows[i].rival_username = "anonymous";
+          }
+          delete rows[i].rival_is_deleted;
         }
         resolve(rows);
       },
