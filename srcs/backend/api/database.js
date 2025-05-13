@@ -144,7 +144,7 @@ db.serialize(() => {
     CREATE TABLE IF NOT EXISTS matches (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     game_type VARCHAR(255) NOT NULL,
-    custom_mode VARCHAR(255),
+    custom_mode VARCHAR(255) DEFAULT 'none',
     status VARCHAR(255) NOT NULL DEFAULT 'scheduled',
     first_player_id INTEGER NOT NULL,
     second_player_id INTEGER NOT NULL,
