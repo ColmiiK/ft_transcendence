@@ -132,6 +132,98 @@ export function getMatches(user_id) {
 }
 
 /**
+ * Returns all matches from a given type of game for a user
+ * @param {Number} user_id - ID of the user
+ * @param {String} type - Either "pong" or "connect_four"
+ * @returns {Array} - All found matches of the given type
+ */
+export function getMatchesType(user_id, type) {
+  assert(user_id !== undefined, "user_id must exist");
+  assert(type !== undefined, "type must exist");
+  return new Promise((resolve, reject) => {
+    const sql = `
+      SELECT
+        *
+      FROM
+        matches
+      WHERE
+        game_type = ?
+      AND
+        (first_player_id = ? OR second_player_id = ?)
+    `;
+    db.all(sql, [type, user_id, user_id], function (err, rows) {
+      if (err) {
+        console.error("Error getting matche:", err.message);
+        return reject(err);
+      }
+      resolve(rows);
+    });
+  });
+}
+
+/**
+ * Returns all matches as the history of matches
+ * @param {Number} user_id - ID of the user
+ * @param {String} type - Either "pong" or "connect_four"
+ * @returns {Array} - All found matches of the given type
+ */
+export function getMatchesHistory(user_id, type) {
+  assert(user_id !== undefined, "user_id must exist");
+  assert(type !== undefined, "type must exist");
+  return new Promise((resolve, reject) => {
+    const sql = `
+      SELECT
+        m.id AS match_id,
+        m.game_type,
+        m.played_at,
+      CASE
+        WHEN m.first_player_id = ? THEN m.first_player_score
+        ELSE m.second_player_score
+      END AS user_score,
+      CASE
+        WHEN m.first_player_id = ? THEN m.second_player_score
+        ELSE m.first_player_score
+      END AS rival_score,
+      CASE
+        WHEN m.winner_id = ? THEN TRUE
+        ELSE FALSE
+      END AS won,
+      CASE
+        WHEN m.first_player_id = ? THEN u2.username
+        ELSE u1.username
+      END AS rival_username,
+      CASE
+        WHEN m.first_player_id = ? THEN u2.avatar
+        ELSE u1.avatar
+      END AS rival_avatar
+      FROM
+        matches m
+      JOIN
+        users u1 ON m.first_player_id = u1.id
+      JOIN
+        users u2 ON m.second_player_id = u2.id
+      WHERE
+        (m.first_player_id = ? OR m.second_player_id = ?)
+      AND
+        m.game_type = ?
+      ORDER BY
+        m.played_at DESC;
+    `;
+    db.all(
+      sql,
+      [user_id, user_id, user_id, user_id, user_id, user_id, user_id, type],
+      function (err, rows) {
+        if (err) {
+          console.error("Error getting matche:", err.message);
+          return reject(err);
+        }
+        resolve(rows);
+      },
+    );
+  });
+}
+
+/**
  * Finishes a match
  * @param {Object} match - Given match
  * @param {Number} first_player_score - Score of the first player

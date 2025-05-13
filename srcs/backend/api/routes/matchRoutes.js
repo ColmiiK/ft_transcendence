@@ -4,6 +4,8 @@ import {
   getMatch,
   finishMatch,
   getMatches,
+  getMatchesHistory,
+  getMatchesType,
 } from "../models/matchModel.js";
 
 import {
@@ -25,7 +27,43 @@ export default function createMatchRoutes(fastify) {
       url: "/matches",
       handler: asyncHandler(async (req, res) => {
         const results = await getMatches(req.userId);
-        return res.code(201).send(results);
+        return res.code(200).send(results);
+      }),
+    },
+    {
+      preHandler: [fastify.authenticate],
+      method: "GET",
+      url: "/matches/pong",
+      handler: asyncHandler(async (req, res) => {
+        const results = await getMatchesType(req.userId, "pong");
+        return res.code(200).send(results);
+      }),
+    },
+    {
+      preHandler: [fastify.authenticate],
+      method: "GET",
+      url: "/matches/connect",
+      handler: asyncHandler(async (req, res) => {
+        const results = await getMatchesType(req.userId, "connect_four");
+        return res.code(200).send(results);
+      }),
+    },
+    {
+      preHandler: [fastify.authenticate],
+      method: "GET",
+      url: "/matches/history/pong",
+      handler: asyncHandler(async (req, res) => {
+        const results = await getMatchesHistory(req.userId, "pong");
+        return res.code(200).send(results);
+      }),
+    },
+    {
+      preHandler: [fastify.authenticate],
+      method: "GET",
+      url: "/matches/history/connect",
+      handler: asyncHandler(async (req, res) => {
+        const results = await getMatchesHistory(req.userId, "connect_four");
+        return res.code(200).send(results);
       }),
     },
     {
