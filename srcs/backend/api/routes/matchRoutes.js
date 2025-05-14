@@ -1,6 +1,7 @@
 import { asyncHandler, validateInput } from "../utils.js";
 import {
   createMatch,
+  createMatchOffline,
   getMatch,
   finishMatch,
   getMatches,
@@ -86,6 +87,33 @@ export default function createMatchRoutes(fastify) {
           "connect_four",
         );
         return res.code(200).send(results);
+      }),
+    },
+    {
+      preHandler: [fastify.authenticate],
+      method: "POST",
+      url: "/matches/offline",
+      handler: asyncHandler(async (req, res) => {
+        if (
+          !validateInput(req, res, [
+            "game_type",
+            "custom_mode",
+            "rival_alias",
+            "first_player_score",
+            "second_player_score",
+          ])
+        )
+          return;
+        req.body.userId = req.userId;
+        if (req.body.first_player_score > req.body.second_player_score) {
+          req.body.winner_id = req.body.userId;
+          req.body.loser_id = null;
+        } else {
+          req.body.loser_id = req.body.userId;
+          req.body.winner_id = null;
+        }
+        const match = await createMatchOffline(req.body);
+        return res.code(201).send(match);
       }),
     },
     {
