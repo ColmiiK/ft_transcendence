@@ -78,6 +78,18 @@ export default function createMatchRoutes(fastify) {
     },
     {
       preHandler: [fastify.authenticate],
+      method: "GET",
+      url: "/matches/general/connect",
+      handler: asyncHandler(async (req, res) => {
+        const results = await getMatchesGeneralStats(
+          req.userId,
+          "connect_four",
+        );
+        return res.code(200).send(results);
+      }),
+    },
+    {
+      preHandler: [fastify.authenticate],
       method: "POST",
       url: "/matches",
       handler: asyncHandler(async (req, res) => {

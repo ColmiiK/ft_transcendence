@@ -188,7 +188,7 @@ export function getMatchesHistory(user_id, type) {
       CASE
         WHEN m.winner_id = ? THEN TRUE
         ELSE FALSE
-      END AS won,
+      END AS is_win,
       CASE
         WHEN m.first_player_id = ? THEN u2.username
         ELSE u1.username
@@ -352,7 +352,6 @@ export function getMatchesGeneralStats(user_id, type) {
       };
     });
 
-    // Combine all results
     result.wins = winsResult.wins;
     result.losses = lossesResult.losses;
     result.standard_games = standardGamesResult.standard_games;
