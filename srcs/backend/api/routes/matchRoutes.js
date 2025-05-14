@@ -5,6 +5,7 @@ import {
   finishMatch,
   getMatches,
   getMatchesHistory,
+  getMatchesGeneralStats,
   getMatchesType,
 } from "../models/matchModel.js";
 
@@ -63,6 +64,15 @@ export default function createMatchRoutes(fastify) {
       url: "/matches/history/connect",
       handler: asyncHandler(async (req, res) => {
         const results = await getMatchesHistory(req.userId, "connect_four");
+        return res.code(200).send(results);
+      }),
+    },
+    {
+      preHandler: [fastify.authenticate],
+      method: "GET",
+      url: "/matches/general/pong",
+      handler: asyncHandler(async (req, res) => {
+        const results = await getMatchesGeneralStats(req.userId, "pong");
         return res.code(200).send(results);
       }),
     },
