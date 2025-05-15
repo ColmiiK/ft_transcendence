@@ -119,7 +119,7 @@ export default function createMatchRoutes(fastify) {
     {
       preHandler: [fastify.authenticate],
       method: "POST",
-      url: "/matches",
+      url: "/matches/online",
       handler: asyncHandler(async (req, res) => {
         if (
           !validateInput(req, res, [

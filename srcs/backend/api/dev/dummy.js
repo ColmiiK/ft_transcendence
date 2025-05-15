@@ -59,7 +59,7 @@ import { patchUser } from "../models/userModel.js";
 import { addUserFriendPending, acceptUserFriend } from "../models/userModel.js";
 import { createChat } from "../models/chatModel.js";
 import { createMessage } from "../models/messageModel.js";
-import { createMatch } from "../models/matchModel.js";
+import { createMatch, createMatchOffline } from "../models/matchModel.js";
 
 async function createMatches(foo, bar) {
   console.log("Creating matches...");
@@ -342,5 +342,123 @@ export async function createDebug() {
     await createTestTournament("Test Tournament 1", foo, bar, baz, qux);
     // await createTestTournament("Test Tournament 2", bar, foo, qux, baz);
     // await createTestTournament("Test Tournament 3", qux, bar, foo, baz);
+
+    for (let i = 0; i < 5; i++) {
+      createMatchOffline({
+        game_type: "pong",
+        custom_mode: "none",
+        userId: foo.id,
+        userId: foo.id,
+        first_player_score: 10,
+        second_player_score: 5,
+        winner_id: foo.id,
+        loser_id: null,
+        rival_alias: "Invited_user",
+      });
+      createMatchOffline({
+        game_type: "pong",
+        custom_mode: "none",
+        userId: foo.id,
+        userId: foo.id,
+        first_player_score: 3,
+        second_player_score: 10,
+        winner_id: null,
+        loser_id: foo.id,
+        rival_alias: "Invited_user",
+      });
+      createMatchOffline({
+        game_type: "pong",
+        custom_mode: "none",
+        userId: bar.id,
+        userId: bar.id,
+        first_player_score: 10,
+        second_player_score: 5,
+        winner_id: bar.id,
+        loser_id: null,
+        rival_alias: "Invited_user",
+      });
+      createMatchOffline({
+        game_type: "pong",
+        custom_mode: "none",
+        userId: bar.id,
+        userId: bar.id,
+        first_player_score: 3,
+        second_player_score: 10,
+        winner_id: null,
+        loser_id: bar.id,
+        rival_alias: "Invited_user",
+      });
+      createMatchOffline({
+        game_type: "pong",
+        custom_mode: "none",
+        userId: baz.id,
+        userId: baz.id,
+        first_player_score: 10,
+        second_player_score: 5,
+        winner_id: baz.id,
+        loser_id: null,
+        rival_alias: "Invited_user",
+      });
+      createMatchOffline({
+        game_type: "pong",
+        custom_mode: "none",
+        userId: baz.id,
+        userId: baz.id,
+        first_player_score: 3,
+        second_player_score: 10,
+        winner_id: null,
+        loser_id: baz.id,
+        rival_alias: "Invited_user",
+      });
+      createMatchOffline({
+        game_type: "pong",
+        custom_mode: "none",
+        userId: qux.id,
+        userId: qux.id,
+        first_player_score: 10,
+        second_player_score: 5,
+        winner_id: qux.id,
+        loser_id: null,
+        rival_alias: "Invited_user",
+      });
+      createMatchOffline({
+        game_type: "pong",
+        custom_mode: "none",
+        userId: qux.id,
+        userId: qux.id,
+        first_player_score: 3,
+        second_player_score: 10,
+        winner_id: null,
+        loser_id: qux.id,
+        rival_alias: "Invited_user",
+      });
+    }
+    for (let i = 0; i < 5; i++) {
+      let match;
+      match = await createMatch({
+        game_type: "pong",
+        first_player_id: foo.id,
+        second_player_id: bar.id,
+      });
+      await finishMatch(match, 10, 5);
+      match = await createMatch({
+        game_type: "pong",
+        first_player_id: foo.id,
+        second_player_id: bar.id,
+      });
+      await finishMatch(match, 6, 10);
+      match = await createMatch({
+        game_type: "pong",
+        first_player_id: baz.id,
+        second_player_id: qux.id,
+      });
+      await finishMatch(match, 10, 5);
+      match = await createMatch({
+        game_type: "pong",
+        first_player_id: baz.id,
+        second_player_id: qux.id,
+      });
+      await finishMatch(match, 6, 10);
+    }
   }, 4000);
 }

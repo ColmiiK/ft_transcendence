@@ -28,7 +28,7 @@ export function createMatch(data) {
         return reject(err);
       }
       resolve({
-        match_id: this.lastID,
+        id: this.lastID,
         game_type: data.game_type,
         first_player_id: data.first_player_id,
         second_player_id: data.second_player_id,
