@@ -343,6 +343,7 @@ export async function createDebug() {
     // await createTestTournament("Test Tournament 2", bar, foo, qux, baz);
     // await createTestTournament("Test Tournament 3", qux, bar, foo, baz);
 
+    console.log("Creating offline matches...");
     for (let i = 0; i < 5; i++) {
       createMatchOffline({
         game_type: "pong",
@@ -433,6 +434,7 @@ export async function createDebug() {
         rival_alias: "Invited_user",
       });
     }
+    console.log("Creating online matches...");
     for (let i = 0; i < 5; i++) {
       let match;
       match = await createMatch({
