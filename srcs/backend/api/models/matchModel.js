@@ -218,6 +218,8 @@ export function getMatchesType(user_id, type) {
   });
 }
 
+//TODO: Look into the order of matches
+
 /**
  * Returns all matches as the history of matches
  * @param {Number} user_id - ID of the user
