@@ -42,8 +42,8 @@
 }
 
 @font-face {
-	font-family: "Alagard";
-	src: url("../resources/fonts/alagard.ttf") format("truetype");
+	font-family: "Alkhemikal";
+	src: url("../resources/fonts/alkhemikal.ttf") format("truetype");
 	font-weight: normal;
     font-style: normal;
 }
@@ -71,8 +71,8 @@ body {
 }
 
 h1 {
-	font-family: "Alagard", serif;
-	font-size: xxx-large;
+	font-family: "Alkhemikal", serif;
+  font-size:4em;
 	color: white;
 }
   

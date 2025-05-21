@@ -96,9 +96,8 @@ export function classicPong(data: Games): void{
 		saveGameState();
 	}
 
-	function stop(): void {
-		saveGameState();
-		stopEngine(generalData, AIData, ballData);
+	async function stop(): Promise<void> {
+		await stopEngine(generalData, AIData, ballData);
 	}
 
 	function moveBall(){
@@ -294,7 +293,7 @@ export function classicPong(data: Games): void{
 	});
 
 	window.addEventListener('popstate', async () => {
-		stop();
+		await stop();
 		await clearGameState();
 	});
 
@@ -303,7 +302,7 @@ export function classicPong(data: Games): void{
 	})
 
 	document.getElementById('exitGame')?.addEventListener('click', async () => {
-		await returnToGames(generalData, ballData);
+		await returnToGames(generalData, ballData, AIData);
 	})
 
 	setOnresize();

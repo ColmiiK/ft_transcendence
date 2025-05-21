@@ -108,6 +108,7 @@ export default function createAuthRoutes(fastify) {
             "email",
             "password",
             "confirm_password",
+            "language",
           ])
         )
           return;

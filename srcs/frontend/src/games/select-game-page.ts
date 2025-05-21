@@ -232,8 +232,10 @@ function initGameSelection(){
           const isCustom = mode.includes('custom')
           showRemoteSearch(currentGame, isCustom);
         }
-        else if (currentGame === "pong")
+        else if (currentGame === "pong"){
+          localStorage.removeItem('gameState');   // Línea añadida para que entre limpio al pong
           navigateTo("/pong", { gameMode: mode, isCustom: mode.includes('custom') });
+        }
         else if (currentGame === "4inrow")
           navigateTo("/4inrow", { gameMode: mode, isCustom: mode.includes('custom') });
         if (mode !== 'remote' && mode !== "remote-custom")

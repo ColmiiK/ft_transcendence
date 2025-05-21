@@ -61,7 +61,7 @@ export function play(generalData: GeneralData, ballData: BallData, AIData: AIDat
 	checkLost(generalData, ballData, AIData, player1, player2, width);
 }
 
-export function stop(generalData: GeneralData, AIData: AIData, ballData: BallData): void {
+export async function stop(generalData: GeneralData, AIData: AIData, ballData: BallData): Promise<void> {
 	if (generalData.controlGame) 
 		clearInterval(generalData.controlGame);
 	if (AIData.activate && AIData.controlAI) 
@@ -278,7 +278,7 @@ export async function pauseGame(generalData: GeneralData, ballData: BallData): P
 	return Promise.resolve();
 }
 
-export async function returnToGames(generalData: GeneralData, ballData: BallData): Promise<void> {
+export async function returnToGames(generalData: GeneralData, ballData: BallData, AIData: AIData): Promise<void> {
 	const exitBtn = document.getElementById('exitGame');
 	if (!exitBtn){
 		console.error("exitGame element not found.");
@@ -318,6 +318,7 @@ export async function returnToGames(generalData: GeneralData, ballData: BallData
 	})
 
 	document.getElementById('exit')?.addEventListener('click', () => {
+		stop(generalData, AIData, ballData);
 		localStorage.removeItem('gameState');
 		navigateTo("/games");
 	})

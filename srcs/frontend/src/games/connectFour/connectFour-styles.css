@@ -5,7 +5,7 @@
 
 #game-connect {
     position: relative;
-    width: 80%;
+    width: 70%;
     margin-top: 1rem;
     margin-bottom: 1rem;
 }
@@ -18,11 +18,11 @@
     opacity: 80%;
 }
 
-#pause {
+#pauseConnect {
     position: absolute;
-    place-self: center;
     transform: translate(-50%, -50%);
     top: 40%;
+    left: 50%;
     color: white;
     font-size: 4vw;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.976);
@@ -44,7 +44,7 @@
     margin-top: 2%;
 }
 
-#buttomGroup>button {
+/* #buttomGroup>button {
     border-radius: 8px;
     background-color: var(--dark-pink);
     width: fit-content;
@@ -59,15 +59,14 @@
 #buttomGroup>button:hover {
     background-color: #b06289;
     transform: translateY(-2px);
-}
+} */
 
-#returnToGames {
+#returnToGamesConnect {
     position: absolute;
     color: white;
-    width: 40%;
-    height: 20%;
-    top: 30%;
-    left: 30%;
+    width: 60%;
+    top: 28%;
+    left: 20%;
     align-content: center;
     justify-content: center;
     text-align: center;
@@ -75,29 +74,29 @@
     background-color: rgb(12, 43, 105);
     border: white solid 2px;
     border-radius: 2%;
+    padding: clamp(5px, 1vw, 10px) clamp(10px, 2vw, 20px);  
 }
 
-#returnToGames > p {
-	font-size: 2vw;
+#returnToGamesConnect > p {
+	white-space: nowrap;
+	font-size: clamp(0.6rem, 1.5vw, 2vw);
 	animation: blinkPause 1.5s infinite;
 }
 
-#returnToGames > button {
-	font-size: 2vw;
+#returnToGamesConnect > button {
+	font-size: clamp(0.4rem, 1.5vw, 1rem);
 	border-radius: 8px;       
     background-color: var(--dark-pink);
     width: fit-content;
     height: fit-content;
-    padding: 10px 20px;        
+    padding: clamp(4px, 0.8vw, 10px) clamp(10px, 2vw, 20px);     
     text-align: center;
-    font-size: 100%;
-    place-self: center;
     cursor: pointer;         
     transition: background-color 0.2s;
 	margin-inline: 2%;
 }
 
-#returnToGames > button:hover {
+#returnToGamesConnect > button:hover {
     background-color: #b06289;
     transform: translateY(-2px);
 }

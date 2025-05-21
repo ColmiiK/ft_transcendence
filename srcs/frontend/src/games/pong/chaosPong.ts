@@ -6,7 +6,7 @@ import {
 
 import { Games } from "../../types.js";
 
-export function chaosPong(data: Games): void{
+export function chaosPong(data: Games): void {
 	const gameElement = document.getElementById('game');
 	if (!gameElement){
 		throw new Error("HTML 'game' element not found.");
@@ -501,7 +501,7 @@ export function chaosPong(data: Games): void{
 	});
 
 	window.addEventListener("popstate", async () => {
-		stop();
+		await stop();
 		await clearGameState();
 	});
 
@@ -510,7 +510,7 @@ export function chaosPong(data: Games): void{
     })
 
     document.getElementById('exitGame')?.addEventListener('click', async () => {
-        await returnToGames(generalData, ballData);
+        await returnToGames(generalData, ballData, AIData);
     })
 
 	setOnresize();

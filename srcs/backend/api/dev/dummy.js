@@ -42,6 +42,7 @@ async function debugRegister(name, email) {
         email: `${email}@gmail.com`,
         password: `${name}.Password1`,
         confirm_password: `${name}.Password1`,
+        language: `en`,
       }),
     });
     const body = await res.json();

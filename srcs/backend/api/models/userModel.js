@@ -30,14 +30,19 @@ export async function createUser(data) {
   assert(data !== undefined, "data must exist");
   data.password = await bcrypt.hash(data.password, 10);
   return new Promise((resolve, reject) => {
-    const sql = `INSERT INTO users (username, email, password) VALUES (?,?,?)`;
-    const params = [data.username, data.email, data.password];
+    const sql = `INSERT INTO users (username, email, password, language) VALUES (?,?,?,?)`;
+    const params = [data.username, data.email, data.password, data.language];
     db.run(sql, params, function (err) {
       if (err) {
         console.error("Error inserting user:", err.message);
         return reject(err);
       }
-      resolve({ id: this.lastID, username: data.username, email: data.email });
+      resolve({
+        id: this.lastID,
+        username: data.username,
+        email: data.email,
+        language: data.language,
+      });
     });
   });
 }
