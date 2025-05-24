@@ -2,8 +2,10 @@ import { navigateTo } from "../index.js"
 import { getClientID } from "../messages/messages-page.js";
 import { showAlert, socketToast} from "../toast-alert/toast-alert.js";
 import { uploadCanvas, updatePhoto, updateNick, updateDescription ,initModifyFetchEvents } from "./modify-fetch.js";
+import { applyTranslation } from "../login-page/login-transcript.js"
 
 export function initModifyPageEvents() {
+  applyTranslation();
 	// Return Home
 	const homeButton = document.getElementById("home-button");
 	if (!homeButton) { return ;}

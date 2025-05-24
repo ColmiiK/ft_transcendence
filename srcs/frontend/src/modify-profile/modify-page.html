@@ -2,7 +2,7 @@
     <div class="flex w-full items-center justify-center">
         <div id="modify-dimensions" class="standard-purple-card flex animate__animated">
             <header class="flex justify-between items-center md:items-end mx-4 h-fit">
-                <h1 class="hidden md:block">Modify Profile</h1>
+                <h1 translatekey="modify_header" class="hidden md:block">Modify Profile</h1>
                 <svg id="home-button" class="home-icon m-4 h-10 w-10s" xmlns="http://www.w3.org/2000/svg" height="24px"
                     viewBox="0 -960 960 960" width="24px" fill="#FEE0EF">
                     <path
@@ -20,19 +20,19 @@
                             class="button p-2.5 rounded-[15px] cursor-pointer" />
                         <input type='submit' value='Submit' hidden />
                     </form>
-                    <button id="create-avatar" class="button p-2.5 rounded-[15px]">Create an avatar</button>
+                    <button translatekey="modify_create_avatar" id="create-avatar" class="button p-2.5 rounded-[15px]">Create an avatar</button>
                 </div>
             </div>
             <div id="friend-statistics"
                 class="flex flex-col p-4 gap-1 mt-4 rounded-[15px] w-full bg-[#7d48778f]">
                 <div class="flex justify-between w-full">
-                    <p class="font-bold text-white">Username: </p>
+                    <p translatekey="modify_username" class="font-bold text-white">Username: </p>
                     <span id="your-name" class="font-thin w-full mx-1.5 px-1.5 rounded-[15px] bg-[#d087ac50]">Default
                         Username</span>
                 </div>
                 <div class="flex justify-between items-center w-full">
-                    <p class="font-bold text-white">Nick: </p>
-                    <span id="your-nick" class="font-thin w-full mx-1.5 px-1.5 rounded-[15px] bg-[#d087ac50]">Default
+                    <p translatekey="modify_nick" class="font-bold text-white">Nick: </p>
+                    <span translatkey="modify_default_nick" id="your-nick" class="font-thin w-full mx-1.5 px-1.5 rounded-[15px] bg-[#d087ac50]">Default
                         Nick</span>
                     <form id="nick-form" class="hidden w-full mx-1.5">
                         <input id="modify-nick" type="text"
@@ -46,7 +46,7 @@
                     </svg>
                 </div>
                 <div class="flex justify-between w-full">
-                    <p class="font-bold text-white">Description: </p>
+                    <p translatekey="modify_description" class="font-bold text-white">Description: </p>
                     <span id="your-description"
                         class="italic font-thin mx-1.5 px-1.5 w-full rounded-[15px] bg-[#d087ac50]">Lorem ipsum dolor
                         sit amet, consectetur adipiscing elit. Nulla convallis nullam.</span>
@@ -63,16 +63,16 @@
                     </svg>
                 </div>
                 <div class="flex justify-between w-full">
-                    <p class="font-bold text-white whitespace-nowrap">Account creation date: </p>
+                    <p translatekey="modify_account" class="font-bold text-white whitespace-nowrap">Account creation date: </p>
                     <span id="your-creation-date" class="font-thin mx-1.5 px-1.5 rounded-[15px] bg-[#d087ac50] w-full">00-00-0000</span>
                 </div>
                 <div class="grid grid-cols-2 flex justify-center">
                     <div class="flex flex-col w-full justify-center items-center">
-                        <p class="font-bold text-white">Total Wins Rate</p>
+                        <p translatekey="modify_wins" class="font-bold text-white">Total Wins Rate</p>
                         <span id="your-wins" class="font-thin mx-1.5 px-1.5 rounded-[15px] bg-[#d087ac50]">0</span>
                     </div>
                     <div class="flex flex-col w-full items-center justify-center">
-                        <p class="font-bold text-white">Total Losses Rate</p>
+                        <p translatekey="modify_losses" class="font-bold text-white">Total Losses Rate</p>
                         <span id="your-losses" class="font-thin mx-1.5 px-1.5 rounded-[15px] bg-[#d087ac50]">0</span>
                     </div>
                 </div>
@@ -81,7 +81,7 @@
 
         <div id="avatar" class="standard-purple-card flex hidden animate__animated animate__fadeInRight">
             <header class="w-full flex justify-between items-center mx-4">
-                <h1 class="hidden md:block">Avatar Creator</h1>
+                <h1 translatekey="modify_avatar_creator" class="hidden md:block">Avatar Creator</h1>
                 <svg id="go-back" class="home-icon m-4" xmlns="http://www.w3.org/2000/svg" height="24px"
                     viewBox="0 -960 960 960" width="24px" fill="#FEE0EF">
                     <path d="M640-80 240-480l400-400 71 71-329 329 329 329-71 71Z" />
@@ -131,7 +131,7 @@
                     </div>
                 </div>
                 <div class="w-full flex justify-center">
-                    <button id="save-avatar" class="button p-2.5 rounded-[15px]">Save Changes</button>
+                    <button translatekey="modify_save_changes" id="save-avatar" class="button p-2.5 rounded-[15px]">Save Changes</button>
                 </div>
             </div>
         </div>
