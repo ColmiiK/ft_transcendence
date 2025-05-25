@@ -54,12 +54,12 @@ export function createsocketToastConnection() {
 				if (data.type === "friendRequest") {
 					if (data.info === "request") {
 						if (data.body) {
+							showAlert(data.body, "toast-success");
 							const invitationListPage = document.getElementById("invitation-list");
 							if (!invitationListPage)
 								return;
 							if (!invitationListPage.classList.contains('hidden'))
 								displayInvitations();
-							showAlert(data.body, "toast-success");
 						}
 					}
 					else if (data.info === "confirmation") {
