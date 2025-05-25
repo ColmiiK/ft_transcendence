@@ -168,7 +168,7 @@ export function createsocketToastConnection() {
 							/*if (data.game_type && data.game_type === "pong")
 								await createSocketPongConnection();*/
 							if (data.game_type && data.game_type === "4inrow")
-								createSocket4inrowConnection();
+								//createSocket4inrowConnection();
 							if (socketToast) {
 								socketToast.send(JSON.stringify({
 									type: "game_invitation",
@@ -179,7 +179,7 @@ export function createsocketToastConnection() {
 									is_custom: data.is_custom,
 								}));
 							}
-							navigateTo(`/${data.game_type}`, { gameMode: "remote", isCustom: data.is_custom })
+							//navigateTo(`/${data.game_type}`, { gameMode: "remote", isCustom: data.is_custom })
 						}
 						function handleReject(data: any) {
 							if (socketToast) {
@@ -195,7 +195,7 @@ export function createsocketToastConnection() {
 					}
 					else if (data.info === "accept") {
 						showAlert("Your invitation has been accepted, starting game", "toast-success");
-						navigateTo(`/${data.game_type}`, { gameMode: "remote", isCustom: data.is_custom });
+						//navigateTo(`/${data.game_type}`, { gameMode: "remote", isCustom: data.is_custom });
 					}
 				}
 			}

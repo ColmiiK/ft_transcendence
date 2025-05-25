@@ -190,7 +190,7 @@ export function displayMessage(data: Message) {
         el.setAttribute("id", "message");
         el.innerHTML = `
                 <div class="message self-message">
-                    <p>You have invited to play ${data.game_type}</p>
+                    <p>I want to play with you to ${game_type}</p>
                     <p class="hour">${sent_at}</p>
                 </div>`;
       }
@@ -214,7 +214,6 @@ export function displayMessage(data: Message) {
         // Añadir event listeners para los botones
         const acceptBtn = el.querySelector('.accept-btn') as HTMLButtonElement;
         const rejectBtn = el.querySelector('.reject-btn') as HTMLButtonElement;
-        console.log(data)
         acceptBtn?.addEventListener('click', (event) => {
           const date = new Date();
           date.setHours(date.getHours() + 2);
@@ -235,6 +234,7 @@ export function displayMessage(data: Message) {
             acceptBtn.textContent = "Accepted ✓";
             rejectBtn?.remove();
             acceptBtn.classList.add('bg-gray-500');
+            
           }
         });
 
@@ -261,11 +261,21 @@ export function displayMessage(data: Message) {
           }
         });
       }
-
       messageContainer.appendChild(el);
     }
     else if (data.info === "accept") {
-      if (data.receiver_id === getClientID() && actual_chat_id === data.chat_id) {
+      console.log(data)
+      if (data.sender_id === getClientID() && actual_chat_id === data.chat_id){
+        el.setAttribute("id", "message");
+        el.innerHTML = `
+        <div class="message self-message">
+          <p>${data.body}</p>
+          <p class="hour">${sent_at}</p>
+        </div>`;
+        sendRequest(`PATCH`, `messages/${data.message_id}`, { is_read: 1 });
+        messageContainer.appendChild(el);
+      }
+      else if (data.receiver_id === getClientID() && actual_chat_id === data.chat_id) {
         el.setAttribute("id", "friend-message");
         el.innerHTML = `
         <div class="message friend-message">
@@ -273,6 +283,29 @@ export function displayMessage(data: Message) {
           <p class="hour">${sent_at}</p>
         </div>`;
         sendRequest(`PATCH`, `messages/${data.message_id}`, { is_read: 1 });
+        messageContainer.appendChild(el);
+      }
+    }
+    else if (data.info === "reject") {
+      if (data.sender_id === getClientID() && actual_chat_id === data.chat_id){
+        el.setAttribute("id", "message");
+        el.innerHTML = `
+        <div class="message self-message">
+          <p>${data.body}</p>
+          <p class="hour">${sent_at}</p>
+        </div>`;
+        sendRequest(`PATCH`, `messages/${data.message_id}`, { is_read: 1 });
+        messageContainer.appendChild(el);
+      }
+      else if (data.receiver_id === getClientID() && actual_chat_id === data.chat_id) {
+        el.setAttribute("id", "friend-message");
+        el.innerHTML = `
+        <div class="message friend-message">
+          <p>${data.body}</p>
+          <p class="hour">${sent_at}</p>
+        </div>`;
+        sendRequest(`PATCH`, `messages/${data.message_id}`, { is_read: 1 });
+        messageContainer.appendChild(el);
       }
     }
     el.scrollIntoView({ behavior: 'smooth' });

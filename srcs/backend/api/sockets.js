@@ -6,8 +6,8 @@ import { asyncWebSocketHandler } from "./utils.js";
 
 const socketsChat = new Map();
 const socketsToast = new Map();
-const socketsPong = new Map();
-const socketsFourInARow = new Map();
+//const socketsPong = new Map();
+//const socketsFourInARow = new Map();
 const socketsTournament = new Map();
 
 async function messageInChat(data, userId) {
@@ -108,9 +108,9 @@ async function messageInChat(data, userId) {
 					}
 				}
 			}
-			else if (data.type === "game") { 
+			else if (data.type === "game") {
 				const receiver_id = parseInt(data.receiver_id);
-				if (socketsChat.has(receiver_id) && data.info === "request") {
+				if (data.info === "request") {
 					const invitation = await createMessage({
 						body: data.body,
 						sender_id: data.sender_id,
@@ -120,35 +120,63 @@ async function messageInChat(data, userId) {
 						is_read: 0
 					})
 					const message_id = invitation.id;
+					if (socketsChat.has(receiver_id)) {
+						const receiver = socketsChat.get(receiver_id);
+						receiver.send(JSON.stringify({
+							body: data.body,
+							message_id: message_id,
+							chat_id: data.chat_id,
+							receiver_id: data.receiver_id,
+							sender_id: userId,
+							sender_username: username,
+							sent_at: data.sent_at,
+							read: false,
+							type: "game",
+							info: "request",
+							game_type: data.game
+						}))
+					}
+					else if (socketsToast.has(receiver_id)) {
+						if (socketsToast.has(receiver_id)) {
+							const receiver = socketsToast.get(receiver_id);
+							receiver.send(JSON.stringify({
+								type: "game_invitation",
+								info: "request",
+								body: `${username} has invited you to play ${data.game_type}`,
+								sender_id: data.sender_id,
+								receiver_id: data.receiver_id,
+								game_type: data.game_type,
+								is_custom: data.is_custom,
+							}))
+						}
+					}
+				}
+				else if (socketsChat.has(sender_id) && socketsChat.has(receiver_id) && data.info === "accept") {
+					const invitation = await createMessage({
+						body: "The invitation has been accepted",
+						sender_id: data.sender_id,
+						receiver_id: data.receiver_id,
+						chat_id: data.chat_id,
+						sent_at: data.sent_at,
+						is_read: 0
+					})
+					const message_id = invitation.id;
+					const sender = socketsChat.get(sender_id);
 					const receiver = socketsChat.get(receiver_id);
+					sender.send(JSON.stringify({
+						body: "The invitation has been accepted",
+						message_id: message_id,
+						chat_id: data.chat_id,
+						receiver_id: data.sender_id,
+						sender_id: userId,
+						sender_username: username,
+						sent_at: data.sent_at,
+						read: false,
+						type: "game",
+						info: "accept",
+						game_type: data.game
+					}));
 					receiver.send(JSON.stringify({
-						body: data.body,
-						message_id: message_id,
-						chat_id: data.chat_id,
-						receiver_id: data.receiver_id,
-						sender_id: userId,
-						sender_username: username,
-						sent_at: data.sent_at,
-						read: false,
-						type: "game",
-						info: "request",
-						game_type: data.game
-					}))
-				}
-				else if (socketsChat.has(sender_id) && data.info === "accept"){
-					console.log(data)
-					const invitation = await createMessage({
-						body: "The invitation has been accepted",
-						sender_id: data.sender_id,
-						receiver_id: data.receiver_id,
-						chat_id: data.chat_id,
-						sent_at: data.sent_at,
-						is_read: 0
-					})
-					console.log("b")
-					const message_id = invitation.id;
-					const sender = socketsChat.get(sender_id);
-					sender.send(JSON.stringify({
 						body: "The invitation has been accepted",
 						message_id: message_id,
 						chat_id: data.chat_id,
@@ -158,11 +186,11 @@ async function messageInChat(data, userId) {
 						sent_at: data.sent_at,
 						read: false,
 						type: "game",
-						info: "request",
+						info: "accept",
 						game_type: data.game
-					}))
+					}));
 				}
-				else if (socketsChat.has(sender_id) && data.info === "reject"){
+				else if (socketsChat.has(sender_id) && socketsChat.has(receiver_id) && data.info === "reject") {
 					const invitation = await createMessage({
 						body: "The invitation has been rejected",
 						sender_id: data.sender_id,
@@ -170,10 +198,24 @@ async function messageInChat(data, userId) {
 						chat_id: data.chat_id,
 						sent_at: data.sent_at,
 						is_read: 0
-					})
+					});
 					const message_id = invitation.id;
 					const sender = socketsChat.get(sender_id);
+					const receiver = socketsChat.get(receiver_id);
 					sender.send(JSON.stringify({
+						body: "The invitation has been rejected",
+						message_id: message_id,
+						chat_id: data.chat_id,
+						receiver_id: data.sender_id,
+						sender_id: userId,
+						sender_username: username,
+						sent_at: data.sent_at,
+						read: false,
+						type: "game",
+						info: "reject",
+						game_type: data.game
+					}));
+					receiver.send(JSON.stringify({
 						body: "The invitation has been rejected",
 						message_id: message_id,
 						chat_id: data.chat_id,
@@ -183,10 +225,9 @@ async function messageInChat(data, userId) {
 						sent_at: data.sent_at,
 						read: false,
 						type: "game",
-						info: "request",
+						info: "reject",
 						game_type: data.game
-					}))
-
+					}));
 				}
 			}
 		}
@@ -331,10 +372,10 @@ async function handleGameInvitation(data, sender_id, receiver_id, fastify) {
 				game_type: data.game_type,
 				is_custom: data.is_custom,
 			}))
-
+	
 			let attempts = 0;
 			const maxAttempts = 10;
-
+	
 			const checkSockets = async () => {
 				console.log("Checking sockets...", {
 					receiverId: receiver_id,
@@ -342,14 +383,14 @@ async function handleGameInvitation(data, sender_id, receiver_id, fastify) {
 					hasPongReceiver: socketsPong.has(receiver_id),
 					hasPongSender: socketsPong.has(sender_id)
 				});
-
+	
 				if (socketsPong.has(receiver_id) && socketsPong.has(sender_id)) {
 					const matchReceiver = socketsPong.get(receiver_id);
 					const matchSender = socketsPong.get(sender_id);
-
+	
 					const gameId = `pong:${Date.now()}:${sender_id}-${receiver_id}`;
 					console.log("Starting game with ID:", gameId);
-
+	
 					await fastify.cache.set(
 						`game:${gameId}`,
 						JSON.stringify({
@@ -361,7 +402,7 @@ async function handleGameInvitation(data, sender_id, receiver_id, fastify) {
 						}),
 						3600
 					);
-
+	
 					matchReceiver.send(JSON.stringify({
 						type: "start_game",
 						gameId,
@@ -369,7 +410,7 @@ async function handleGameInvitation(data, sender_id, receiver_id, fastify) {
 						user_id: receiver_id,
 						role: "player2"
 					}));
-
+	
 					matchSender.send(JSON.stringify({
 						type: "start_game",
 						gameId,
@@ -387,7 +428,7 @@ async function handleGameInvitation(data, sender_id, receiver_id, fastify) {
 					notifyConnectionError(sender_id, receiver_id);
 				}
 			};
-
+	
 			checkSockets();
 		}
 	}
@@ -498,8 +539,8 @@ export default function createWebSocketsRoutes(fastify) {
 							tournamentCreation(data, sender_id, receiver_id);
 						else if (data.type === "change_avatar")
 							handleAvatarChange(data)
-						else if (data.type === "game_invitation")
-							await handleGameInvitation(data, sender_id, receiver_id, fastify);
+						//else if (data.type === "game_invitation")
+						//	await handleGameInvitation(data, sender_id, receiver_id, fastify);
 					}
 				})
 				socket.on("close", async () => {
