@@ -314,6 +314,7 @@ export async function getChatBetweenUsers(user_id, friend_id) {
         console.error("Error getting chats:", err.message);
         return reject(err);
       }
+      if (!row || !row.id) resolve(null);
       resolve(row.id);
     });
   });

@@ -1,4 +1,9 @@
+import { getClientID } from "../../messages/messages-page.js";
+import { GameState } from "../../types.js";
 import { navigateTo } from "../../index.js";
+
+//export let socketPong: WebSocket | null;
+//let current_game: GameState | null = null;
 
 export interface Player {
 	keyPress: boolean;
@@ -181,6 +186,83 @@ export function setAI(AIData: AIData, player2: Player, ballData: BallData, heigh
 	AIData.errorRate = player2.paddleCenter < AIData.targetY ? Math.random() * height - player2.paddleCenter : Math.random() * player2.paddleCenter - 0;
 	player2.paddleCenter = player2.paddle.offsetTop + player2.paddle.clientHeight / 2; 
 }
+
+/*export async function createSocketPongConnection(): Promise<boolean> {
+return new Promise((resolve, reject) => {
+		if (socketPong && socketPong.readyState !== WebSocket.CLOSED)
+			socketPong.close();
+		try{
+			socketPong = new WebSocket(`wss://${window.location.hostname}:8443/ws/pong`)
+			if (!socketPong)
+				return false;
+			socketPong.onopen = () => {
+				let id = getClientID();
+				console.log("WebSocketPong connection established, sending id:", id);
+				if (id === -1){
+					console.error("Invalid ID, cannot connect to back")
+					return ;
+				}
+				else{
+					if (!socketPong)
+						return ;
+					socketPong.send(JSON.stringify({
+						userId: id,
+						action: "identify"
+					}));
+					console.log("ID succesfully sent");
+				}
+			};
+			socketPong.onmessage = (event) => {
+				try{
+					const data = JSON.parse(event.data);
+					if (data.type === "connection" && data.status === "success"){
+						setupGameHandler();
+						resolve(true);
+					}
+				}
+				catch(err){
+					reject(err);
+				}
+			};
+			socketPong.onerror = (error) => {
+				console.error("WebSocket error:", error);
+			};
+			socketPong.onclose = () => {
+				console.log("WebSocketPong connection closed");
+				socketPong = null;
+			};
+		}
+		catch(err){
+			console.error("Error creating WebSocketPong:", err);
+			reject(err);
+		}
+	})
+}
+
+function setupGameHandler(){
+	if (!socketPong)
+		return ;
+	socketPong.onmessage = (event) =>{
+		try{
+			const data = JSON.parse(event.data);
+			if (data.type === "start_game"){
+				current_game = {
+					gameId: data.game_id,
+					role: data.role,
+					opponent_id: data.opponent_id,
+					isPlaying: false
+				};
+				
+			}
+			else if (data.type === "game_started"){
+
+			}
+		}
+		catch(err){
+
+		}
+	};
+}*/
 
 export function delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));

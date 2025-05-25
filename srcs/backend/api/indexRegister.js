@@ -5,6 +5,8 @@ import formbody from "@fastify/formbody";
 import websocket from "@fastify/websocket";
 import fastifyCookie from "@fastify/cookie";
 import fastifyStatic from "@fastify/static";
+import fastifyCaching from "@fastify/caching";
+import abstractCache from "abstract-cache";
 import { UPLOAD_DIR } from "./utils.js";
 
 export default async function pluginRegistration(fastify) {
@@ -42,6 +44,12 @@ export default async function pluginRegistration(fastify) {
   await fastify.register(fastifyStatic, {
     root: UPLOAD_DIR,
     prefix: "/avatars/",
+  });
+
+  const cache = abstractCache({ useAwait: true });
+  await fastify.register(fastifyCaching, {
+    cache: cache,
+    expiresIn: 3600,
   });
 
   /** Decorator for Cookie / JWT verification */
