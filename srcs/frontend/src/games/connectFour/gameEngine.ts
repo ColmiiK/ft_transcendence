@@ -37,6 +37,8 @@ export interface GameState {
 
 export let columnMap: Map<string, HTMLElement[]> = new Map();
 
+export let columnClickHandlers = new Map<HTMLElement, () => Promise<void>>();
+
 export let columnList: HTMLElement[] = [];
 
 export let boardMap: Map<string, number[]> = new Map();

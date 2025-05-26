@@ -3,6 +3,7 @@ import {
     columnMap,
     columnList,
     boardMap,
+	columnClickHandlers,
 	pauseGame,
 	delay,
 	PlayerState,
@@ -21,8 +22,8 @@ import {
 } from './gameEngine.js';
 
 
-import { navigateTo } from "../../index.js";
 import { Games } from "../../types.js";
+import { navigateTo } from "../../index.js";
 import { updateDescription } from '../../modify-profile/modify-fetch.js';
 
 export function classicMode(data: Games): void {
@@ -40,14 +41,14 @@ export function classicMode(data: Games): void {
 		}
 	}
 
-	let columnClickHandlers = new Map<HTMLElement, () => Promise<void>>();
 	let player1 = new PlayerClass(false, 1, "red");
 	let player2 = new PlayerClass(data.gameMode === "ai" ? true : false, 2, "yellow");
-	let aiColumn: HTMLElement | null = null;
-	let aiInterval: NodeJS.Timeout | null = null;
-	let aiWorker: Worker | null = null;
+
 	let gameActive: boolean = true;
 	let aiIsThinking: boolean = false;
+	let aiWorker: Worker | null = null;
+	let aiColumn: HTMLElement | null = null;
+	let aiInterval: NodeJS.Timeout | null = null;
 	
 
 	function init(): void {
@@ -79,7 +80,6 @@ export function classicMode(data: Games): void {
 			if (!aiColumn && player2.turn && player2.AI && !aiIsThinking) {
 				console.log("AI calculando movimiento...");
 				aiColumn = await aiToken();
-				console.log(aiIsThinking)
 				console.log("AI decidió columna:", aiColumn?.id);
 			}
 			
@@ -93,7 +93,7 @@ export function classicMode(data: Games): void {
 	}
 
 	async function start(): Promise<void> {
-		const savedState = loadGameState("classic");
+		const savedState = loadGameState();
 		init();
 		if (savedState){
 			renderBoardFromState(savedState)
@@ -101,10 +101,10 @@ export function classicMode(data: Games): void {
 		}
 		else
 			await enableClicks();
-		clickColumn();
+		handlerEvents();
 	}
 
-	function clickColumn(){
+	function handlerEvents(){
 		columnClickHandlers.forEach((handler, column) => {
 			column.removeEventListener("click", handler);
 		});
@@ -244,7 +244,7 @@ export function classicMode(data: Games): void {
 			});
 			columnToUse = columnList.find(col => col.id === bestColumnId) || null;
 		}
-		console.log(aiIsThinking)
+
 		if (columnToUse && !isColumnPlayable(columnToUse))
 			columnToUse = columnList.find((column) => isColumnPlayable(column)) || null;
 
@@ -294,7 +294,7 @@ export function classicMode(data: Games): void {
 		localStorage.setItem(`connect4GameStateclassic`, JSON.stringify(state));
 	}
 
-	function loadGameState(mode: "classic" | "custom"): GameState | null {
+	function loadGameState(): GameState | null {
 		const stateStr = localStorage.getItem(`connect4GameStateclassic`);
 		if (!stateStr) return null;
 

@@ -3,6 +3,7 @@ import {
     columnMap,
     columnList,
     boardMap,
+    columnClickHandlers,
     crazyTokens,
     pauseGame,
     init as initEngine,
@@ -21,6 +22,8 @@ import {
 } from './gameEngine.js';
 
 import { Games } from "../../types.js";
+import { navigateTo } from "../../index.js";
+import { updateDescription } from '../../modify-profile/modify-fetch.js';
 
 export function crazyTokensMode(data: Games): void {
     class PlayerClass {
@@ -41,8 +44,14 @@ export function crazyTokensMode(data: Games): void {
             this.color = color;
         }
     }
-	const player1 = new PlayerClass(false, 1, "red");
-	const player2 = new PlayerClass(data.gameMode === "ai-custom" ? true : false, 2, "yellow");
+	let player1 = new PlayerClass(false, 1, "red");
+	let player2 = new PlayerClass(data.gameMode === "ai-custom" ? true : false, 2, "yellow");
+
+    let gameActive: boolean = true;
+	let aiIsThinking: boolean = false;
+	let aiWorker: Worker | null = null;
+	let aiColumn: HTMLElement | null = null;
+	let aiInterval: NodeJS.Timeout | null = null;
 
     /* Initialization Functionality */
 
@@ -52,38 +61,104 @@ export function crazyTokensMode(data: Games): void {
         dice.style.display = 'flex';
 
         initEngine(player1, boardMap, columnMap, columnList);
+        gameActive = true;
+
+        if (player2.AI)
+			initAI();
     }
+
+    function initAI(): void {
+		if (aiInterval) {
+			clearInterval(aiInterval);
+			aiInterval = null;
+		}
+		
+		if (aiWorker) {
+			aiWorker.terminate();
+			aiWorker = null;
+		}
+		aiColumn = null;
+
+		aiWorker = new Worker(new URL('./aiWorker.js', import.meta.url));
+		aiInterval = setInterval(async () => {
+			if (!gameActive) {
+				return;
+			}
+			
+			if (!aiColumn && player2.turn && player2.AI && !aiIsThinking) {
+				console.log("AI calculando movimiento...");
+				aiColumn = await aiToken();
+				console.log("AI decidió columna:", aiColumn?.id);
+			}
+			
+			if (player2.turn && player2.AI && aiColumn && aiIsThinking) {
+				aiIsThinking = false;
+				await aiColumn.click();
+				aiIsThinking = false;
+				aiColumn = null;
+			}
+		}, 1000);
+	}
 
     async function start(): Promise<void> {
-        clearGame();
-        init();
-        enableClicks();
-        await document.getElementById("dice-container")!.addEventListener("click", () => rollDice());
-        columnList.forEach((column: HTMLElement) => {
-            column.addEventListener("click", async () => handleColumnClick(column));
-        });
+     /*    const savedState = loadGameState("classic"); */
+		init();
+		/* if (savedState){
+			renderBoardFromState(savedState)
+			await pauseGame(columnList);
+		}
+		else */
+			await enableClicks();
+		handlerEvents();
     }
 
+    function handlerEvents(){
+        document.getElementById("dice-container")!.removeEventListener("click", rollDice);
+        document.getElementById("dice-container")!.addEventListener("click", () => rollDice());
+
+		columnClickHandlers.forEach((handler, column) => {
+			column.removeEventListener("click", handler);
+		});
+		columnClickHandlers.clear();
+		columnList.forEach((column: HTMLElement) => {
+			const handler = () => handleColumnClick(column);
+			columnClickHandlers.set(column, handler);
+			column.addEventListener("click", handler);
+		});	
+	}
+
     function clearGame(): void {
-        return clearGameEngine(player1, player2, columnList, columnMap, boardMap);
+      /*   localStorage.removeItem(`connect4GameStateclassic`); */
+        gameActive = false;
+        clearGameEngine(player1, player2, columnList, columnMap, boardMap);
+        if (aiInterval) {
+			clearInterval(aiInterval);
+			aiInterval = null;
+		}
+		
+		if (aiWorker) {
+			aiWorker.terminate();
+			aiWorker = null;
+		}
+		aiColumn = null;
     }
 
     /* Click Functionality */
 
-    function enableClicks(): void {
-        return enableClicksEngine(columnList);
+    async function enableClicks(): Promise<void> {
+        await enableClicksEngine(columnList);
     }
     
-    function disableClicks(): void {
-        return disableClicksEngine(columnList);
+    async function disableClicks(): Promise<void> {
+        await disableClicksEngine(columnList);
     }
 
     /* Handle Column Click */
 
     async function handleColumnClick(column: HTMLElement): Promise<void> {
-        if (player1.winner || player2.winner) { 
-			clearGame(); 
-			return; 
+        if (!gameActive || player1.winner || player2.winner) {
+			clearGame();
+			return;
 		}
 
         const currentPlayer = player1.turn ? player1 : player2;
@@ -108,20 +183,15 @@ export function crazyTokensMode(data: Games): void {
         }
         else
             await placeToken(column);
+        /* await saveGameState("custom"); */
         if (checkWin(false)) {
 			insertDivWinner();
-			disableClicks();
+			await disableClicks();
+            gameActive = false;
 		} else if (checkDraw()) {
 			insertDivDraw();
-			disableClicks();
-		} else {
-			if (player2.turn && player2.AI) {
-				disableClicks();
-				console.log("AI is thinking...");
-				await aiToken();
-				console.log("AI token placed");
-                enableClicks();
-			}
+			await disableClicks();
+            gameActive = false;
 		}
     }
 
@@ -129,12 +199,12 @@ export function crazyTokensMode(data: Games): void {
 
     function insertDivWinner(): void {
         document.getElementById("dice-container")!.style.pointerEvents = 'none';
-        return insertDivWinnerEngine(player1, player2, columnList);
+        insertDivWinnerEngine(player1, player2, columnList);
     }
 
     function insertDivDraw(): void {
         document.getElementById("dice-container")!.style.pointerEvents = 'none';
-        return insertDivDrawEngine(columnList);
+        insertDivDrawEngine(columnList);
     }
 
     /* Turn Indicator */
@@ -161,19 +231,19 @@ export function crazyTokensMode(data: Games): void {
 
     /* AI Functionality */
 
-    async function aiToken(): Promise<void> {
+    async function aiToken(): Promise<HTMLElement | null> {
+        if (!gameActive || !aiWorker || !player2.turn || aiColumn || aiIsThinking)
+			return null;
+		aiIsThinking = true;
+
 		if (player2.affected && player2.affected === "🌫️"){
 			console.log("AI is blind");
-            enableClicks();
-            columnList[Math.floor(Math.random() * columnList.length)]?.click();
-			return ;
+            return columnList[Math.floor(Math.random() * columnList.length)];
 		}
 
         const winColumns = detectWinOpportunities(player2);
         if (winColumns.length > 0) {
-            enableClicks();
-            winColumns[0]?.click();
-            return;
+            return winColumns[0];
         }
     
         const	threatColumns = detectWinOpportunities(player1);
@@ -181,16 +251,14 @@ export function crazyTokensMode(data: Games): void {
 
 		if (!columnToUse){
 			if (threatColumns.length > 0) {
-                enableClicks();
-                threatColumns[0]?.click();
-            	return;
+                return threatColumns[0];
 			}
             columnToUse = Math.random() < 0.2 
                 ? (columnList[Math.floor(Math.random() * columnList.length)] ?? null) 
                 : null;
 		}
 
-        if (!columnToUse){
+        if (!columnToUse && aiWorker){
             const boardState = {
                 boardMap: Object.fromEntries(
                     Array.from(boardMap.entries()).map(([key, value]) => [key, [...value]])
@@ -199,26 +267,42 @@ export function crazyTokensMode(data: Games): void {
                 player1: { num: player1.num },
                 player2: { num: player2.num }
             };
-
-            const worker = new Worker(new URL('./aiWorker.js', import.meta.url));
             
-            const bestColumnId = await new Promise<string>((resolve) => {
-                worker.onmessage = (e) => resolve(e.data);
-                worker.postMessage({ 
-                    boardState,
-                    depth: 4
-                });
-            });
+            const bestColumnId = await new Promise<string>((resolve, reject) => {
+				if (!aiWorker || !gameActive) {
+					reject('Worker not available or game not active');
+					return;
+				}
 
-            worker.terminate();
-            columnToUse = columnList.find(col => col.id === bestColumnId) || null;
+				const timeout = setTimeout(() => {
+					reject('AI timeout');
+				}, 5000);
+
+				aiWorker.onmessage = (e) => {
+					clearTimeout(timeout);
+					resolve(e.data);
+				};
+
+				aiWorker.onerror = () => {
+					clearTimeout(timeout);
+					reject('Worker error');
+				};
+
+				aiWorker.postMessage({ 
+					boardState,
+					depth: 5
+				});
+			}).catch(error => {
+				console.warn('AI Worker error:', error);
+				return columnList[Math.floor(Math.random() * columnList.length)].id;
+			});
+			columnToUse = columnList.find(col => col.id === bestColumnId) || null;
         }
 
         if (columnToUse && !isColumnPlayable(columnToUse))
             columnToUse = columnList.find(column => isColumnPlayable(column)) ?? null;
         
-        enableClicks();
-        if (columnToUse) columnToUse.click();
+        return columnToUse;
     }
     
 	function isColumnPlayable(column: HTMLElement): boolean {
@@ -677,9 +761,64 @@ export function crazyTokensMode(data: Games): void {
         await pauseGame(columnList);
     })
 
-/*     document.getElementById('exitGame')?.addEventListener('click', async () => {
-        await returnToGames(columnList);
-    }) */
+	document.getElementById('exitGame')?.addEventListener('click', async () => {
+        const exitBtn = document.getElementById('exitGame');
+        if (!exitBtn){
+            console.error("exitGame element not found.");
+            return Promise.resolve();
+        }
+    
+        const pauseBtn = document.getElementById('pauseGame')
+        if (!pauseBtn){
+            console.error("pauseGame element not found.")
+            return Promise.resolve();
+        }
+    
+        const boardEl = document.getElementById('board');
+        if (!boardEl){
+            console.error("board element not found.")
+            return Promise.resolve();
+        }
+    
+        const diceEl = document.getElementById('dice-container');
+        if (!diceEl){
+            console.error("dice-container element not found.")
+            return Promise.resolve();
+        }
+    
+        await disableClicks();
+        diceEl.style.pointerEvents = 'none';
+        exitBtn.style.pointerEvents = 'none';
+        pauseBtn.style.pointerEvents = 'none';
+        boardEl.style.animation = "mediumOpacity 0.25s ease forwards";
+        await delay(250);
+    
+        const returnEl = document.getElementById('returnToGamesConnect');
+        if (!returnEl){
+            console.error("returnToGamesConnect element not found.");
+            return Promise.resolve();
+        }
+        returnEl.style.display = 'block';
+    
+        document.getElementById('continue')?.addEventListener('click', async () => {
+            returnEl.style.display = 'none';
+            boardEl.style.animation = "fullOpacity 0.25s ease forwards";
+            diceEl.style.pointerEvents = 'auto';
+            exitBtn.style.pointerEvents = 'auto';
+            pauseBtn.style.pointerEvents = 'auto';
+            await enableClicks();
+            return ;
+        })
+    
+        document.getElementById('exit')?.addEventListener('click', () => {
+            clearGame();
+            navigateTo("/games");
+        })
+	})
+
+	window.addEventListener('beforeunload', () => {
+		clearGame();
+	});
 
     start();
 }
