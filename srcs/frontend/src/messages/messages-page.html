@@ -1,7 +1,7 @@
 <div class="screen-set">
 	<div class="standard-purple-card flex">
 		<div class="flex flex-col-reverse md:flex-row justify-between items-center w-full">
-			<h1 class="m-4 hidden md:block">Chat Room</h1>
+			<h1 class="m-4 hidden md:block" translatekey="messages_title">Chat Room</h1>
 			<div class="mobile-chat-buttons flex flex-row-reverse justify-between items-center w-full md:w-auto">
 				<svg id="home-button" class="home-icon m-4 h-10 w-10" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FEE0EF">
 					<path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/>
@@ -15,7 +15,7 @@
 			<div id="conversation-list" class="h-full p-2.5 rounded-[15px] bg-[var(--dark-pink)]">
 				<form id="search-chat-form" class="flex justify-center items-center w-full h-14">
 					<div class="relative w-full">
-						<input type="text" placeholder="Friend name" list="" id="friend-input" class="outline-none indent-2 w-full h-3/5 opacity-80 p-1.5 bg-[whitesmoke] text-[var(--dark-purple)] rounded-[15px]" maxlength="16">
+						<input type="text" placeholder="Friend name" list="" id="friend-input" class="outline-none indent-2 w-full h-3/5 opacity-80 p-1.5 bg-[whitesmoke] text-[var(--dark-purple)] rounded-[15px]" maxlength="16" data-placeholder="messages_friend_name">
 						<datalist id="search-chat" role="listbox" class="z-20 absolute w-full mt-1.5 p-1.5 rounded-[15px] bg-[#3b0034c6]"></datalist>
 					</div>
 					<button type="submit"></button>
@@ -29,7 +29,7 @@
 				<div id="pink-divider" class="w-full"></div>
 				<div id="message-history" class="flex flex-col w-full h-4/5 rounded-[15px]"></div> <!-- Messages displayed here -->
 				<form id="message-box" class="flex justify-center items-center w-full h-14">
-					<input type="text" placeholder="Chat with your friends" class="outline-none indent-2 w-full h-3/5 opacity-80 p-1.5 bg-[whitesmoke] text-[var(--dark-purple)] rounded-l-[15px]" maxlength="800">
+					<input type="text" placeholder="Chat with your friends" class="outline-none indent-2 w-full h-3/5 opacity-80 p-1.5 bg-[whitesmoke] text-[var(--dark-purple)] rounded-l-[15px]" maxlength="800" data-placeholder="messages_chat">
 					<button type="submit" class="flex items-center h-3/5 opacity-80 p-1.5 bg-[whitesmoke] rounded-r-[15px]">
 						<svg class="send-icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#54184D">
 							<path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z"/>
@@ -44,13 +44,13 @@
 						aria-orientation="vertical" aria-labelledby="party-invitation" tabindex="-1">
 							<div class="hidden py-2.5 bg-[var(--dark-pink)]" role="none" id="party-options">
 								<div profile_key="classic-pong" class="p-option px-4 py-2 text-left hover:bg-[var(--dark-purple)] cursor-pointer" role="menuitem"
-								tabindex="-1">Classic Pong</div>
+								tabindex="-1" translatekey="messages_classic_pong">Classic Pong</div>
 								<div profile_key="chaos-pong" class="p-option px-4 py-2 text-left hover:bg-[var(--dark-purple)] cursor-pointer" role="menuitem"
-								tabindex="-1">Chaos Pong</div>
+								tabindex="-1" translatekey="messages_chaos_pong">Chaos Pong</div>
 								<div profile_key="classic-connect4" class="p-option px-4 py-2 text-left hover:bg-[var(--dark-purple)] cursor-pointer" role="menuitem"
-								tabindex="-1">Classic Connect4</div>
+								tabindex="-1" translatekey="messages_classic_connect">Classic Connect4</div>
 								<div profile_key="crazy-connect4" class="p-option px-4 py-2 text-left hover:bg-[var(--dark-purple)] cursor-pointer" role="menuitem"
-								tabindex="-1">CrazyTokens Connect4</div>
+								tabindex="-1" translatekey="messages_crazy_connect">CrazyTokens Connect4</div>
 							</div>
 						</div>
 					</button>

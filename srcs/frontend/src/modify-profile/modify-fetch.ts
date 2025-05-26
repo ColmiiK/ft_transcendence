@@ -1,6 +1,7 @@
 import { sendRequest } from "../login-page/login-fetch.js";
 import { showAlert } from "../toast-alert/toast-alert.js";
 import { Profile } from "../types.js"
+import { getTranslation } from "../login-page/login-transcript.js";
 
 export function initModifyFetchEvents() {
 	initData();
@@ -33,7 +34,6 @@ async function initData() {
 	}
 	catch (error) {
 		console.error(`Error: `, error);
-		showAlert((error as Error).message , "toast-error");
 		return ;
 	}
 }
@@ -79,7 +79,6 @@ export async function uploadCanvas(canvas: HTMLCanvasElement): Promise<string | 
 		return (response.avatar);
 	}
 	catch (error) {
-		console.error(`Error: `, error);
 		showAlert((error as Error).message , "toast-error");
 		return (null);
 	}
@@ -88,7 +87,7 @@ export async function uploadCanvas(canvas: HTMLCanvasElement): Promise<string | 
 export async function updateNick(nickname: string) {
 	try {
 		if (!nickname)
-			throw new Error("Nickname cannot be empty");
+			throw new Error(getTranslation('modify_empty_nickname'));
 		const response = await sendRequest('PATCH', '/users', {alias: nickname});
 		if (!response)
 			throw new Error("Error while updating nickname");
@@ -96,7 +95,6 @@ export async function updateNick(nickname: string) {
 		return ;
 	}
 	catch (error) {
-		console.error(`Error: `, error);
 		showAlert((error as Error).message , "toast-error");
 		return ;
 	}
@@ -105,7 +103,7 @@ export async function updateNick(nickname: string) {
 export async function updateDescription(description: string) {
 	try {
 		if (!description)
-			throw new Error("Description cannot be empty");
+			throw new Error(getTranslation('modify_empty_description'));
 		const response = await sendRequest('PATCH', '/users', {status: description});
 		if (!response)
 			throw new Error("Error while updating description");
@@ -113,7 +111,6 @@ export async function updateDescription(description: string) {
 		return ;
 	}
 	catch (error) {
-		console.error(`Error: `, error);
 		showAlert((error as Error).message , "toast-error");
 		return ;
 	}

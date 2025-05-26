@@ -1,7 +1,7 @@
 <div class="screen-set">
   <div class="standard-purple-card min-h-[80vh] flex flex-col">
     <header class="flex justify-between items-center md:items-end mx-4">
-      <h1 class="font-bold text-center">Select Game Mode</h1>
+      <h1 class="font-bold text-center" translatekey="select_title">Select Game Mode</h1>
       <svg id="home-button" class="home-icon m-4 h-10 w-10 cursor-pointer" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FEE0EF">
         <path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/>
       </svg>
@@ -19,9 +19,9 @@
         </div>
         <div>
           <h2 class="game-title">Pong</h2>
-          <p class="game-description">Classic table tennis game. Challenge your friends in real-time!</p>
+          <p class="game-description" translatekey="select_pong_description">Classic table tennis game. Challenge your friends in real-time!</p>
         </div>
-        <button class="game-button p-4" data-route ='/pong'>
+        <button class="game-button p-4" data-route ='/pong' translatekey="select_pong_button">
           Play Pong
         </button>
       </div>
@@ -34,11 +34,11 @@
           </svg>
         </div>
         <div>
-          <h2 class="game-title">4 in Row</h2>
-          <p class="game-description">Connect four pieces in a row to win. Strategic and fun!</p>
+          <h2 class="game-title" translatekey="select_connect_title">Connect 4</h2>
+          <p class="game-description" translatekey="select_connect_description">Connect four pieces in a row to win. Strategic and fun!</p>
         </div>
-        <button class="game-button p-4" data-route ='/4inrow'>
-          Play 4 in Row
+        <button class="game-button p-4" data-route ='/4inrow' translatekey="select_connect_button">
+          Play Connect 4
         </button>
       </div>
       <!-- Tournament Card -->
@@ -49,10 +49,10 @@
           </svg>
         </div>
         <div>
-          <h2 class="game-title">Tournament</h2>
-          <p class="game-description">Create tournaments for both games!</p>
+          <h2 class="game-title" translatekey="select_tournament_title">Tournament</h2>
+          <p class="game-description" translatekey="select_tournament_description">Create tournaments for both games!</p>
         </div>
-        <button class="game-button p-4" data-route ='/tournament'>
+        <button class="game-button p-4" data-route ='/tournament' translatekey="select_tournament_button">
           Create Tournament
         </button>
       </div>
@@ -61,7 +61,7 @@
     <div id="game-options-modal" class="modal hidden">
       <div class="modal-content flex flex-col gap-4">
         <header class="flex justify-between items-center">
-          <h1 class="text-white text-3xl">Game Mode</h1>
+          <h1 class="text-white text-3xl" translatekey="select_game_mode">Game Mode</h1>
           <svg class="close-icon close-modal" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#3B0034">
           <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
         </svg>
@@ -71,8 +71,8 @@
 
         <!-- Game Mode Selection Buttons -->
         <div class="mode-selector flex justify-center gap-4">
-          <button class="mode-button active" data-mode-type="normal">Normal Mode</button>
-          <button class="mode-button" data-mode-type="custom">Custom Mode</button>
+          <button class="mode-button active" data-mode-type="normal" translatekey="select_normal_mode">Normal Mode</button>
+          <button class="mode-button" data-mode-type="custom" translatekey="select_custom_mode">Custom Mode</button>
         </div>
     
         <!-- Normal Mode Options -->
@@ -92,19 +92,19 @@
                 <div id="remote-search-results" class="search-results-container"></div>
               </div>
             </div>
-            <span>Remote Player</span>
+            <span translatekey="select_remote">Remote Player</span>
           </button>
           <button class="option-button" data-mode="local">
             <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24">
               <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
             </svg>
-            <span>Local Game</span>
+            <span translatekey="select_local">Local Game</span>
           </button>
           <button class="option-button" data-mode="ai">
             <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24">
               <path d="M22 11h-4.17l3.24-3.24-1.41-1.42L15 11h-2V9l4.66-4.66-1.42-1.41L13 6.17V2h-2v4.17L7.76 2.93 6.34 4.34 11 9v2H9L4.34 6.34 2.93 7.76 6.17 11H2v2h4.17l-3.24 3.24 1.41 1.42L9 13h2v2l-4.66 4.66 1.42 1.41L11 17.83V22h2v-4.17l3.24 3.24 1.42-1.41L13 15v-2h2l4.66 4.66 1.41-1.42L17.83 13H22z"/>
             </svg>
-            <span>Play vs AI</span>
+            <span translatekey="select_play_ai">Play vs AI</span>
           </button>
         </div>
     
@@ -125,19 +125,19 @@
                 <div id="remote-custom-search-results" class="search-custom-results-container"></div>
               </div>
             </div>
-            <span>Custom Remote</span>
+            <span translatekey="select_custom_remote">Custom Remote</span>
           </button>
           <button class="option-button" data-mode="local-custom">
             <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24">
               <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
             </svg>
-            <span>Custom Local</span>
+            <span translatekey="select_custom_local">Custom Local</span>
           </button>
           <button class="option-button" data-mode="ai-custom">
             <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24">
               <path d="M22 11h-4.17l3.24-3.24-1.41-1.42L15 11h-2V9l4.66-4.66-1.42-1.41L13 6.17V2h-2v4.17L7.76 2.93 6.34 4.34 11 9v2H9L4.34 6.34 2.93 7.76 6.17 11H2v2h4.17l-3.24 3.24 1.41 1.42L9 13h2v2l-4.66 4.66 1.42 1.41L11 17.83V22h2v-4.17l3.24 3.24 1.42-1.41L13 15v-2h2l4.66 4.66 1.41-1.42L17.83 13H22z"/>
             </svg>
-            <span>Custom AI</span>
+            <span translatekey="select_custom_ai">Custom AI</span>
           </button>
         </div>
     <!-- Tournament options -->
@@ -146,13 +146,13 @@
         <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24">
           <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
         </svg>
-        <span>Create Tournament</span>
+        <span translatekey="select_create_tournament">Create Tournament</span>
       </button>
       <button class="option-button" data-mode="join">
         <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24">
           <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
         </svg>
-        <span>Join Tournament</span>
+        <span translatekey="select_join_tournament">Join Tournament</span>
       </button>
     </div>
   </div>

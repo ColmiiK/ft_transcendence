@@ -140,6 +140,32 @@ export function scheduleMatch(data) {
   });
 }
 
+export function getScheduledMatches(user_id) {
+  assert(user_id !== undefined, "user_id must exist");
+  return new Promise((resolve, reject) => {
+    const sql = `
+SELECT
+id AS match_id,
+first_player_id,
+second_player_id,
+status
+FROM
+matches
+WHERE
+(first_player_id = ? OR second_player_id = ?)
+AND
+status = 'scheduled'
+    `;
+    db.all(sql, [user_id, user_id], function (err, rows) {
+      if (err) {
+        console.error("Error getting matches:", err.message);
+        return reject(err);
+      }
+      resolve(rows);
+    });
+  });
+}
+
 /**
  * Returns a match by a given ID
  * @param {Number} match_id - ID of the match

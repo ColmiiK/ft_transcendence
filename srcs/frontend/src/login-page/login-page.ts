@@ -2,7 +2,6 @@
 
 import { initLoginFetches } from "./login-fetch.js";
 import { checkLogged, navigateTo } from "../index.js"
-import { applyTranslation } from "./login-transcript.js"
 
 export async function initLoginEvents() {
 	const logged = await checkLogged();
@@ -14,7 +13,6 @@ export async function initLoginEvents() {
 		resetPassword();
 		initLoginFetches();
 		googleSignIn();
-		applyTranslation();
 	
 		setTimeout(() => {
 			const googleButton = document.getElementsByClassName("g_id_signin")[0];

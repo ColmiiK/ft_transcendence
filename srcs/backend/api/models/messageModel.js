@@ -27,8 +27,23 @@ export function getMessages() {
 export function createMessage(data) {
   assert(data !== undefined, "data must exist");
   return new Promise((resolve, reject) => {
-    const sql = `INSERT INTO messages (sender_id, receiver_id, chat_id, body) VALUES (?,?,?,?)`;
-    const params = [data.sender_id, data.receiver_id, data.chat_id, data.body];
+    const sql = `
+      INSERT INTO messages (
+        sender_id,
+        receiver_id,
+        chat_id,
+        body,
+        invitation_type,
+        invitation_status
+      ) VALUES (?,?,?,?,?,?)`;
+    const params = [
+      data.sender_id,
+      data.receiver_id,
+      data.chat_id,
+      data.body,
+      data?.invitation_type || "message",
+      data?.invitation_status,
+    ];
 
     db.run(sql, params, function (err) {
       if (err) {

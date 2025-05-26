@@ -1,6 +1,7 @@
 import { showAlert } from "../toast-alert/toast-alert.js";
 import { parseSessionForm, sendRequest } from "../login-page/login-fetch.js";
 import { navigateTo } from "../index.js";
+import { getTranslation } from "../login-page/login-transcript.js";
 
 export function initResetPasswordEvents() {
 	moveToLogin();
@@ -44,7 +45,7 @@ async function resetPassword(e: Event) {
 		if (response["success"]) {
 			const passwordMessage = document.getElementById("reset-password-message");
 			if (passwordMessage)
-				passwordMessage.innerText = "Change of password was successful. You can now return to login page!";
+				passwordMessage.innerText = getTranslation('reset_success');
 		}
 		else
 			throw new Error(response["error"]);

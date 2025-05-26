@@ -8,6 +8,7 @@ import {
   getMatchesHistory,
   getMatchesGeneralStats,
   getMatchesType,
+  getScheduledMatches,
 } from "../models/matchModel.js";
 
 import {
@@ -27,6 +28,15 @@ export default function createMatchRoutes(fastify) {
       url: "/matches",
       handler: asyncHandler(async (req, res) => {
         const results = await getMatches(req.userId);
+        return res.code(200).send(results);
+      }),
+    },
+    {
+      preHandler: [fastify.authenticate],
+      method: "GET",
+      url: "/matches/scheduled",
+      handler: asyncHandler(async (req, res) => {
+        const results = await getScheduledMatches(req.userId);
         return res.code(200).send(results);
       }),
     },
