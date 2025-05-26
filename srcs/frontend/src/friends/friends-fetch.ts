@@ -4,6 +4,7 @@ import { displayBlockPopUp, closeModal, toggleMobileDisplay } from "./friends-pa
 import { navigateTo } from "../index.js";
 import { socketToast } from "../toast-alert/toast-alert.js";
 import { getClientID } from "../messages/messages-page.js";
+import { getTranslation } from "../login-page/login-transcript.js";
 
 export function initFriendFetches() {
 	const searchForm = document.getElementById("message-box") as HTMLFormElement;
@@ -64,18 +65,18 @@ export async function clickFriendProfile(e: Event | null, data: User | null) {
 		friendProfileDiv.innerHTML = ` 
 				<div id="friend-data" class="flex flex-col-reverse lg:flex-row justify-between items-center gap-4 w-full p-2.5">
 					<div class="flex flex-col lg:ml-4">
-						<p class="font-bold text-center lg:text-start">Username: <span id="friend-name" class="font-thin">${friendProfileTyped.username}</span></p>
-						<p class="font-bold text-center lg:text-start">Nick: <span id="friend-nick" class="font-thin">${friendProfileTyped.alias}</span></p>
+						<p class="font-bold text-center lg:text-start">${getTranslation('modify_username')}<span id="friend-name" class="font-thin">${friendProfileTyped.username}</span></p>
+						<p class="font-bold text-center lg:text-start">${getTranslation('modify_nick')}<span id="friend-nick" class="font-thin">${friendProfileTyped.alias}</span></p>
 						<div id="friend-status" class="flex gap-2 justify-center lg:justify-start">
 							${friendProfileTyped.is_online === 1 ?
-							'<p>Online</p><img src="../../resources/img/online.svg" alt="Online status">' :
-							'<p>Offline</p><img src="../../resources/img/offline.svg" alt="Offline status">'
+							`<p>${getTranslation('friends_online')}</p><img src="../../resources/img/online.svg" alt="Online status">` :
+							`<p>${getTranslation('friends_offline')}</p><img src="../../resources/img/offline.svg" alt="Offline status">`
 							}
 						</div>
-						<p class="font-bold text-center lg:text-start">Description: <span id="friend-description" class="italic font-thin">${friendProfileTyped.status}</span></p>
+						<p class="font-bold text-center lg:text-start">${getTranslation('modify_description')}<span id="friend-description" class="italic font-thin">${friendProfileTyped.status}</span></p>
 						<div class="flex justify-center gap-10 my-4">
-							<button id="delete-friend" class="button p-2.5 rounded-[15px]">Delete</button>
-							<button id="block-friend" class="button p-2.5 rounded-[15px] bg-[var(--alert)]">Block</button>
+							<button id="delete-friend" class="button p-2.5 rounded-[15px]">${getTranslation('friends_delete')}</button>
+							<button id="block-friend" class="button p-2.5 rounded-[15px] bg-[var(--alert)]">${getTranslation('friends_block')}</button>
 						</div>
 					</div>
 					<div class="flex flex-col items-center lg:mr-4">
@@ -83,12 +84,12 @@ export async function clickFriendProfile(e: Event | null, data: User | null) {
 					</div>
 				</div>
 				<div id="friend-statistics" class="flex flex-col items-center p-4 gap-1 mt-4 rounded-[15px] w-full lg:w-9/12 bg-[#7d48778f]">
-					<p class="font-bold text-center">Pong Games Played: <span class="font-thin">${friendProfileTyped.pong_games_played}</span></p>
-					<p class="font-bold text-center">Pong Wins Rate: <span class="font-thin">${friendProfileTyped.pong_games_won}</span></p>
-					<p class="font-bold text-center">Pong Loses Rate: <span class="font-thin">${friendProfileTyped.pong_games_lost}</span></p>
-					<p class="font-bold text-center">Connect Four Games Played: <span class="font-thin">${friendProfileTyped.connect_four_games_played}</span></p>
-					<p class="font-bold text-center">Connect Four Wins Rate: <span class="font-thin">${friendProfileTyped.connect_four_games_played}</span></p>
-					<p class="font-bold text-center">Connect Four Loses Rate: <span class="font-thin">${friendProfileTyped.connect_four_games_played}</span></p>
+				<p class="font-bold text-center">${getTranslation('friends_pong_played')}<span class="font-thin">${friendProfileTyped.pong_games_played}</span></p>
+					<p class="font-bold text-center">${getTranslation('friends_pong_wins')}<span class="font-thin">${friendProfileTyped.pong_games_won}</span></p>
+					<p class="font-bold text-center">${getTranslation('friends_pong_losses')}<span class="font-thin">${friendProfileTyped.pong_games_lost}</span></p>
+					<p class="font-bold text-center">${getTranslation('friends_connect_played')}<span class="font-thin">${friendProfileTyped.connect_four_games_played}</span></p>
+					<p class="font-bold text-center">${getTranslation('friends_connect_wins')}<span class="font-thin">${friendProfileTyped.connect_four_games_played}</span></p>
+					<p class="font-bold text-center">${getTranslation('friends_connect_losses')}<span class="font-thin">${friendProfileTyped.connect_four_games_played}</span></p>
 				</div>
 				`
 
@@ -169,7 +170,7 @@ export async function showMatches(input: string) {
 			var option;
 			if (matchesTyped.length === 0) {
 				option = document.createElement('p');
-				option.innerText = "User Not Found";
+				option.innerText = getTranslation("friends_user_not_found");
 			}
 			else {
 				option = document.createElement('div');
@@ -291,8 +292,8 @@ export async function displayFriends() {
 						</div>
 						<div id="friend-status" class="flex gap-2 px-4">
 							${friend.is_online === 1 ?
-								'<p>Online</p><img src="../../resources/img/online.svg" alt="Online status">' :
-								'<p>Offline</p><img src="../../resources/img/offline.svg" alt="Offline status">'
+								`<p>${getTranslation('friends_online')}</p><img src="../../resources/img/online.svg" alt="Online status">` :
+								`<p>${getTranslation('friends_offline')}</p><img src="../../resources/img/offline.svg" alt="Offline status">`
 							}
 						</div>
 					`;
@@ -381,7 +382,6 @@ export async function displayInvitations() {
 
 async function confirmInvitation(friendId: string) {
 	try {
-    // FIX: Se está lanzando esto a pesar de que solo se está mandando la invitation, no confirmandola
 		const response = await sendRequest('POST', 'users/friends/confirm', {friend_id: friendId});
 		if (!response)
 			throw new Error("Error while fetching confirm invitation");

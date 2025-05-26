@@ -4,6 +4,7 @@ import { debounce, emptyMatches } from "../friends/friends-fetch.js"
 import { navigateTo } from "../index.js";
 import { showAlert } from "../toast-alert/toast-alert.js";
 import { displayMessage, getClientID, socketChat } from "./messages-page.js"
+import { getTranslation } from "../login-page/login-transcript.js";
 export let actual_chat_id: number;
 
 export function loadInfo(data: MessageObject) {
@@ -267,7 +268,7 @@ async function displayFriendInfo(friend_username: string) {
 
 		const data = await sendRequest('POST', '/users/isfriends', { friend_id: response.user_id });
 		if (!data)
-			showAlert("You're not friends with this user", "toast-error");
+			showAlert(getTranslation("messages_not_friend"), "toast-error");
 		else
 			navigateTo("/friends", response);
 	}

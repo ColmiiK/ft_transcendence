@@ -2,8 +2,8 @@
 	<div id="card" class="standard-purple-card flex">
 		<header class="flex justify-between items-center md:items-end mx-4 h-fit md:h-1/6">
 			<div>
-				<h1 class="hidden md:block">Friends</h1>
-				<p><span id="friend-list-page" class="friend-selector cursor-pointer">Friends List</span> | <span id="friend-invitation-page" class="friend-selector cursor-pointer">Invitations</span></p>
+				<h1 class="hidden md:block" translatekey="friends_title">Friends</h1>
+				<p><span id="friend-list-page" class="friend-selector cursor-pointer" translatekey="friends_list">Friends List</span> | <span id="friend-invitation-page" class="friend-selector cursor-pointer" translatekey="friends_invitations">Invitations</span></p>
 			</div>
 			<svg id="home-button" class="home-icon m-4 h-10 w-10" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FEE0EF">
 				<path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/>
@@ -18,7 +18,7 @@
 					<path d="M640-80 240-480l400-400 71 71-329 329 329 329-71 71Z"/>
 				</svg>
 				<div class="relative w-full">
-					<input autocomplete="off" list="" id="friend-input" class="outline-none indent-2 w-full h-3/5 opacity-80 p-1.5 bg-[whitesmoke] text-[var(--dark-purple)] rounded-[15px]" placeholder="Search a friend" class="outline-none w-full indent-2">
+					<input autocomplete="off" list="" id="friend-input" class="outline-none indent-2 w-full h-3/5 opacity-80 p-1.5 bg-[whitesmoke] text-[var(--dark-purple)] rounded-[15px]" placeholder="Search a friend" class="outline-none w-full indent-2" data-placeholder="friends_search">
 					<datalist id="search-friend" role="listbox" class="z-20 absolute w-full mt-1.5 p-1.5 rounded-[15px] bg-[#3b0034c6]"></datalist>
 				</div>
 				<button type="submit"></button>
@@ -34,14 +34,14 @@
 			<div id="invitation-list" class="hidden flex flex-col lg:flex-row gap-2 h-full w-full justify-between overflow-y-auto">
 				<div class="flex flex-col w-full">
 					<div class="flex items-center gap-2 m-2">
-						<p class="w-fit text-lg">Received</p>
+						<p class="w-fit text-lg" translatekey="friends_received">Received</p>
 						<div id="pink-divider" class="w-full"></div>
 					</div>
 					<section id="invitation-received" class="flex flex-col h-[98%] overflow-x-clip overflow-y-auto"></section>
 				</div>
 				<div class="flex flex-col w-full">
 					<div class="flex items-center gap-2 m-2">
-						<p class="w-fit text-lg">Sent</p>
+						<p class="w-fit text-lg" translatekey="friends_sent">Sent</p>
 						<div id="pink-divider" class="w-full"></div>
 					</div>
 					<section id="invitation-sent" class="flex flex-col h-[98%] overflow-x-clip overflow-y-auto"></section>
@@ -54,19 +54,19 @@
 <dialog id="block-user" class="standard-pink-card hidden">
 	<div class="w-full h-full">
 		<div class="flex justify-between items-center m-2.5">
-			<h1 class="text-white text-3xl">Block a friend</h1>
+			<h1 class="text-white text-3xl" translatekey="friends_block_title">Block a friend</h1>
 			<svg class="close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#3B0034">
 				<path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
 			</svg>
 		</div>
 		<div id="pink-divider"></div>
 		<div class="flex gap-10 justify-center">
-			<button class="button cancel-button p-2.5 rounded-[15px]">Cancel</button>
-			<button class="button block-button p-2.5 rounded-[15px]">Block</button>
+			<button class="button cancel-button p-2.5 rounded-[15px]" translatekey="friends_cancel">Cancel</button>
+			<button class="button block-button p-2.5 rounded-[15px]" translatekey="friends_block">Block</button>
 		</div>
 		<div class="flex flex-col m-2.5 justify-center items-center">
-			<p class="text-center">Are you sure you want to <span class="text-[var(--alert)]">block</span> your friend?<p>
-			<p class="text-center">Once done you can revert it in <span class="text-[var(--violet)]">settings</span></p>
+			<p class="text-center" translatekey="friends_block_m1">Are you sure you want to <span class="text-[var(--alert)]">block</span> your friend?<p>
+			<p class="text-center" translatekey="friends_block_m2">Once done you can revert it in <span class="text-[var(--violet)]">settings</span></p>
 		</div>
 	  </div>
 </dialog>

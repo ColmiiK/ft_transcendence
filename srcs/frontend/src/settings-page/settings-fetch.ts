@@ -2,6 +2,7 @@ import { sendRequest } from "../login-page/login-fetch.js";
 import { showAlert } from "../toast-alert/toast-alert.js";
 import { navigateTo } from "../index.js";
 import { Blocked } from "../types.js";
+import { getTranslation } from "../login-page/login-transcript.js";
 
 export function initSettingsFetch() {
 	const changePasswordForm  = document.getElementById("change-password-form") as HTMLFormElement;
@@ -20,13 +21,13 @@ export function initSettingsFetch() {
 function parsePasswords(currentPassword: string, newPassword: string, confirmNewPassword: string): boolean {
 	try {
 		if (!currentPassword || !newPassword || !confirmNewPassword)
-			throw new Error("Fill in all the fields");
+			throw new Error(getTranslation('fill_all_fields'));
 		else if (newPassword !== confirmNewPassword)
-			throw new Error("Passwords don't match");
+			throw new Error(getTranslation('passwords_not_match'));
 		else if (newPassword.length < 9)
-			throw new Error("Password too short");
+			throw new Error(getTranslation('password_too_short'));
 		else if (!/[A-Z]/.test(newPassword) || !/[a-z]/.test(newPassword) || !/[0-9]/.test(newPassword) || !/[*\.\-_]/.test(newPassword))
-			throw new Error("Please use at least one uppercase, lowercase, number and '*.-_'");
+			throw new Error(getTranslation('password_musts'));
 		return true;
 	}
 	catch (error) {
@@ -53,7 +54,7 @@ async function changePassword(e: Event) {
 		if (!response["success"])
 			throw new Error(response["error"]);
 		else
-			showAlert("Password changed successfully", "toast-success");
+			showAlert(getTranslation('settings_password_success'), "toast-success");
 		const form = document.getElementById("change-password-form") as HTMLFormElement;
 		if (form)
 			form.reset();
@@ -79,14 +80,14 @@ async function deleteAccount(e: Event) {
 	const deleteValue = deleteInput.value;
 	try {
 		if (!emailValue || !passwordValue || !deleteValue)
-			throw new Error("Fill in all the fields");
+			throw new Error(getTranslation('fill_all_fields'));
 		else if (deleteValue !== "Delete")
-			throw new Error("Incorrect confirm message");
+			throw new Error(getTranslation('settings_wrong_delete'));
 		const response = await sendRequest('DELETE', 'users', { email: emailValue, password: passwordValue, delete_input: deleteValue})
 		if (!response["success"])
 			throw new Error(response["error"]);
 		else {
-			showAlert("Account deleted successfully", "toast-success");
+			showAlert(getTranslation('settings_delete_success'), "toast-success");
 			displayDeletedAccount();
 		}
 		const form = document.getElementById("delete-account-form") as HTMLFormElement;
@@ -110,9 +111,7 @@ function displayDeletedAccount() {
 	deleteForm.style.display = "none";
 	closeIcon.style.display = "none";
 	deleteMessage.classList.add("text-center");
-	deleteMessage.innerText = `Your account has been deleted.
-		If you log-in with your credentials in the next 30 days you'll recover it.
-		We'll miss you!!`
+	deleteMessage.innerHTML = getTranslation('settings_delete_message');
 	logOutButton.classList.remove("hidden");
 	logOutButton.onclick = async () => {
     	localStorage.clear();
@@ -153,7 +152,7 @@ async function twoFactorAuth(e: Event) {
 	const valueCode = inputs.map(input => (input as HTMLInputElement).value).join("");
 	try {
 		if (!valueCode || valueCode.length < 6)
-			throw new Error("Fill in all the fields");
+			throw new Error(getTranslation('fill_all_fields'));
 		qrForm.reset();
 		
 		if (localStorage.getItem("is_2fa_enabled") === "1") {
@@ -161,14 +160,14 @@ async function twoFactorAuth(e: Event) {
 			if (!response["success"])
 				throw new Error(response["error"]);
 			localStorage.setItem("is_2fa_enabled", "0");
-			showAlert("2FA disabled successfully", "toast-success");
+			showAlert(getTranslation('settings_disable_2fa'), "toast-success");
 		}
 		else {
 			const response = await sendRequest('POST', '2fa/verify', {totp_code: valueCode});
 			if (!response["success"])
 				throw new Error(response["error"]);
 			localStorage.setItem("is_2fa_enabled", "1");
-			showAlert("2FA enabled successfully", "toast-success");
+			showAlert(getTranslation('settings_enable_2fa'), "toast-success");
 		}
 		toggle2FA();
 	}
@@ -245,7 +244,7 @@ async function unblockUser(blockedId: string) {
 		if (!response["success"])
 			throw new Error(response["error"]);
 		displayBlockedAccounts();
-		showAlert("User unblocked successfully", "toast-success");
+		showAlert(getTranslation('settings_unblock_success'), "toast-success");
 	}
 	catch(error) {
 		showAlert((error as Error).message, "toast-error");
