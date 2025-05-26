@@ -7,6 +7,7 @@ import createChatRoutes from "./chatRoutes.js";
 import createAuthRoutes from "./authorizationRoutes.js";
 import createAvatarRoutes from "./avatarRoutes.js";
 import createWebSocketsRoutes from "../sockets.js";
+import createCacheRoutes from "./cacheRoutes.js";
 import assert from "node:assert";
 
 // Bundling all of the routes into one export
@@ -21,7 +22,8 @@ export default function createRoutes(fastify) {
   const tournamentRoutes = createTournamentRoutes(fastify);
   const authRoutes = createAuthRoutes(fastify);
   const avatarRoutes = createAvatarRoutes(fastify);
-  const socketsRoute = createWebSocketsRoutes(fastify);
+  const socketsRoutes = createWebSocketsRoutes(fastify);
+  const cacheRoutes = createCacheRoutes(fastify);
   return [].concat(
     userRoutes,
     relationRoutes,
@@ -31,6 +33,7 @@ export default function createRoutes(fastify) {
     tournamentRoutes,
     authRoutes,
     avatarRoutes,
-    socketsRoute,
+    socketsRoutes,
+    cacheRoutes,
   );
 }

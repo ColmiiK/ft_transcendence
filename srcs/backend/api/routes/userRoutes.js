@@ -68,7 +68,7 @@ export default function createUserRoutes(fastify) {
       handler: asyncHandler(async (req, res) => {
         if (!validateInput(req, res, ["username"])) return;
         const user = await getUser(req.body.username);
-        return res.code(200).send({user_id: user.id});
+        return res.code(200).send({ user_id: user.id });
       }),
     },
     {
