@@ -2,7 +2,7 @@ import { navigateTo } from "../index.js"
 import { getClientID } from "../messages/messages-page.js";
 import { showAlert, socketToast} from "../toast-alert/toast-alert.js";
 import { uploadCanvas, updatePhoto, updateNick, updateDescription ,initModifyFetchEvents } from "./modify-fetch.js";
-import { applyTranslation } from "../login-page/login-transcript.js"
+import { applyTranslation, getTranslation } from "../login-page/login-transcript.js"
 
 export function initModifyPageEvents() {
   applyTranslation();
@@ -165,7 +165,7 @@ function toggleAvatarEditor() {
 		if (canvas) {
 			for (let layer of layers) {
 				if (!layer || layer.src === "") {
-					showAlert("Select 4 options" , "toast-error");
+					showAlert(getTranslation('modify_select_options') , "toast-error");
 					return ;
 				}
 			}

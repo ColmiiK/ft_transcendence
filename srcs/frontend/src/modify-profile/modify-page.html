@@ -17,26 +17,27 @@
                     <form id='formid'>
                         <input id='fileid' type='file' accept="image/png, image/gif, image/jpeg, image/webp" hidden />
                         <input id='buttonid' type='button' value='Upload a photo'
-                            class="button p-2.5 rounded-[15px] cursor-pointer" />
+                            class="button p-2.5 rounded-[15px] cursor-pointer" data-value="modify_upload_photo"/>
                         <input type='submit' value='Submit' hidden />
                     </form>
-                    <button translatekey="modify_create_avatar" id="create-avatar" class="button p-2.5 rounded-[15px]">Create an avatar</button>
+                    <button translatekey="modify_create_avatar" id="create-avatar"
+                        class="button p-2.5 rounded-[15px]">Create an avatar</button>
                 </div>
             </div>
-            <div id="friend-statistics"
-                class="flex flex-col p-4 gap-1 mt-4 rounded-[15px] w-full bg-[#7d48778f]">
+            <div id="friend-statistics" class="flex flex-col p-4 gap-1 mt-4 rounded-[15px] w-full bg-[#7d48778f]">
                 <div class="flex justify-between w-full">
                     <p translatekey="modify_username" class="font-bold text-white">Username: </p>
-                    <span id="your-name" class="font-thin grow mx-1.5 px-1.5 rounded-[15px] bg-[#d087ac50]">Default
-                        Username</span>
+                    <span id="your-name" class="font-thin grow mx-1.5 px-1.5 rounded-[15px] bg-[#d087ac50]">Default Username</span>
                 </div>
                 <div class="flex justify-between items-center w-full">
                     <p translatekey="modify_nick" class="font-bold text-white">Nick: </p>
-                    <span translatkey="modify_default_nick" id="your-nick" class="font-thin w-full mx-1.5 px-1.5 rounded-[15px] bg-[#d087ac50]">Default
+                    <span translatkey="modify_default_nick" id="your-nick"
+                        class="font-thin w-full mx-1.5 px-1.5 rounded-[15px] bg-[#d087ac50]">Default
                         Nick</span>
                     <form id="nick-form" class="hidden w-full mx-1.5">
                         <input id="modify-nick" type="text"
-                            class="w-full outline-none indent-2 opacity-60 bg-[whitesmoke] text-[var(--dark-purple)] rounded-[15px]" maxlength="16">
+                            class="w-full outline-none indent-2 opacity-60 bg-[whitesmoke] text-[var(--dark-purple)] rounded-[15px]"
+                            maxlength="16">
                         <button type="submit" hidden></button>
                     </form>
                     <svg class="edit-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" height="24px"
@@ -63,8 +64,10 @@
                     </svg>
                 </div>
                 <div class="flex justify-between w-full">
-                    <p translatekey="modify_account" class="font-bold text-white whitespace-nowrap">Account creation date: </p>
-                    <span id="your-creation-date" class="font-thin mx-1.5 px-1.5 rounded-[15px] bg-[#d087ac50] w-full">00-00-0000</span>
+                    <p translatekey="modify_account" class="font-bold text-white whitespace-nowrap">Account creation
+                        date: </p>
+                    <span id="your-creation-date"
+                        class="font-thin mx-1.5 px-1.5 rounded-[15px] bg-[#d087ac50] w-full">00-00-0000</span>
                 </div>
                 <div class="grid grid-cols-2 flex justify-center">
                     <div class="flex flex-col w-full justify-center items-center">
@@ -131,7 +134,8 @@
                     </div>
                 </div>
                 <div class="w-full flex justify-center">
-                    <button translatekey="modify_save_changes" id="save-avatar" class="button p-2.5 rounded-[15px]">Save Changes</button>
+                    <button translatekey="modify_save_changes" id="save-avatar" class="button p-2.5 rounded-[15px]">Save
+                        Changes</button>
                 </div>
             </div>
         </div>

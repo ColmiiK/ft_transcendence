@@ -62,6 +62,7 @@ const locales = [
 			losses: 'Losses',
 			score_last_10: 'Score in the last 10 games',
 			modify_header: 'Modify Profile',
+			modify_upload_photo: 'Upload a photo',
 			modify_create_avatar: 'Create an Avatar',
 			modify_username: 'Username: ',
 			modify_nick: 'Nick: ',
@@ -71,6 +72,9 @@ const locales = [
 			modify_losses: 'Total losses',
 			modify_avatar_creator: 'Avatar Creator',
 			modify_save_changes: 'Save Changes',
+			modify_empty_nickname: 'Nickname cannot be empty',
+			modify_empty_description: 'Description cannot be empty',
+			modify_select_options: 'Select 4 options',
 		}
 	},
 	{
@@ -112,38 +116,42 @@ const locales = [
 			password_not_valid: 'La contraseña no es válida',
 			user_success: 'Usuario creado correctamente',
 			email_sent_successfully: '¡Correo enviado con éxito! Revísalo para cambiar tu contraseña',
-      home_header: 'Página de Inicio',
-      home_welcome: '¡Bienvenido<span id="username" class="text-[var(--dark-pink)]"> Username</span>!',
-      home_modify: 'Modificar perfil',
-      home_profile: 'Opciones del perfil',
-      home_logout: 'Cerrar sesión',
-      home_games: 'Juegos',
-      home_friends: 'Amigos',
-      home_messages: 'Mensajes',
-      home_statistics: 'Estadísticas',
-      home_moonbit: '✨ ¡Bienvenido a Moonbit! ✨ ',
-      home_first_p: 'Aquí podrás disfrutar de juegos clásicos como <b class="text-white">Pong</b> o <b class="text-white">Cuatro en raya</b>, juega partidas rápidas o únete a <b class="text-white">torneos</b> amistosos.',
-      home_second_p: '¿Quieres hablar un rato? El <b class="text-white">chat</b> siempre está abierto: di hola, comparte unas risas o prepara tu siguiente partida. También puedes echarle un vistazo a tu <b class="text-white">Página de Amigos</b>, invitar a otros a jugar y ver qué están haciendo.',
-      home_third_p: 'Y por supuesto, este mundo te pertenece para hacerlo tuyo: visita tu <b class="text-white">Perfil</b> para personalizar cómo se te ve en este estrellado espacio pixelado.',
-      home_fourth_p: 'Así que adelante: explora, juega, y diviértete. Estamos felices de que estés aquí. 🌟',
-      stats_header: 'Estadísticas',
-      stats_pong: 'Pong',
-      stats_connect: 'Cuatro en raya',
-      stats_historical: 'Historial',
-      stats_dash: 'Panel',
-      wins: 'Victorias',
-      losses: 'Derrotas',
-      score_last_10: 'Puntuación en las últimas 10 partidas',
-      modify_header: 'Modificar Perfil',
-      modify_create_avatar: 'Crea un avatar',
-      modify_username: 'Nombre de usuario: ',
-      modify_nick: 'Apodo: ',
-      modify_description: 'Descripción: ',
-      modify_account: 'Fecha de creación de cuenta: ',
-      modify_wins: 'Victorias totales',
-      modify_losses: 'Derrotas totales',
-      modify_avatar_creator: 'Creador de Avatares',
-      modify_save_changes: 'Guardar Cambios',
+			home_header: 'Página de Inicio',
+			home_welcome: '¡Bienvenido<span id="username" class="text-[var(--dark-pink)]"> Username</span>!',
+			home_modify: 'Modificar perfil',
+			home_profile: 'Opciones del perfil',
+			home_logout: 'Cerrar sesión',
+			home_games: 'Juegos',
+			home_friends: 'Amigos',
+			home_messages: 'Mensajes',
+			home_statistics: 'Estadísticas',
+			home_moonbit: '✨ ¡Bienvenido a Moonbit! ✨ ',
+			home_first_p: 'Aquí podrás disfrutar de juegos clásicos como <b class="text-white">Pong</b> o <b class="text-white">Cuatro en raya</b>, juega partidas rápidas o únete a <b class="text-white">torneos</b> amistosos.',
+			home_second_p: '¿Quieres hablar un rato? El <b class="text-white">chat</b> siempre está abierto: di hola, comparte unas risas o prepara tu siguiente partida. También puedes echarle un vistazo a tu <b class="text-white">Página de Amigos</b>, invitar a otros a jugar y ver qué están haciendo.',
+			home_third_p: 'Y por supuesto, este mundo te pertenece para hacerlo tuyo: visita tu <b class="text-white">Perfil</b> para personalizar cómo se te ve en este estrellado espacio pixelado.',
+			home_fourth_p: 'Así que adelante: explora, juega, y diviértete. Estamos felices de que estés aquí. 🌟',
+			stats_header: 'Estadísticas',
+			stats_pong: 'Pong',
+			stats_connect: 'Cuatro en raya',
+			stats_historical: 'Historial',
+			stats_dash: 'Panel',
+			wins: 'Victorias',
+			losses: 'Derrotas',
+			score_last_10: 'Puntuación en las últimas 10 partidas',
+			modify_header: 'Modificar Perfil',
+			modify_upload_photo: 'Sube una foto',
+			modify_create_avatar: 'Crea un avatar',
+			modify_username: 'Nombre de usuario: ',
+			modify_nick: 'Apodo: ',
+			modify_description: 'Descripción: ',
+			modify_account: 'Fecha de creación de cuenta: ',
+			modify_wins: 'Victorias totales',
+			modify_losses: 'Derrotas totales',
+			modify_avatar_creator: 'Creador de Avatares',
+			modify_save_changes: 'Guardar Cambios',
+			modify_empty_nickname: 'El apodo no puede estar vacío',
+			modify_empty_description: 'La descripción no puede estar vacía',
+			modify_select_options: 'Selecciona 4 opciones',
 		}
 	},
 	{
@@ -224,6 +232,7 @@ export function applyTranslation() {
 
 	const nodes = document.querySelectorAll('[translatekey]');
 	const formNodes = document.querySelectorAll('[data-placeholder]');
+	const buttonNodes = document.querySelectorAll('[data-value]');
 
 	if (!nodes) return;
 
@@ -237,6 +246,11 @@ export function applyTranslation() {
 		const translation = translations[key] || key;
 		node.setAttribute('placeholder', translation);
 	});
+	buttonNodes?.forEach((node) => {
+		const key = node.getAttribute('data-value');
+		const translation = translations[key] || key;
+		node.setAttribute('value', translation);
+	})
 }
 
 function generateLanguageSelector() {
