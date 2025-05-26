@@ -66,6 +66,8 @@ SELECT q.* FROM (
           m.body,
           m.sent_at,
           m.is_read,
+          m.invitation_type,
+          m.invitation_status,
           s.username AS sender_username,
           s.is_deleted AS sender_deleted,
           r.username AS receiver_username,
