@@ -181,8 +181,8 @@ export function displayMessage(data: Message) {
   else if (data.type === "game") {
     let messageContainer = document.getElementById("message-history");
     if (!messageContainer) return;
-    const game_type = data.body.substring(29);
-
+    const game_type = data.body.substring(27);
+    console.log(game_type);
     let el = document.createElement("div");
     const sent_at = data.sent_at.substring(11, 16);
     if (data.info === "request") {
