@@ -4,8 +4,10 @@ import { moveBetweenInputs } from "../two-factor-page/two-factor.js";
 import { closeModal } from "../friends/friends-page.js";
 import { moveToHome } from "../messages/messages-page.js";
 import { initSettingsFetch, displayQR, displayBlockedAccounts } from "./settings-fetch.js";
+import { applyTranslation, getTranslation } from "../login-page/login-transcript.js";
 
 export function initSettingsEvents() {
+	applyTranslation();
 	dropDown();
 	displayTerms();
 	moveBetweenInputs();
@@ -177,7 +179,7 @@ async function displayTerms() {
 		else {
 			settingsPage.style.display = "flex";
 			termsPage.style.display = "none";
-			termsButton.innerText = "Privacy and Terms Conditions";
+			termsButton.innerText = getTranslation('terms_policy');
 
 			changePassword.classList.remove('hidden');
 			twoFactor.classList.remove('hidden');
