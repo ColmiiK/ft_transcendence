@@ -1,5 +1,6 @@
 import { sendRequest } from "../login-page/login-fetch.js";
 import { ChartStats, Historical } from "../types.js"
+import { getTranslation } from "../login-page/login-transcript.js"
 
 export function initStatsFetch() {
 	pongCharts();
@@ -25,7 +26,7 @@ async function pongCharts() {
 		new Chart(winsLossesChart, {
 			type: 'doughnut',
 			data: {
-				labels: ['Wins', 'Losses'],
+				labels: [getTranslation('wins'), getTranslation('losses')],
 				datasets: [
 					{
 						cutout: '35%',
@@ -99,7 +100,7 @@ async function pongCharts() {
 					labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
 					datasets: [
 						{
-							label: 'Score in last 10 games',
+							label: getTranslation('score_last_10'),
 							data: resultsArray,
 							borderColor: ['#FEE0EF'],
 							backgroundColor: ['#D087AB'],
@@ -197,7 +198,7 @@ export async function connect4Charts() {
 		new Chart(winsLossesChart, {
 			type: 'doughnut',
 			data: {
-				labels: ['Wins', 'Losses'],
+				labels: [getTranslation('wins'), getTranslation('losses')],
 				datasets: [
 					{
 						cutout: '35%',
@@ -271,7 +272,7 @@ export async function connect4Charts() {
 					labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
 					datasets: [
 						{
-							label: 'Score in last 10 games',
+							label: getTranslation('score_last_10'),
 							data: resultsArray,
 							borderColor: ['#FEE0EF'],
 							backgroundColor: ['#D087AB'],

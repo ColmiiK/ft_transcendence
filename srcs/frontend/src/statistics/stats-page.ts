@@ -1,7 +1,9 @@
 import { moveToHome } from "../messages/messages-page.js";
 import { initStatsFetch, connect4Charts } from "./stats-fetch.js";
+import { applyTranslation } from "../login-page/login-transcript.js"
 
 export function initStatsEvents() {
+  applyTranslation();
 	moveToHome();
 	initStatsFetch();
 

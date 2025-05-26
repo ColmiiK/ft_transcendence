@@ -44,23 +44,6 @@
     margin-top: 2%;
 }
 
-/* #buttomGroup>button {
-    border-radius: 8px;
-    background-color: var(--dark-pink);
-    width: fit-content;
-    height: fit-content;
-    padding: 10px 20px;
-    text-align: center;
-    font-size: 100%;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-#buttomGroup>button:hover {
-    background-color: #b06289;
-    transform: translateY(-2px);
-} */
-
 #returnToGamesConnect {
     position: absolute;
     color: white;

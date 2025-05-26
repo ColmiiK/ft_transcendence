@@ -5,6 +5,8 @@ import {
     boardMap,
 	pauseGame,
 	returnToGames,
+	PlayerState,
+	GameState,
 	init as initEngine,
 	clearGame as clearGameEngine,
 	insertDivWinner as insertDivWinnerEngine,
@@ -16,9 +18,11 @@ import {
 	placeToken as placeTokenEngine,
 	isColumnPlayable as isColumnPlayableEngine,
 	detectWinOpportunities as detectWinOpportunitiesEngine,
+	updateTurnIndicator,
 } from './gameEngine.js';
 
 import { Games } from "../../types.js";
+import { updateDescription } from '../../modify-profile/modify-fetch.js';
 
 export function classicMode(data: Games): void {
 	class PlayerClass implements Player {
@@ -42,16 +46,26 @@ export function classicMode(data: Games): void {
 		initEngine(player1, boardMap, columnMap, columnList);
 	}
 
-	function start(): void {
-		clearGame();
+	async function start(): Promise<void> {
+		const savedState = loadGameState("classic");
 		init();
-		enableClicks();
+		if (savedState){
+			renderBoardFromState(savedState)
+			await pauseGame(columnList);
+		}
+		else
+			enableClicks();
+		clickColumn();
+	}
+
+	function clickColumn(){
 		columnList.forEach((column: HTMLElement) => {
 			column.addEventListener("click", () => handleColumnClick(column));
-		});
+		});	
 	}
 
 	function clearGame(): void {
+		localStorage.removeItem(`connect4GameStateclassic`);
 		clearGameEngine(player1, player2, columnList, columnMap, boardMap);
 	}
 
@@ -70,6 +84,7 @@ export function classicMode(data: Games): void {
 		}
 
 		await placeToken(column);
+		saveGameState("classic");
 		if (checkWin(false)) {
 			insertDivWinner();
 			disableClicks();
@@ -94,7 +109,7 @@ export function classicMode(data: Games): void {
 		insertDivDrawEngine(columnList);
 	}
 
-	async function placeToken(column: HTMLElement): Promise<void> {
+	async function placeToken(column: HTMLElement | null): Promise<void> {
 		await placeTokenEngine(column, player1, player2, columnMap, boardMap, columnList, "classic");
 	}
 
@@ -154,8 +169,7 @@ export function classicMode(data: Games): void {
 		}
 
 		enableClicks();
-		if (columnToUse)
-			await columnToUse.click();
+		columnToUse?.click();
 	}
 
 	function isColumnPlayable(column: HTMLElement): boolean {
@@ -164,6 +178,86 @@ export function classicMode(data: Games): void {
 
 	function detectWinOpportunities(player: Player): HTMLElement[] {
 		return detectWinOpportunitiesEngine(boardMap, columnList, player, player1, player2);
+	}
+
+	function getPlayerState(player: Player): PlayerState {
+		const playerS = {
+			num: player.num,
+			color: player.color,
+			turn: player.turn,
+			AI: player.AI,
+		}
+		return playerS;
+	}
+
+	function setPlayerState(player: Player, state: PlayerState) {
+		player.num = state.num;
+		player.color = state.color;
+		player.turn = state.turn;
+		player.AI = state.AI;
+	}
+
+	function saveGameState(mode: "classic" | "custom") {
+		const boardData: { [columnId: string]: number[] } = {};
+
+		columnList.forEach(column => {
+			const data = boardMap.get(column.id);
+			if (data) boardData[column.id] = [...data];
+		});
+
+		const state: GameState = {
+			mode,
+			boardData,
+			player1: getPlayerState(player1),
+			player2: getPlayerState(player2),
+		};
+
+		localStorage.setItem(`connect4GameState${mode}`, JSON.stringify(state));
+	}
+
+	function loadGameState(mode: "classic" | "custom"): GameState | null {
+		const stateStr = localStorage.getItem(`connect4GameState${mode}`);
+		if (!stateStr) return null;
+
+		const state: GameState = JSON.parse(stateStr);
+		return state;
+	}
+
+	function renderBoardFromState(state: GameState) {
+		for (const colId in state.boardData) {
+			boardMap.set(colId, [...state.boardData[colId]]);
+		}
+
+		columnList.forEach(column => {
+			const cells = columnMap.get(column.id);
+			if (!cells) return;
+
+			for (let row = 0; row < cells.length; row++) {
+				const cell = cells[row];
+				cell.innerHTML = "";
+				cell.className = "cell";
+
+				const cellValue = boardMap.get(column.id)?.[row] || 0;
+
+				if (cellValue === 1) {
+					cell.classList.add("filled", "red-hover");
+					const token = document.createElement("div");
+					token.className = "token red";
+					cell.appendChild(token);
+				} else if (cellValue === 2) {
+					cell.classList.add("filled", "yellow-hover");
+					const token = document.createElement("div");
+					token.className = "token yellow";
+					cell.appendChild(token);
+				} else {
+					if (state.player1.turn) cell.classList.add("red-hover");
+					else cell.classList.add("yellow-hover");
+				}
+			}
+		});
+	
+		setPlayerState(player1, state.player1);
+		setPlayerState(player2, state.player2);
 	}
 
 	document.getElementById('pauseGame')?.addEventListener('click', async () => {
@@ -176,3 +270,101 @@ export function classicMode(data: Games): void {
 
 	start();
 }
+
+/* function getPlayerState(player: Player): PlayerState {
+		const playerS = {
+			num: player.num,
+			color: player.color,
+			turn: player.turn,
+			specialToken: player.specialToken,
+			diceUses: player.diceUses,
+			useSpecial: player.useSpecial,
+			affected: player.affected,
+			turnAffected: player.turnAffected,
+		}
+		return playerS;
+	}
+
+	function setPlayerState(player: Player, state: PlayerState) {
+		player.num = state.num;
+		player.color = state.color;
+		player.turn = state.turn;
+		player.specialToken = state.specialToken;
+		player.diceUses = state.diceUses;
+		player.useSpecial = state.useSpecial;
+		player.affected = state.affected;
+		player.turnAffected = state.turnAffected;
+	}
+
+	function saveGameState(mode: "classic" | "custom", player1: Player, player2: Player) {
+	const boardData: { [columnId: string]: number[] } = {};
+	columnList.forEach(column => {
+		const data = boardMap.get(column.id);
+		if (data) boardData[column.id] = [...data];
+	});
+
+	const state: GameState = {
+		mode,
+		boardData,
+		player1: getPlayerState(player1),
+		player2: getPlayerState(player2),
+	};
+
+	localStorage.setItem(`connect4GameState${mode}`, JSON.stringify(state));
+	}
+
+	function loadGameState(mode: "classic" | "custom"): GameState | null {
+	const stateStr = localStorage.getItem(`connect4_game_state_${mode}`);
+	if (!stateStr) return null;
+
+	const state: GameState = JSON.parse(stateStr);
+	return state;
+	}
+
+	function renderBoardFromState(state: GameState, player1: Player, player2: Player) {
+	for (const colId in state.boardData) {
+		boardMap.set(colId, [...state.boardData[colId]]);
+	}
+
+	columnList.forEach(column => {
+		const cells = columnMap.get(column.id);
+		if (!cells) return;
+
+		for (let row = 0; row < cells.length; row++) {
+		const cell = cells[row];
+		cell.innerHTML = "";
+		cell.className = "cell";
+
+		const cellValue = boardMap.get(column.id)?.[row] || 0;
+
+		if (cellValue === 1) {
+			cell.classList.add("filled", "red-hover");
+			const token = document.createElement("div");
+			token.className = "token red";
+			cell.appendChild(token);
+		} else if (cellValue === 2) {
+			cell.classList.add("filled", "yellow-hover");
+			const token = document.createElement("div");
+			token.className = "token yellow";
+			cell.appendChild(token);
+		} else if (cellValue === 3) {
+			cell.classList.add("filled");
+			const token = document.createElement("div");
+			token.className = "token ghostToken opacity-50 grayscale";
+			token.innerText = "👻";
+			cell.appendChild(token);
+		} else {
+			if (state.player1.turn) {
+			cell.classList.add("red-hover");
+			} else {
+			cell.classList.add("yellow-hover");
+			}
+		}
+		}
+	});
+	
+	setPlayerState(player1, state.player1);
+	setPlayerState(player2, state.player2);
+	updateTurnIndicator();
+
+} */

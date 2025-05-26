@@ -1,3 +1,7 @@
+import { getClientID } from "../../messages/messages-page.js";
+
+export let socket4inrow: WebSocket | null;
+
 import { navigateTo } from "../../index.js";
 
 export interface Player {
@@ -12,6 +16,25 @@ export interface Player {
     affected?: string | null;
     turnAffected?: number;
     diceUses?: number;
+}
+
+export interface PlayerState {
+  num: number;
+  color: string;
+  turn: boolean;
+  AI: boolean;
+  specialToken?: string | null;
+  diceUses?: number;
+  useSpecial?: boolean;
+  affected?: string | null;
+  turnAffected?: number;
+}
+
+export interface GameState {
+  mode: "classic" | "custom";
+  boardData: { [columnId: string]: number[] };
+  player1: PlayerState;
+  player2: PlayerState;
 }
 
 export const columnMap: Map<string, HTMLElement[]> = new Map();
@@ -156,7 +179,7 @@ async function updateCell(cell: HTMLElement, player: Player): Promise<void> {
         token.style.animation = "";
 }
 
-export async function placeToken(column: HTMLElement, player1: Player, player2: Player, columnMap: Map<string, HTMLElement[]>, boardMap: Map<string, number[]>, columnList: HTMLElement[], mode: string): Promise<void> {
+export async function placeToken(column: HTMLElement | null, player1: Player, player2: Player, columnMap: Map<string, HTMLElement[]>, boardMap: Map<string, number[]>, columnList: HTMLElement[], mode: string): Promise<void> {
     disableClicks(columnList);
     if (!column || !column.id) {
         enableClicks(columnList);
@@ -297,6 +320,51 @@ export function delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+export function createSocket4inrowConnection(){
+if (socket4inrow && socket4inrow.readyState !== WebSocket.CLOSED)
+        socket4inrow.close();
+    try{
+        socket4inrow = new WebSocket(`wss://${window.location.hostname}:8443/ws/4inrow`)
+        if (!socket4inrow)
+            return ;
+        socket4inrow.onopen = () => {
+            let id = getClientID();
+            console.log("WebSocket4inrow connection established, sending id:", id);
+            if (id === -1)
+                console.error("Invalid ID, cannot connect to back")
+            else{
+                if (!socket4inrow)
+                    return ;
+                socket4inrow.send(JSON.stringify({
+                    userId: id,
+                    action: "identify"
+                }));
+                console.log("ID succesfully sent");
+            }
+        };
+        socket4inrow.onmessage = (event) => {
+            try{
+                const data = JSON.parse(event.data);
+                
+            }
+            catch(err){
+                console.error("Error on message", err);
+            }
+        };
+        socket4inrow.onerror = (error) => {
+            console.error("WebSocket error:", error);
+        };
+        socket4inrow.onclose = () => {
+            console.log("WebSocket4inrow connection closed");
+            socket4inrow = null;
+        };
+    }
+    catch(err){
+        console.error("Error creating WebSocket4inrow:", err);
+    }
+}
+
+
 export async function pauseGame(columnList: HTMLElement[]): Promise<void> {
     const pauseEl = document.getElementById('pauseConnect');
     if (!pauseEl){
@@ -397,7 +465,7 @@ export async function returnToGames(columnList: HTMLElement[]): Promise<void> {
     })
 
     document.getElementById('exit')?.addEventListener('click', () => {
-        /* localStorage.removeItem('gameState'); */
+        localStorage.removeItem(`connect4GameStateclassic`);
         navigateTo("/games");
     })
 }

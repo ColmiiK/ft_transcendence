@@ -295,7 +295,7 @@ export function classicPong(data: Games): void{
 	window.addEventListener('popstate', async () => {
 		await stop();
 		await clearGameState();
-	});
+});
 
 	document.getElementById('pauseGame')?.addEventListener('click', async () => {
 		await pauseGame(generalData, ballData);

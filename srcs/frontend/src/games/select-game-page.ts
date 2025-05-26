@@ -226,20 +226,17 @@ function initGameSelection(){
       event.preventDefault();
       const target = event.target as HTMLElement;
       const mode = target.getAttribute('data-mode');
-      console.log(mode)
       if (mode && currentGame){
         if (mode === "remote" || mode === "remote-custom"){
           const isCustom = mode.includes('custom')
           showRemoteSearch(currentGame, isCustom);
         }
-        else if (currentGame === "pong"){
-          localStorage.removeItem('gameState');   // Línea añadida para que entre limpio al pong
+        else if (currentGame === "pong")
           navigateTo("/pong", { gameMode: mode, isCustom: mode.includes('custom') });
-        }
         else if (currentGame === "4inrow")
           navigateTo("/4inrow", { gameMode: mode, isCustom: mode.includes('custom') });
-        if (mode !== 'remote' && mode !== "remote-custom")
-          hideGameOptions();
+        /*if (mode !== 'remote' && mode !== "remote-custom")
+          hideGameOptions();*/
       }
     });
   });

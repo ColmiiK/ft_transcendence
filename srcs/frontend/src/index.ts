@@ -122,8 +122,9 @@ const routes = [
 		accesible: false,
     	event: (data: object) => {
       		const mode = data as Games;
-			if (!mode.isCustom)
-      			classicPong(mode);
+			if (!mode.isCustom){
+				classicPong(mode);
+			}
 			else
 				chaosPong(mode)
     	}
@@ -134,8 +135,9 @@ const routes = [
 		accesible: false,
     	event: (data: object) => {
 			const mode = data as Games;
-			if (!mode.isCustom)
-      			classicMode(mode);
+			if (!mode.isCustom){
+				classicMode(mode);	
+			}
 			else
 				crazyTokensMode(mode)
     	}
