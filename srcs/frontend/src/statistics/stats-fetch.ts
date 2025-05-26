@@ -62,7 +62,7 @@ async function pongCharts() {
 		new Chart(gameModesChart, {
 				type: 'doughnut',
 				data: {
-					labels: ['Classic', 'Chaos'],
+					labels: [getTranslation('classic'), getTranslation('chaos')],
 					datasets: [
 						{
 							cutout: '35%',
@@ -234,7 +234,7 @@ export async function connect4Charts() {
 		new Chart(gameModesChart, {
 				type: 'doughnut',
 				data: {
-					labels: ['Classic', 'Custom'],
+					labels: [getTranslation('classic'), getTranslation('crazy_tokens')],
 					datasets: [
 						{
 							cutout: '35%',

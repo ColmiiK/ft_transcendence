@@ -161,16 +161,16 @@ async function handleRegister(e: Event) {
 		const response = await sendRequest("POST", "register", {username, email, password, confirm_password});
 		if (response["error"]) {
 			if (response["error"].includes("username"))
-				throw new Error("Username already exists");
+				throw new Error(getTranslation('username_exists'));
 			else if (response["error"].includes("email"))
-				throw new Error("Email already in use");
+				throw new Error(getTranslation('email_exists'));
 			else if (response["error"].includes("password"))
-				throw new Error("Password is not valid");
+				throw new Error(getTranslation('password_not_valid'));
 			else
 				throw new Error(response["error"]);
 		}
 		else
-			showAlert("User create successfully", "toast-success");
+			showAlert(getTranslation('user_success'), "toast-success");
 		const form = document.getElementById("signup-form") as HTMLFormElement;
 		if (form)
 			form.reset();
@@ -238,7 +238,7 @@ async function recoverPassword(e: Event) {
 			throw new Error(response["error"]);
 		else {
 			const msg = document.getElementById("recover-password-message") as HTMLElement;
-			msg.innerText = "Email sent succesfully! Go check it to reset your password";
+			msg.innerText = getTranslation('email_sent_successfully');
 		}
 		const form = document.getElementById("recover-password-form") as HTMLFormElement;
 		if (form)
@@ -291,10 +291,8 @@ async function displayTerms() {
 (window as any).handleGoogleLogin = async (response: object) => {
 	try {
 		const data = await sendRequest('POST', 'google/login', response);
-		// if (data["token"])
-		// 	initSession(data);
-    if (data["success"])
-      initSession(data);
+		if (data["success"])
+			initSession(data);
 		else
 			throw new Error(data["error"]);
 	}

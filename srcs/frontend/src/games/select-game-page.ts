@@ -5,6 +5,7 @@ import { UserMatches } from "../types.js";
 import { socketToast } from "../toast-alert/toast-alert.js";
 import { getClientID } from "../messages/messages-page.js";
 import { showAlert } from "../toast-alert/toast-alert.js";
+import { getTranslation } from "../login-page/login-transcript.js";
 
 export function initSelectPageEvent(){
   initGameSelection();
@@ -38,7 +39,7 @@ async function initRemotePlayerSearchCustom(mode: string, isCustom: boolean){
         }
         catch (error){
             console.error('Error searching players:', error);
-            searchResults.innerHTML = '<p>Error searching players</p>';
+            searchResults.innerHTML = getTranslation("select_search_error");
         }
       }
       else
@@ -51,11 +52,11 @@ function displayRemoteSearchResultsCustom(players: UserMatches[], container: HTM
   container.innerHTML = '';
   
   if (!Array.isArray(players)){
-    container.innerHTML = '<p>Error: Invalid data format</p>';
+    container.innerHTML = getTranslation('select_invalid_data');
     return;
   }
   if (players.length === 0){
-    container.innerHTML = '<p>No players found</p>';
+    container.innerHTML = getTranslation('select_no_found');
     return;
   }
   players.forEach(player => {
@@ -64,7 +65,7 @@ function displayRemoteSearchResultsCustom(players: UserMatches[], container: HTM
     option.innerHTML = `
       ${player.username}
       <button class="invite-button" data-user-id="${player.user_id}">
-        Invite to Custom Game
+        ${getTranslation('select_invite_custom')}
       </button>
     `;
     const inviteButton = option.querySelector('.invite-button');
@@ -116,8 +117,8 @@ async function initRemotePlayerSearch(mode: string, isCustom: boolean){
           displayRemoteSearchResults(matches, searchResults, mode, isCustom);
         }
         catch (error){
-          console.error('Error searching players:', error);
-          searchResults.innerHTML = '<p>Error searching players</p>';
+          console.error(getTranslation("select_search_error"), error);
+          searchResults.innerHTML = getTranslation("select_search_error");
         }
       }
       else
@@ -129,11 +130,11 @@ async function initRemotePlayerSearch(mode: string, isCustom: boolean){
 function displayRemoteSearchResults(players: UserMatches[], container: HTMLElement, mode: string, isCustom: boolean){
   container.innerHTML = '';
   if (!Array.isArray(players)){
-    container.innerHTML = '<p>Error: Invalid data format</p>';
+    container.innerHTML = getTranslation('select_invalid_data');
     return;
   }
   if (players.length === 0){
-    container.innerHTML = '<p>No players found</p>';
+    container.innerHTML = getTranslation('select_no_found');
     return;
   }
   players.forEach(player => {
@@ -142,7 +143,7 @@ function displayRemoteSearchResults(players: UserMatches[], container: HTMLEleme
     option.innerHTML = `
       ${player.username}
       <button class="invite-button" data-user-id="${player.user_id}">
-        Invite to Game
+        ${getTranslation('select_invite_normal')}
       </button>
     `;
     const inviteButton = option.querySelector('.invite-button');
@@ -166,7 +167,7 @@ function sendGameInvitation(receiverId: number, username: string, currentGame: s
       is_custom: isCustom,
       sent_at: new Date().toISOString()
     }));
-    showAlert(`Invitation sent to ${username}`, 'toast-success');
+    showAlert(getTranslation('select_invitation_sent') + ` ${username}`, 'toast-success');
   }
 }
 
