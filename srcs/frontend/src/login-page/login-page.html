@@ -117,7 +117,7 @@
 <dialog id="recover-password" class="standard-pink-card hidden">
     <div id="recover-password-modal" class="w-full h-full">
       <div class="flex justify-between items-center m-2.5">
-        <h1 class="text-white text-3xl">Recover your password</h1>
+        <h1 class="text-white text-3xl" translatekey="login_recover_password">Recover your password</h1>
         <svg class="close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#3B0034">
           <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
         </svg>
@@ -125,9 +125,9 @@
       <div id="pink-divider"></div>
       <form id="recover-password-form" class="flex justify-center items-center">
         <input type="email" id="email-password-recovery" class="text-[var(--dark-purple)] w-2/3 p-1 m-2 rounded-md outline-none"
-          placeholder="Introduce your email">
-        <button type="submit" class="signin-user p-1 m-2 rounded-md modal-button">Submit</button>
+          placeholder="Introduce your email" data-placeholder="login_email">
+        <button type="submit" class="signin-user p-1 m-2 rounded-md modal-button" translatekey="login_submit">Submit</button>
       </form>
-      <p id="recover-password-message" class="m-2.5 flex justify-center">We'll send you an email to reset your password</p>
+      <p id="recover-password-message" class="m-2.5 flex justify-center" translatekey="login_reset_password_message">We'll send you an email to reset your password</p>
     </div>
 </dialog>
