@@ -47,6 +47,8 @@ export interface Message {
 	info?: string;
 	game_type?: string;
 	tournament?: Tournament | null;
+	invitation_type?: string;
+	invitation_status?: string;
 }
 
 export interface MessageObject {

@@ -108,7 +108,7 @@ async function messageInChat(data, userId) {
 					}
 				}
 			}
-			else if (data.type === "game") {
+			else if (data.type === "game") { //Auto rechazar la invitacion si se hacen multiples en el mismo chat
 				const receiver_id = parseInt(data.receiver_id);
 				if (data.info === "request") {
 					const invitation = await createMessage({
@@ -117,7 +117,9 @@ async function messageInChat(data, userId) {
 						receiver_id: data.receiver_id,
 						chat_id: data.chat_id,
 						sent_at: data.sent_at,
-						is_read: 0
+						is_read: 0,
+						invitation_type: "game",
+						invitation_status: "pending",
 					})
 					const message_id = invitation.id;
 					if (socketsChat.has(receiver_id)) {
@@ -158,7 +160,7 @@ async function messageInChat(data, userId) {
 						receiver_id: data.receiver_id,
 						chat_id: data.chat_id,
 						sent_at: data.sent_at,
-						is_read: 0
+						is_read: 0,
 					})
 					const message_id = invitation.id;
 					const sender = socketsChat.get(sender_id);
@@ -197,7 +199,7 @@ async function messageInChat(data, userId) {
 						receiver_id: data.receiver_id,
 						chat_id: data.chat_id,
 						sent_at: data.sent_at,
-						is_read: 0
+						is_read: 0,
 					});
 					const message_id = invitation.id;
 					const sender = socketsChat.get(sender_id);
