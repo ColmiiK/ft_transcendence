@@ -4,7 +4,7 @@ import {
     columnList,
     boardMap,
 	pauseGame,
-	returnToGames,
+	delay,
 	PlayerState,
 	GameState,
 	init as initEngine,
@@ -18,9 +18,10 @@ import {
 	placeToken as placeTokenEngine,
 	isColumnPlayable as isColumnPlayableEngine,
 	detectWinOpportunities as detectWinOpportunitiesEngine,
-	updateTurnIndicator,
 } from './gameEngine.js';
 
+
+import { navigateTo } from "../../index.js";
 import { Games } from "../../types.js";
 import { updateDescription } from '../../modify-profile/modify-fetch.js';
 
@@ -39,12 +40,56 @@ export function classicMode(data: Games): void {
 		}
 	}
 
-	const player1 = new PlayerClass(false, 1, "red");
-	const player2 = new PlayerClass(data.gameMode === "ai" ? true : false, 2, "yellow");
-	let aiIsThinking = false;
+	let columnClickHandlers = new Map<HTMLElement, () => Promise<void>>();
+	let player1 = new PlayerClass(false, 1, "red");
+	let player2 = new PlayerClass(data.gameMode === "ai" ? true : false, 2, "yellow");
+	let aiColumn: HTMLElement | null = null;
+	let aiInterval: NodeJS.Timeout | null = null;
+	let aiWorker: Worker | null = null;
+	let gameActive: boolean = true;
+	let aiIsThinking: boolean = false;
+	
 
 	function init(): void {
 		initEngine(player1, boardMap, columnMap, columnList);
+		gameActive = true;
+
+		if (player2.AI)
+			initAI();
+	}
+
+	function initAI(): void {
+		if (aiInterval) {
+			clearInterval(aiInterval);
+			aiInterval = null;
+		}
+		
+		if (aiWorker) {
+			aiWorker.terminate();
+			aiWorker = null;
+		}
+		aiColumn = null;
+
+		aiWorker = new Worker(new URL('./aiWorker.js', import.meta.url));
+		aiInterval = setInterval(async () => {
+			if (!gameActive) {
+				return;
+			}
+			
+			if (!aiColumn && player2.turn && player2.AI && !aiIsThinking) {
+				console.log("AI calculando movimiento...");
+				aiColumn = await aiToken();
+				console.log(aiIsThinking)
+				console.log("AI decidió columna:", aiColumn?.id);
+			}
+			
+			if (player2.turn && player2.AI && aiColumn && aiIsThinking) {
+				aiIsThinking = false;
+				await aiColumn.click();
+				aiIsThinking = false;
+				aiColumn = null;
+			}
+		}, 1000);
 	}
 
 	async function start(): Promise<void> {
@@ -55,55 +100,71 @@ export function classicMode(data: Games): void {
 			await pauseGame(columnList);
 		}
 		else
-			enableClicks();
+			await enableClicks();
 		clickColumn();
 	}
 
 	function clickColumn(){
+		columnClickHandlers.forEach((handler, column) => {
+			column.removeEventListener("click", handler);
+		});
+		columnClickHandlers.clear();
 		columnList.forEach((column: HTMLElement) => {
-			column.addEventListener("click", () => handleColumnClick(column));
+			const handler = () => handleColumnClick(column);
+			columnClickHandlers.set(column, handler);
+			column.addEventListener("click", handler);
 		});	
 	}
 
 	function clearGame(): void {
 		localStorage.removeItem(`connect4GameStateclassic`);
+		gameActive = false;
 		clearGameEngine(player1, player2, columnList, columnMap, boardMap);
+		if (aiInterval) {
+			clearInterval(aiInterval);
+			aiInterval = null;
+		}
+		
+		if (aiWorker) {
+			aiWorker.terminate();
+			aiWorker = null;
+		}
+		aiColumn = null;
 	}
 
-	function enableClicks(): void {
-		enableClicksEngine(columnList);
+	async function enableClicks(): Promise<void> {
+		await enableClicksEngine(columnList);
 	}
 
-	function disableClicks(): void {
-		disableClicksEngine(columnList);
+	async function disableClicks(): Promise<void> {
+		await disableClicksEngine(columnList);
 	}
 
 	async function handleColumnClick(column: HTMLElement): Promise<void> {
-		if (player1.winner || player2.winner) {
+		if (!gameActive || player1.winner || player2.winner) {
 			clearGame();
 			return;
 		}
-		if (player2.turn && player2.AI && aiIsThinking) return;
 
+		if (player2.turn && player2.AI && !aiColumn) {
+			return ;
+		}
+		else if (player2.turn && player2.AI && aiColumn){
+			column = aiColumn;
+		}
 		await placeToken(column);
-		await updateTurnIndicator(player1, player2, columnList, columnMap, "clasic");
 		await saveGameState("classic");
 		if (checkWin(false)) {
 			insertDivWinner();
-			disableClicks();
+			await disableClicks();
+			gameActive = false;
 		} else if (checkDraw()) {
 			insertDivDraw();
-			disableClicks();
-		} else {
-			if (player2.turn && player2.AI && !aiIsThinking) {
-				disableClicks();
-				console.log("AI is thinking...");
-				await aiToken();
-				console.log("AI token placed");
-			}
+			await disableClicks();
+			gameActive = false;
 		}
 	}
-
+	
 	function insertDivWinner(): void {
 		insertDivWinnerEngine(player1, player2, columnList);
 	}
@@ -124,29 +185,26 @@ export function classicMode(data: Games): void {
 		return checkWinEngine(boardMap, columnList, player1, player2, checking);
 	}
 
-	async function aiToken(): Promise<void> {
-		if (aiIsThinking) return;
-    	aiIsThinking = true;
+	async function aiToken(): Promise<HTMLElement | null> {
+		if (!gameActive || !aiWorker || !player2.turn || aiColumn || aiIsThinking)
+			return null;
+		aiIsThinking = true;
 
 		const winColumns = detectWinOpportunities(player2);
 		if (winColumns.length > 0) {
-			enableClicks();
-			await winColumns[0].click();
-			return;
+			return winColumns[0];
 		}
 
 		const threatColumns = detectWinOpportunities(player1);
 		if (threatColumns.length > 0) {
-			enableClicks();
-			await threatColumns[0].click();
-			return;
+			return threatColumns[0];
 		}
 
 		let columnToUse: HTMLElement | null = Math.random() < 0.2
 			? columnList[Math.floor(Math.random() * columnList.length)]
 			: null;
 
-		if (!columnToUse){
+		if (!columnToUse && aiWorker){
 			const boardState = {
 				boardMap: Object.fromEntries(
 					Array.from(boardMap.entries()).map(([key, value]) => [key, [...value]])
@@ -155,28 +213,42 @@ export function classicMode(data: Games): void {
 				player1: { num: player1.num },
 				player2: { num: player2.num }
         	};
-
-			const worker = new Worker(new URL('./aiWorker.js', import.meta.url));
 			
-			const bestColumnId = await new Promise<string>((resolve) => {
-				worker.onmessage = (e) => resolve(e.data);
-				worker.postMessage({ 
+			const bestColumnId = await new Promise<string>((resolve, reject) => {
+				if (!aiWorker || !gameActive) {
+					reject('Worker not available or game not active');
+					return;
+				}
+
+				const timeout = setTimeout(() => {
+					reject('AI timeout');
+				}, 5000);
+
+				aiWorker.onmessage = (e) => {
+					clearTimeout(timeout);
+					resolve(e.data);
+				};
+
+				aiWorker.onerror = () => {
+					clearTimeout(timeout);
+					reject('Worker error');
+				};
+
+				aiWorker.postMessage({ 
 					boardState,
 					depth: 5
 				});
+			}).catch(error => {
+				console.warn('AI Worker error:', error);
+				return columnList[Math.floor(Math.random() * columnList.length)].id;
 			});
-
-			worker.terminate();
 			columnToUse = columnList.find(col => col.id === bestColumnId) || null;
 		}
-
+		console.log(aiIsThinking)
 		if (columnToUse && !isColumnPlayable(columnToUse))
 			columnToUse = columnList.find((column) => isColumnPlayable(column)) || null;
 
-		enableClicks();
-		aiIsThinking = false;
-		console.log("hola ?");
-		columnToUse?.click();
+		return columnToUse;
 	}
 
 	function isColumnPlayable(column: HTMLElement): boolean {
@@ -208,8 +280,8 @@ export function classicMode(data: Games): void {
 		const boardData: { [columnId: string]: number[] } = {};
 
 		columnList.forEach(column => {
-			const data = boardMap.get(column.id);
-			if (data) boardData[column.id] = [...data];
+			const copy = boardMap.get(column.id);
+			if (copy) boardData[column.id] = [...copy];
 		});
 
 		const state: GameState = {
@@ -219,11 +291,11 @@ export function classicMode(data: Games): void {
 			player2: getPlayerState(player2),
 		};
 
-		localStorage.setItem(`connect4GameState${mode}`, JSON.stringify(state));
+		localStorage.setItem(`connect4GameStateclassic`, JSON.stringify(state));
 	}
 
 	function loadGameState(mode: "classic" | "custom"): GameState | null {
-		const stateStr = localStorage.getItem(`connect4GameState${mode}`);
+		const stateStr = localStorage.getItem(`connect4GameStateclassic`);
 		if (!stateStr) return null;
 
 		const state: GameState = JSON.parse(stateStr);
@@ -272,8 +344,63 @@ export function classicMode(data: Games): void {
 	})
 
 	document.getElementById('exitGame')?.addEventListener('click', async () => {
-		await returnToGames(columnList);
+			const exitBtn = document.getElementById('exitGame');
+			if (!exitBtn){
+				console.error("exitGame element not found.");
+				return Promise.resolve();
+			}
+		
+			const pauseBtn = document.getElementById('pauseGame')
+			if (!pauseBtn){
+				console.error("pauseGame element not found.")
+				return Promise.resolve();
+			}
+		
+			const boardEl = document.getElementById('board');
+			if (!boardEl){
+				console.error("board element not found.")
+				return Promise.resolve();
+			}
+		
+			const diceEl = document.getElementById('dice-container');
+			if (!diceEl){
+				console.error("dice-container element not found.")
+				return Promise.resolve();
+			}
+		
+			await disableClicks();
+			diceEl.style.pointerEvents = 'none';
+			exitBtn.style.pointerEvents = 'none';
+			pauseBtn.style.pointerEvents = 'none';
+			boardEl.style.animation = "mediumOpacity 0.25s ease forwards";
+			await delay(250);
+		
+			const returnEl = document.getElementById('returnToGamesConnect');
+			if (!returnEl){
+				console.error("returnToGamesConnect element not found.");
+				return Promise.resolve();
+			}
+			returnEl.style.display = 'block';
+		
+			document.getElementById('continue')?.addEventListener('click', async () => {
+				returnEl.style.display = 'none';
+				boardEl.style.animation = "fullOpacity 0.25s ease forwards";
+				diceEl.style.pointerEvents = 'auto';
+				exitBtn.style.pointerEvents = 'auto';
+				pauseBtn.style.pointerEvents = 'auto';
+				await enableClicks();
+				return ;
+			})
+		
+			document.getElementById('exit')?.addEventListener('click', () => {
+				clearGame();
+				navigateTo("/games");
+			})
 	})
+
+	window.addEventListener('beforeunload', () => {
+		clearGame();
+	});
 
 	start();
 }
