@@ -164,6 +164,16 @@ const locales = [
 			select_invite_custom: 'Invite to Custom Game',
 			select_invite_normal: 'Invite to Game',
 			select_invitation_sent: 'Invitation sent to',
+			// 404
+			page_404: '404 Page Not Found',
+			// Recover password
+			reset_password: 'Introduce your new password',
+			reset_password_again: 'Introduce your new password again',
+			reset_message: `Remember your password must contain at least one uppercase, lowercase, number and '*.-_'`,
+			reset_success: `Change of password was successful. You can now return to login page!`,
+			// 2FA
+			twofa_validate: 'Validate 2FA',
+			invalid_code: 'Invalid code',
 		}
 	},
 	{
@@ -329,6 +339,13 @@ const locales = [
 			select_invite_custom: 'Invitar a juego personalizado',
 			select_invite_normal: 'Invitar a jugar',
 			select_invitation_sent: 'Invitación enviada a',
+			// 404
+			page_404: '404 Página No Encontrada',
+			// Recover password
+			reset_password: 'Introduce tu nueva contraseña',
+			reset_password_again: 'Repite tu nueva contraseña',
+			reset_message: `Recuerde que su contraseña debe contener al menos una mayúscula, una minúscula, un número y '*.-_'`,
+			reset_success: `¡El cambio de contraseña se ha realizado correctamente! Puedes volver a la página de inicio de sesión.`,
 		}
 	},
 	{
