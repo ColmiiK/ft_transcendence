@@ -1,8 +1,10 @@
+import { applyTranslation } from "../login-page/login-transcript.js";
 import { moveToHome } from "../messages/messages-page.js"
 import { User } from "../types.js";
 import { initFriendFetches, displayFriends, displayInvitations, blockFriend, clickFriendProfile } from "./friends-fetch.js"
 
 export function initFriendsEvents(data: User | null) {
+	applyTranslation();
 	moveToHome();
 	changeFriendPage();
 	initFriendFetches();
