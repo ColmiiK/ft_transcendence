@@ -84,6 +84,20 @@ export	function clearGame(player1: Player, player2: Player, columnList: HTMLElem
     columnMap.clear();
     columnList = [];
 	
+    const columnIds = ["c1", "c2", "c3", "c4", "c5", "c6", "c7"]; // ajusta si son dinámicos
+    columnIds.forEach(colId => {
+        boardMap.set(colId, Array(6).fill(0)); // 6 filas por columna
+    });
+
+    const allColumns = document.querySelectorAll<HTMLElement>(".column");
+
+    allColumns.forEach(col => {
+        const colId = col.id;
+        const cells = Array.from(col.querySelectorAll<HTMLElement>(".cell")).reverse(); // ajustá si usás otra estructura
+        columnMap.set(colId, cells);
+        columnList.push(col); // si lo reinicializaste antes
+    });
+
     const winnerDiv = document.getElementById("winner");
     const drawDiv = document.getElementById("draw");
     if (winnerDiv){
@@ -178,6 +192,7 @@ async function updateCell(cell: HTMLElement, player: Player): Promise<void> {
 
 export async function placeToken(column: HTMLElement | null, player1: Player, player2: Player, columnMap: Map<string, HTMLElement[]>, boardMap: Map<string, number[]>, columnList: HTMLElement[], mode: string): Promise<void> {
     disableClicks(columnList);
+    console.log(player1.turn, player2.turn)
     if (!column || !column.id) {
         enableClicks(columnList);
         console.error("Column or column ID is invalid: ", column);
@@ -208,6 +223,7 @@ export async function placeToken(column: HTMLElement | null, player1: Player, pl
     columnData[row] = currentPlayer.num;
 
     await updateCell(cells[row], currentPlayer);
+    await updateTurnIndicator(player1, player2, columnList, columnMap, "classic");
 }
 
 export function checkDraw(boardMap: Map<string, number[]>, columnList: HTMLElement[]): boolean {
