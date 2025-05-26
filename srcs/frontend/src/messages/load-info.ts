@@ -4,11 +4,10 @@ import { debounce, emptyMatches } from "../friends/friends-fetch.js"
 import { navigateTo } from "../index.js";
 import { showAlert } from "../toast-alert/toast-alert.js";
 import { displayMessage, getClientID, socketChat } from "./messages-page.js"
-import { applyTranslation, getTranslation } from "../login-page/login-transcript.js";
+import { getTranslation } from "../login-page/login-transcript.js";
 export let actual_chat_id: number;
 
 export function loadInfo(data: MessageObject) {
-	applyTranslation();
 	dropDown();
 	displayFirstChat(data);
 	recentChats();

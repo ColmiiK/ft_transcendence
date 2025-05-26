@@ -4,10 +4,9 @@ import { moveBetweenInputs } from "../two-factor-page/two-factor.js";
 import { closeModal } from "../friends/friends-page.js";
 import { moveToHome } from "../messages/messages-page.js";
 import { initSettingsFetch, displayQR, displayBlockedAccounts } from "./settings-fetch.js";
-import { applyTranslation, getTranslation } from "../login-page/login-transcript.js";
+import { getTranslation } from "../login-page/login-transcript.js";
 
 export function initSettingsEvents() {
-	applyTranslation();
 	dropDown();
 	displayTerms();
 	moveBetweenInputs();

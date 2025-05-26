@@ -5,10 +5,9 @@ import { UserMatches } from "../types.js";
 import { socketToast } from "../toast-alert/toast-alert.js";
 import { getClientID } from "../messages/messages-page.js";
 import { showAlert } from "../toast-alert/toast-alert.js";
-import { applyTranslation, getTranslation } from "../login-page/login-transcript.js";
+import { getTranslation } from "../login-page/login-transcript.js";
 
 export function initSelectPageEvent(){
-  applyTranslation();
   initGameSelection();
   initHomeButton();
 }

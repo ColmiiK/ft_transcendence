@@ -1,14 +1,12 @@
 import { navigateTo } from "../index.js";
 import { sendRequest } from "../login-page/login-fetch.js";
 import { initHomeFetches } from "./home-fetch.js"
-import { applyTranslation } from "../login-page/login-transcript.js"
 
 /**
  * @brief Inits the associated Home Events
  * @note Export because it'll be called on index.js
  */
 export function initHomeEvents() {
-  applyTranslation();
 	initHomeFetches();
 	setHomeAttributes();
 	dropDown();
