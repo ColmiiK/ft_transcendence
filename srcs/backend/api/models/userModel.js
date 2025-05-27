@@ -600,28 +600,30 @@ export function getFriendOfUser(friend_id) {
         u.alias,
         u.status,
         u.avatar,
-        u.is_online
+        u.is_online,
+        COUNT(m.id) AS total_matches,
+        COUNT(CASE WHEN m.game_type = 'pong' THEN 1 END) AS pong_games_played,
+        COUNT(CASE WHEN m.game_type = 'pong' AND m.winner_id = u.id THEN 1 END) AS pong_games_won,
+        COUNT(CASE WHEN m.game_type = 'pong' AND m.loser_id = u.id THEN 1 END) AS pong_games_lost,
+        COUNT(CASE WHEN m.game_type = 'connect_four' THEN 1 END) AS connect_four_games_played,
+        COUNT(CASE WHEN m.game_type = 'connect_four' AND m.winner_id = u.id THEN 1 END) AS connect_four_games_won,
+        COUNT(CASE WHEN m.game_type = 'connect_four' AND m.loser_id = u.id THEN 1 END) AS connect_four_games_lost
       FROM
         users u
+      LEFT JOIN
+        matches m ON (u.id = m.first_player_id OR u.id = m.second_player_id)
+        AND m.status = 'finished'
       WHERE
-        id = ?
-      AND
-        u.is_deleted = 0
+        u.id = ?
+        AND u.is_deleted = 0
+      GROUP BY
+        u.id, u.username, u.alias, u.status, u.avatar, u.is_online;
     `;
     db.get(sql, [friend_id], (err, row) => {
       if (err) {
         console.error("error getting user:", err.message);
         return reject(err);
       }
-      // Don't harcode this, figure out matches table
-      Object.assign(row, {
-        pong_games_played: 4,
-        pong_games_won: 2,
-        pong_games_lost: 2,
-        connect_four_games_played: 2,
-        connect_four_games_won: 1,
-        connect_four_games_lost: 1,
-      });
       resolve(row);
     });
   });
