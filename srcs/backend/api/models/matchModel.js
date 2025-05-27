@@ -109,15 +109,17 @@ export function scheduleMatch(data) {
     const sql = `
       INSERT INTO matches (
         game_type,
+        custom_mode,
         first_player_id,
         second_player_id,
         tournament_id,
         phase
       )
-      VALUES (?,?,?,?,?)
+      VALUES (?,?,?,?,?,?)
     `;
     const params = [
       data.game_type,
+      data.custom_mode,
       data.first_player_id,
       data.second_player_id,
       data.tournament_id,

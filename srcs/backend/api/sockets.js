@@ -1,4 +1,5 @@
 import { getChatBetweenUsers } from "./models/chatModel.js";
+import { scheduleMatch } from "./models/matchModel.js";
 import { createMessage } from "./models/messageModel.js";
 import { addParticipantToTournament, addInvitationToTournament, modifyInvitationToTournament, createTournament, isInvited, getTournamentByID } from "./models/tournamentModel.js";
 import { getUsername, isBlocked, patchUser } from "./models/userModel.js";
@@ -135,20 +136,23 @@ async function messageInChat(data, userId) {
 							read: false,
 							type: "game",
 							info: "request",
-							game_type: data.game
+							game_type: data.game_type
 						}))
 					}
 					else if (socketsToast.has(receiver_id)) {
 						if (socketsToast.has(receiver_id)) {
 							const receiver = socketsToast.get(receiver_id);
 							receiver.send(JSON.stringify({
-								type: "game_invitation",
+								type: "game",
 								info: "request",
 								body: `${username} has invited you to play ${data.game_type}`,
 								sender_id: data.sender_id,
 								receiver_id: data.receiver_id,
 								game_type: data.game_type,
 								is_custom: data.is_custom,
+								chat_id: data.chat_id,
+								sent_at: data.sent_at,
+								message_id: message_id,
 							}))
 						}
 					}
@@ -176,7 +180,7 @@ async function messageInChat(data, userId) {
 						read: false,
 						type: "game",
 						info: "accept",
-						game_type: data.game
+						game_type: data.game_type
 					}));
 					receiver.send(JSON.stringify({
 						body: "The invitation has been accepted",
@@ -189,8 +193,15 @@ async function messageInChat(data, userId) {
 						read: false,
 						type: "game",
 						info: "accept",
-						game_type: data.game
+						game_type: data.game_type
 					}));
+					let game = data.game_type.split('-')
+					let game_type;
+					if (game[1] === "connect4")
+						game_type = "connect_four"
+					else
+						game_type = game[1];
+					await scheduleMatch({ game_type: game_type, first_player_id: data.receiver_id, second_player_id: data.sender_id, tournament_id: null, phase: null });
 				}
 				else if (socketsChat.has(sender_id) && socketsChat.has(receiver_id) && data.info === "reject") {
 					const invitation = await createMessage({
@@ -346,107 +357,89 @@ async function handleAvatarChange(data) {
 		}
 	})
 }
-/*
-async function handleGameInvitation(data, sender_id, receiver_id, fastify) {
-	if (data.info === "request") {
-		let username = await getUsername(data.sender_id);
-		if (socketsToast.has(receiver_id)) {
-			const receiver = socketsToast.get(receiver_id);
-			receiver.send(JSON.stringify({
-				type: "game_invitation",
-				info: "request",
-				body: `${username} has invited you to play ${data.game_type}`,
+
+async function handleGameInvitation(data, sender_id) {
+
+	let username = await getUsername(data.sender_id);
+	if (data.type === "game") {
+		const receiver_id = parseInt(data.receiver_id);
+		if (data.info === "request") {
+			await createMessage({
+				body: data.body,
 				sender_id: data.sender_id,
 				receiver_id: data.receiver_id,
-				game_type: data.game_type,
-				is_custom: data.is_custom,
-			}))
+				chat_id: data.chat_id,
+				sent_at: data.sent_at,
+				is_read: 0,
+				invitation_type: "game",
+				invitation_status: "pending",
+			})
 		}
-	}
-	else if (data.info === "accept") {
-		if (socketsToast.has(receiver_id)) {
-			const receiver = socketsToast.get(receiver_id);
-			receiver.send(JSON.stringify({
-				type: "game_invitation",
+		else if (socketsChat.has(sender_id) && data.info === "accept") {
+			const invitation = await createMessage({
+				body: "The invitation has been accepted",
+				sender_id: data.receiver_id,
+				receiver_id: data.sender_id,
+				chat_id: data.chat_id,
+				sent_at: data.sent_at,
+				is_read: 0,
+			})
+			const message_id = invitation.id;
+			const sender = socketsChat.get(sender_id);
+			sender.send(JSON.stringify({
+				body: "The invitation has been accepted",
+				message_id: message_id,
+				chat_id: data.chat_id,
+				receiver_id: data.sender_id,
+				sender_id: data.receiver_id,
+				sender_username: username,
+				sent_at: data.sent_at,
+				read: false,
+				type: "game",
 				info: "accept",
-				sender_id: data.sender_id,
-				receiver_id: data.receiver_id,
-				game_type: data.game_type,
-				is_custom: data.is_custom,
-			}))
-	
-			let attempts = 0;
-			const maxAttempts = 10;
-	
-			const checkSockets = async () => {
-				console.log("Checking sockets...", {
-					receiverId: receiver_id,
-					senderId: sender_id,
-					hasPongReceiver: socketsPong.has(receiver_id),
-					hasPongSender: socketsPong.has(sender_id)
-				});
-	
-				if (socketsPong.has(receiver_id) && socketsPong.has(sender_id)) {
-					const matchReceiver = socketsPong.get(receiver_id);
-					const matchSender = socketsPong.get(sender_id);
-	
-					const gameId = `pong:${Date.now()}:${sender_id}-${receiver_id}`;
-					console.log("Starting game with ID:", gameId);
-	
-					await fastify.cache.set(
-						`game:${gameId}`,
-						JSON.stringify({
-							player1: sender_id,
-							player2: receiver_id,
-							ball: { x: 50, y: 50, velX: 0, velY: 0 },
-							score: { player1: 0, player2: 0 },
-							status: "playing",
-						}),
-						3600
-					);
-	
-					matchReceiver.send(JSON.stringify({
-						type: "start_game",
-						gameId,
-						opponent_id: sender_id,
-						user_id: receiver_id,
-						role: "player2"
-					}));
-	
-					matchSender.send(JSON.stringify({
-						type: "start_game",
-						gameId,
-						opponent_id: receiver_id,
-						user_id: sender_id,
-						role: "player1"
-					}));
-				} else if (attempts < maxAttempts) {
-					attempts++;
-					console.log(`Waiting for sockets... Attempt ${attempts}`);
-					setTimeout(checkSockets, 1000);
-				} else {
-					console.error("Failed to establish game connection");
-					// Notificar error a ambos usuarios
-					notifyConnectionError(sender_id, receiver_id);
-				}
-			};
-	
-			checkSockets();
+				game_type: data.game
+			}));
+			let game = data.game_type.split('-')
+			let game_type;
+			let is_custom;
+			if (game[0] !== "classic")
+				is_custom = "custom";
+			else
+				is_custom = "classic";
+			if (game[1] === "connect4")
+				game_type = "connect_four"
+			else
+				game_type = game[1];
+			await scheduleMatch({ game_type: game_type, custom_mode: is_custom, first_player_id: data.receiver_id, second_player_id: data.sender_id, tournament_id: null, phase: null });
 		}
-	}
-	else if (data.info === "reject") {
-		if (socketsToast.has(receiver_id)) {
-			const receiver = socketsToast.get(receiver_id)
-			receiver.send(JSON.stringify({
-				type: "game_invitation",
+		else if (socketsChat.has(sender_id) && data.info === "reject") {
+			const invitation = await createMessage({
+				body: "The invitation has been rejected",
+				sender_id: data.receiver_id,
+				receiver_id: data.sender_id,
+				chat_id: data.chat_id,
+				sent_at: data.sent_at,
+				is_read: 0,
+			});
+			const message_id = invitation.id;
+			const sender = socketsChat.get(sender_id);
+			sender.send(JSON.stringify({
+				body: "The invitation has been rejected",
+				message_id: message_id,
+				chat_id: data.chat_id,
+				receiver_id: data.sender_id,
+				sender_id: data.receiver_id,
+				sender_username: username,
+				sent_at: data.sent_at,
+				read: false,
+				type: "game",
 				info: "reject",
-				sender_id: data.sender_id,
-				receiver_id: data.receiver_id,
-			}))
+				game_type: data.game
+			}));
 		}
 	}
 }
-*/
+
 export default function createWebSocketsRoutes(fastify) {
 	return [
 		{
@@ -533,6 +526,7 @@ export default function createWebSocketsRoutes(fastify) {
 					}
 					else {
 						const data = JSON.parse(notification);
+						console.log(data);
 						const sender_id = parseInt(data.sender_id);
 						const receiver_id = parseInt(data.receiver_id);
 						if (data.type === "friendRequest")
@@ -541,8 +535,8 @@ export default function createWebSocketsRoutes(fastify) {
 							tournamentCreation(data, sender_id, receiver_id);
 						else if (data.type === "change_avatar")
 							handleAvatarChange(data)
-						//else if (data.type === "game_invitation")
-						//	await handleGameInvitation(data, sender_id, receiver_id, fastify);
+						else if (data.type === "game")
+							await handleGameInvitation(data, sender_id, receiver_id, fastify);
 					}
 				})
 				socket.on("close", async () => {

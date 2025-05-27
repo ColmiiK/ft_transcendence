@@ -2,7 +2,7 @@ import { getClientID } from "../messages/messages-page.js"
 import { displayFriends, displayInvitations, showMatches, debounce } from "../friends/friends-fetch.js";
 import { Tournament } from "../types.js";
 //import { createSocketTournamentConnection } from "../tournament/tournament.js";
-import { navigateTo } from "../index.js";
+import { sendRequest } from "../login-page/login-fetch.js";
 import { createSocket4inrowConnection } from "../games/connectFour/gameEngine.js";
 //import { createSocketPongConnection } from "../games/pong/gameEngine.js";
 
@@ -161,41 +161,43 @@ export function createsocketToastConnection() {
 						}
 					}
 				}
-				else if (data.type === "game_invitation") {
-					console.log(data);
+				else if (data.type === "game") {
 					if (data.info === "request") {
+						console.log(data)
 						async function handleAccept(data: any) {
-							/*if (data.game_type && data.game_type === "pong")
-								await createSocketPongConnection();*/
-							if (data.game_type && data.game_type === "4inrow")
-								//createSocket4inrowConnection();
 							if (socketToast) {
 								socketToast.send(JSON.stringify({
-									type: "game_invitation",
+									type: "game",
 									info: "accept",
-									sender_id: getClientID(),
-									receiver_id: data.sender_id,
+									sender_id: data.sender_id,
+									receiver_id: data.receiver_id,
 									game_type: data.game_type,
 									is_custom: data.is_custom,
+									chat_id: data.chat_id,
+									sent_at: data.sent_at,
 								}));
+								sendRequest(`PATCH`, `messages/${data.message_id}`, { invitation_status: "accept" });
 							}
-							//navigateTo(`/${data.game_type}`, { gameMode: "remote", isCustom: data.is_custom })
 						}
 						function handleReject(data: any) {
 							if (socketToast) {
 								socketToast.send(JSON.stringify({
-									type: "game_invitation",
+									type: "game",
 									info: "reject",
-									sender_id: getClientID(),
-									receiver_id: data.sender_id,
+									sender_id: data.sender_id,
+									receiver_id: data.receiver_id,
+									game_type: data.game_type,
+									is_custom: data.is_custom,
+									chat_id: data.chat_id,
+									sent_at: data.sent_at
 								}));
+								sendRequest(`PATCH`, `messages/${data.message_id}`, { invitation_status: "reject" });
 							}
 						}
 						showAlert(data.body, "toast-success", () => handleAccept(data), () => handleReject(data));
 					}
 					else if (data.info === "accept") {
 						showAlert("Your invitation has been accepted, starting game", "toast-success");
-						//navigateTo(`/${data.game_type}`, { gameMode: "remote", isCustom: data.is_custom });
 					}
 				}
 			}

@@ -357,6 +357,54 @@ export async function chargeChat(chat_id: number, friend_username: string, frien
                         </button>
                     </div>
                 </div>`;
+
+								const acceptBtn = div.querySelector('.accept-btn') as HTMLButtonElement;
+								const rejectBtn = div.querySelector('.reject-btn') as HTMLButtonElement;
+								const game_type = message.body.substring(27);
+								acceptBtn?.addEventListener('click', (event) => {
+									const date = new Date();
+									date.setHours(date.getHours() + 2);
+									event.preventDefault();
+									if (socketChat) {
+										socketChat.send(JSON.stringify({
+											type: "game",
+											info: "accept",
+											game_type: game_type,
+											sender_id: getClientID(),
+											receiver_id: message.sender_id,
+											body: "Game invitation accepted",
+											chat_id: actual_chat_id,
+											sent_at: date.toISOString(),
+										}));
+										acceptBtn.disabled = true;
+										acceptBtn.textContent = "Accepted ✓";
+										rejectBtn?.remove();
+										acceptBtn.classList.add('bg-gray-500');
+										sendRequest(`PATCH`, `messages/${message.message_id}`, { invitation_status: "accept" });
+									}
+								});
+								rejectBtn?.addEventListener('click', (event) => {
+									const date = new Date();
+									date.setHours(date.getHours() + 2);
+									event.preventDefault()
+									if (socketChat) {
+										socketChat.send(JSON.stringify({
+											type: "game",
+											info: "reject",
+											game_type: game_type,
+											sender_id: getClientID(),
+											receiver_id: message.sender_id,
+											body: "Game invitation rejected",
+											chat_id: actual_chat_id,
+											sent_at: date.toISOString(),
+										}));
+										rejectBtn.disabled = true;
+										rejectBtn.textContent = "Rejected ✗";
+										acceptBtn?.remove();
+										rejectBtn.classList.add('bg-gray-500');
+										sendRequest(`PATCH`, `messages/${message.message_id}`, { invitation_status: "reject" });
+									}
+								});
 							}
 						}
 						else if (message.invitation_status && message.invitation_status === "accept") {
