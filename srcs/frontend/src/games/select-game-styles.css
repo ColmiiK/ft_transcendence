@@ -1,4 +1,13 @@
 /* --> Select game page <-- */
+.pong-icon {
+  fill:none;
+  stroke:var(--dark-pink);
+  stroke-width: 2;
+  stroke-linecap:round;
+  stroke-linejoin: round;
+  stroke-miterlimit: 10;
+}
+
 .game-card {
   display: flex;
 	background-color: var(--accent-pink);
@@ -28,14 +37,15 @@
 	color: var(--dark-blue);
 }
 
-.game-button {
+.tour-button {
+  width: fit-content;
 	margin-top: auto;
 	background-color: var(--dark-pink);
 	border-radius: 15px;
 	transition: all 250ms ease-in-out;
-}
+} */
 
-.game-button:hover {
+.tour-button:hover {
   background-color: #b06289;
 }
 

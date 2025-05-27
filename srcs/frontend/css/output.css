@@ -163,7 +163,7 @@
 }
 
 #message-history {
-  background-image: url("../resources/img/output-onlinepngtools.png");
+  background-image: url("../resources/img/chat_wallpaper.png");
   background-size: 40%;
   background-position: center;
   overflow-y: auto;
@@ -399,6 +399,15 @@
 
 /* --> Select game page <-- */
 
+.pong-icon {
+  fill:none;
+  stroke:var(--dark-pink);
+  stroke-width: 2;
+  stroke-linecap:round;
+  stroke-linejoin: round;
+  stroke-miterlimit: 10;
+}
+
 .game-card {
   display: flex;
   background-color: var(--accent-pink);
@@ -428,14 +437,18 @@
   color: var(--dark-blue);
 }
 
-.game-button {
+.tour-button {
+  width: -moz-fit-content;
+  width: fit-content;
   margin-top: auto;
   background-color: var(--dark-pink);
   border-radius: 15px;
   transition: all 250ms ease-in-out;
 }
 
-.game-button:hover {
+*/
+
+.tour-button:hover {
   background-color: #b06289;
 }
 
@@ -2155,10 +2168,6 @@ video {
   height: 3.5rem;
 }
 
-.h-16 {
-  height: 4rem;
-}
-
 .h-3\/5 {
   height: 60%;
 }
@@ -2212,10 +2221,6 @@ video {
   width: 2.5rem;
 }
 
-.w-16 {
-  width: 4rem;
-}
-
 .w-2\/3 {
   width: 66.666667%;
 }
@@ -2235,14 +2240,6 @@ video {
 
 .w-full {
   width: 100%;
-}
-
-.min-w-\[80vw\] {
-  min-width: 80vw;
-}
-
-.min-w-\[95vw\] {
-  min-width: 95vw;
 }
 
 .max-w-24 {
@@ -3088,10 +3085,6 @@ h1 {
 }
 
 @media (min-width: 768px) {
-  .md\:mt-16 {
-    margin-top: 4rem;
-  }
-
   .md\:block {
     display: block;
   }
@@ -3110,14 +3103,6 @@ h1 {
 
   .md\:w-auto {
     width: auto;
-  }
-
-  .md\:max-w-\[20vw\] {
-    max-width: 20vw;
-  }
-
-  .md\:grid-cols-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .md\:grid-cols-6 {
@@ -3170,8 +3155,8 @@ h1 {
     width: 75%;
   }
 
-  .lg\:min-w-0 {
-    min-width: 0px;
+  .lg\:max-w-\[20vw\] {
+    max-width: 20vw;
   }
 
   .lg\:max-w-\[80vw\] {
@@ -3184,6 +3169,10 @@ h1 {
 
   .lg\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lg\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .lg\:flex-row {
@@ -3208,11 +3197,6 @@ h1 {
 
   .lg\:text-start {
     text-align: start;
-  }
-
-  .lg\:text-3xl {
-    font-size: 1.875rem;
-    line-height: 2.25rem;
   }
 }
 

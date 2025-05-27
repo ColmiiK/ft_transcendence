@@ -1,7 +1,7 @@
 <div class="screen-set">
   <div class="standard-purple-card min-h-[80vh] flex flex-col">
     <header class="flex justify-between items-center md:items-end mx-4">
-      <h1 class="font-bold text-center" translatekey="select_title">Select Game Mode</h1>
+      <h1 class="hidden lg:flex" translatekey="select_title">Game Selection</h1>
       <svg id="home-button" class="home-icon m-4 h-10 w-10 cursor-pointer" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FEE0EF">
         <path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/>
       </svg>
@@ -9,91 +9,108 @@
 
     <div id="pink-divider" class="flex justify-center"></div>
     
-    <div class="gap-4 grid grid-cols-1 md:grid-cols-3 md:mt-16">
-      <!-- Pong Card -->
-      <div class="game-card md:max-w-[20vw] p-8 flex flex-col items-center gap-4">
-        <div class="game-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-16 h-16">
-            <path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/>
-          </svg>
-        </div>
-        <div>
-          <h2 class="game-title">Pong</h2>
-          <p class="game-description" translatekey="select_pong_description">Classic table tennis game. Challenge your friends in real-time!</p>
-        </div>
-        <button class="game-button p-4" data-route ='/pong' translatekey="select_pong_button">
-          Play Pong
-        </button>
-      </div>
+    <div class="gap-4 grid grid-cols-1 lg:grid-cols-3">
+      <div class="grid grid-cols-1 gap-4">
+         <!-- Pong Card -->
+         <div class="game-card lg:max-w-[20vw] p-8 flex flex-col items-center gap-4 game-button" data-route ='/pong'>
+           <div class="game-icon">
+            <svg version="1.1" id="Icons" class="pong-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+              viewBox="0 0 32 32" xml:space="preserve">
+              <path class="st0" d="M27,6.5v7c0,0.8-0.7,1.5-1.5,1.5h0c-0.8,0-1.5-0.7-1.5-1.5v-7C24,5.7,24.7,5,25.5,5h0C26.3,5,27,5.7,27,6.5z"/>
+              <path class="st0" d="M8,18.5v7C8,26.3,7.3,27,6.5,27h0C5.7,27,5,26.3,5,25.5v-7C5,17.7,5.7,17,6.5,17h0C7.3,17,8,17.7,8,18.5z"/>
+              <circle class="st0" cx="15" cy="18" r="2"/>
+              <path class="st0" d="M26,30H6c-2.2,0-4-1.8-4-4V6c0-2.2,1.8-4,4-4h20c2.2,0,4,1.8,4,4v20C30,28.2,28.2,30,26,30z"/>
+              <line class="st0" x1="16" y1="16" x2="16" y2="2"/>
+              <line class="st0" x1="16" y1="30" x2="16" y2="20"/>
+            </svg>
+           </div>
+           <div>
+             <h2 class="game-title">Pong</h2>
+             <p class="game-description" translatekey="select_pong_description">Classic table tennis game. Challenge your friends in real-time!</p>
+           </div>
+         </div>
+   
+         <!-- 4 in Row Card -->
+         <div class="game-card lg:max-w-[20vw] p-8 flex flex-col items-center gap-4 game-button" data-route ='/4inrow'>
+           <div class="game-icon">
+            <svg version="1.1" id="Icons" class="pong-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+	            viewBox="0 0 32 32" xml:space="preserve">
+              <circle class="st0" cx="16" cy="16" r="10"/>
+              <circle class="st0" cx="16" cy="16" r="14"/>
+              <line class="st0" x1="16" y1="2" x2="16" y2="6"/>
+              <line class="st0" x1="6.1" y1="6.1" x2="8.9" y2="8.9"/>
+              <line class="st0" x1="2" y1="16" x2="6" y2="16"/>
+              <line class="st0" x1="6.1" y1="25.9" x2="8.9" y2="23.1"/>
+              <line class="st0" x1="16" y1="30" x2="16" y2="26"/>
+              <line class="st0" x1="25.9" y1="25.9" x2="23.1" y2="23.1"/>
+              <line class="st0" x1="30" y1="16" x2="26" y2="16"/>
+              <line class="st0" x1="25.9" y1="6.1" x2="23.1" y2="8.9"/>
+              <polygon class="st0" points="16,11 12,16 16,21 20,16 "/>
+            </svg>
+           </div>
+           <div>
+             <h2 class="game-title" translatekey="select_connect_title">Connect 4</h2>
+             <p class="game-description" translatekey="select_connect_description">Connect four pieces in a row to win. Strategic and fun!</p>
+           </div>
+         </div>
 
-      <!-- 4 in Row Card -->
-      <div class="game-card md:max-w-[20vw] p-8 flex flex-col items-center gap-4">
-        <div class="game-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-16 h-16">
-            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4 6h-4v4h4v4h-4v-4H7v-4h4V5h4v4z"/>
-          </svg>
-        </div>
-        <div>
-          <h2 class="game-title" translatekey="select_connect_title">Connect 4</h2>
-          <p class="game-description" translatekey="select_connect_description">Connect four pieces in a row to win. Strategic and fun!</p>
-        </div>
-        <button class="game-button p-4" data-route ='/4inrow' translatekey="select_connect_button">
-          Play Connect 4
-        </button>
-      </div>
+       </div>
       <!-- Tournament Card -->
-      <div class="game-card md:max-w-[20vw] p-8 flex flex-col items-center gap-4">
+      <div class="game-card lg:max-w-[20vw] p-8 flex flex-col items-center justify-center gap-4 game-button" data-route ='/tournament'>
         <div class="game-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-16 h-16">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="pong-icon" xml:space="preserve">
             <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2z"/>
           </svg>
         </div>
-        <div>
+        <div class="flex flex-col gap-2 items-center">
           <h2 class="game-title" translatekey="select_tournament_title">Tournament</h2>
           <p class="game-description" translatekey="select_tournament_description">Create tournaments for both games!</p>
+          <button class="tour-button p-2" translatekey="select_tournament_button">
+            Create Tournament
+          </button>
+          <button class="tour-button p-2 hidden" data-route ='/tournament'>
+            View Current Tournament
+          </button>
         </div>
-        <button class="game-button p-4" data-route ='/tournament' translatekey="select_tournament_button">
-          Create Tournament
-        </button>
+      </div>
+      <div class="game-card lg:max-w-[20vw] p-8 flex flex-col items-center gap-4">
+        <div class="flex items-center gap-4">
+          <h2 class="game-title">Ready to Play</h2>
+          <div class="game-icon">
+            <svg version="1.1" id="Icons" class="pong-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+                viewBox="0 0 32 32" xml:space="preserve">
+              <path class="st0" d="M17,4c-1.1,0-2.1,0.4-3,1H9C8.1,4.4,7.1,4,6,4C3.2,4,1,6.2,1,9s2.2,5,5,5c1.1,0,2.1-0.4,3-1H14
+                c0.8,0.6,1.9,1,3,1c2.8,0,5-2.2,5-5S19.8,4,17,4z"/>
+              <line class="st0" x1="6" y1="7" x2="6" y2="11"/>
+              <line class="st0" x1="4" y1="9" x2="8" y2="9"/>
+              <line class="st0" x1="18" y1="8" x2="18" y2="8"/>
+              <line class="st0" x1="16" y1="10" x2="16" y2="10"/>
+              <path class="st0" d="M26,18c-1.1,0-2.1,0.4-3,1H18c-0.8-0.6-1.9-1-3-1c-2.8,0-5,2.2-5,5s2.2,5,5,5c1.1,0,2.1-0.4,3-1H23
+                c0.8,0.6,1.9,1,3,1c2.8,0,5-2.2,5-5S28.8,18,26,18z"/>
+              <line class="st0" x1="15" y1="21" x2="15" y2="25"/>
+              <line class="st0" x1="13" y1="23" x2="17" y2="23"/>
+              <line class="st0" x1="27" y1="22" x2="27" y2="22"/>
+              <line class="st0" x1="25" y1="24" x2="25" y2="24"/>
+            </svg>
+          </div>
+        </div>
+        </div>
       </div>
     </div>
 
+
     <div id="game-options-modal" class="modal hidden">
       <div class="modal-content flex flex-col gap-4">
-        <header class="flex justify-between items-center">
-          <h1 class="text-white text-3xl" translatekey="select_game_mode">Game Mode</h1>
-          <svg class="close-icon close-modal" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#3B0034">
-          <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
-        </svg>
-        </header>
-        
-        <div id="pink-divider"></div>
-
         <!-- Game Mode Selection Buttons -->
         <div class="mode-selector flex justify-center gap-4">
           <button class="mode-button active" data-mode-type="normal" translatekey="select_normal_mode">Normal Mode</button>
           <button class="mode-button" data-mode-type="custom" translatekey="select_custom_mode">Custom Mode</button>
         </div>
+
+        <div id="pink-divider"></div>
     
         <!-- Normal Mode Options -->
         <div class="game-options game-modes normal-modes">
-          <button class="option-button" data-mode="remote">
-            <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM6.5 9L10 5.5 13.5 9H11v4H9V9H6.5zm11 6L14 18.5 10.5 15H13v-4h2v4h2.5z"/>
-            </svg>
-            <div id="remote-search-container" class="hidden">
-              <div class="search-container">
-                <input 
-                  type="text" 
-                  id="remote-player-search" 
-                  placeholder="Search players..."
-                  class="w-full p-2 border rounded-lg"
-                >
-                <div id="remote-search-results" class="search-results-container"></div>
-              </div>
-            </div>
-            <span translatekey="select_remote">Remote Player</span>
-          </button>
           <button class="option-button" data-mode="local">
             <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24">
               <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
@@ -110,23 +127,6 @@
     
         <!-- Custom Mode Options (initially hidden) -->
         <div class="game-options game-modes custom-modes hidden">
-          <button class="option-button" data-mode="remote-custom">
-            <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM6.5 9L10 5.5 13.5 9H11v4H9V9H6.5zm11 6L14 18.5 10.5 15H13v-4h2v4h2.5z"/>
-            </svg>
-            <div id="remote-custom-search-container" class="hidden">
-              <div class="search-container">
-                <input 
-                  type="text" 
-                  id="remote-custom-player-search" 
-                  placeholder="Search players..."
-                  class="w-full p-2 border rounded-lg"
-                >
-                <div id="remote-custom-search-results" class="search-custom-results-container"></div>
-              </div>
-            </div>
-            <span translatekey="select_custom_remote">Custom Remote</span>
-          </button>
           <button class="option-button" data-mode="local-custom">
             <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24">
               <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
