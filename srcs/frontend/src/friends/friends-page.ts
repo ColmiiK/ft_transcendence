@@ -13,7 +13,7 @@ export function initFriendsEvents(data: User | null) {
 			toggleMobileDisplay();
 	});
 	window.addEventListener("resize", changedWindowSize);
-	if (data) {
+	if (data && data.user_id) {
 		clickFriendProfile(null, data);
 	}
 }
