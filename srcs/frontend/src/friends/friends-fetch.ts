@@ -4,7 +4,7 @@ import { displayBlockPopUp, closeModal, toggleMobileDisplay } from "./friends-pa
 import { navigateTo } from "../index.js";
 import { socketToast } from "../toast-alert/toast-alert.js";
 import { getClientID } from "../messages/messages-page.js";
-import { getTranslation } from "../login-page/login-transcript.js";
+import { getTranslation } from "../functionalities/transcript.js";
 
 export function initFriendFetches() {
 	const searchForm = document.getElementById("message-box") as HTMLFormElement;

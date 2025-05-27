@@ -2,6 +2,7 @@
 
 import { initLoginFetches } from "./login-fetch.js";
 import { checkLogged, navigateTo } from "../index.js"
+import { setLang, applyTranslation } from "../functionalities/transcript.js";
 
 export async function initLoginEvents() {
 	const logged = await checkLogged();
@@ -60,8 +61,11 @@ function changeLanguage(option: string) {
 	const language = languages.find((elem) => elem.key == option);
 	if (!language || language === undefined)
 		dropdownButton.innerText = "English";
-	else
+	else {
 		dropdownButton.innerText = language.label;
+		setLang(language.key);
+		applyTranslation();
+	}
 }
 
 
@@ -120,11 +124,15 @@ function popUp() {
 }
 
 function googleSignIn() {
-  const googleSignIn = document.getElementById("google-script");
-  if (googleSignIn)
-    googleSignIn.remove();
+	const googleSignIn = document.getElementById("google-script");
+	if (googleSignIn)
+		googleSignIn.remove();
+	const userLang = window.navigator.language || 'en';
+	const googleButton = document.getElementsByClassName("g_id_signin")[0];
+	if (googleButton)
+		googleButton.setAttribute('data-locale', userLang);
 	var s = document.createElement( 'script' );
-  s.id = "google-script";
-	s.setAttribute( 'src', "https://accounts.google.com/gsi/client" );
+	s.id = "google-script";
+	s.setAttribute( 'src', `https://accounts.google.com/gsi/client` );
 	document.body.appendChild( s );
 };
