@@ -2,8 +2,6 @@ import { getClientID } from "../../messages/messages-page.js";
 
 export let socket4inrow: WebSocket | null;
 
-import { navigateTo } from "../../index.js";
-
 export interface Player {
     color: string;
     turn: boolean;
@@ -37,13 +35,15 @@ export interface GameState {
   player2: PlayerState;
 }
 
-export const columnMap: Map<string, HTMLElement[]> = new Map();
+export let columnMap: Map<string, HTMLElement[]> = new Map();
 
-export const columnList: HTMLElement[] = [];
+export let columnClickHandlers = new Map<HTMLElement, () => Promise<void>>();
 
-export const boardMap: Map<string, number[]> = new Map();
+export let columnList: HTMLElement[] = [];
 
-export const crazyTokens: string[] = ["🌀", "🌫️", "💣", "🔒", "👻", "🎲"];
+export let boardMap: Map<string, number[]> = new Map();
+
+export let crazyTokens: string[] = ["🌀", "🌫️", "💣", "🔒", "👻", "🎲"];
 
 export function setArray(num: string) {
 	let array = new Array();
@@ -66,29 +66,35 @@ export function init(player1: Player, boardMap: Map<string, number[]>, columnMap
     }
 }
 
-export function enableClicks(columnList: HTMLElement[]): void {
+export async function enableClicks(columnList: HTMLElement[]): Promise<void> {
 	columnList.forEach((column) => {
         if (!column.classList.contains("opacity-50"))
 		    column.style.pointerEvents = "auto";
 	});
 }
 
-export function disableClicks(columnList: HTMLElement[]): void {
+export async function disableClicks(columnList: HTMLElement[]): Promise<void> {
 	columnList.forEach((column) => {
 		column.style.pointerEvents = "none";
 	});
 }
 
 export	function clearGame(player1: Player, player2: Player, columnList: HTMLElement[], columnMap: Map<string, HTMLElement[]>, boardMap: Map<string, number[]>): void {
-    columnList.forEach((column) => {
-        const newColumn = column.cloneNode(true);
-        column.replaceWith(newColumn);
-    });
-	
     boardMap.clear();
     columnMap.clear();
-    columnList = [];
+    for (let i = 0; i < columnList.length; i++)
+        columnList.pop()
+    columnList.length = 0;
 	
+    player1.winner = false;
+    player2.winner = false;
+    player1.turn = false;
+    player2.turn = false;
+    const columnIds = ["c1", "c2", "c3", "c4", "c5", "c6", "c7"];
+    columnIds.forEach(colId => {
+        boardMap.set(colId, Array(6).fill(0));
+    });
+
     const winnerDiv = document.getElementById("winner");
     const drawDiv = document.getElementById("draw");
     if (winnerDiv){
@@ -181,28 +187,29 @@ async function updateCell(cell: HTMLElement, player: Player): Promise<void> {
 
 export async function placeToken(column: HTMLElement | null, player1: Player, player2: Player, columnMap: Map<string, HTMLElement[]>, boardMap: Map<string, number[]>, columnList: HTMLElement[], mode: string): Promise<void> {
     disableClicks(columnList);
+    console.log(player1.turn, player2.turn)
     if (!column || !column.id) {
-        enableClicks(columnList);
+        await enableClicks(columnList);
         console.error("Column or column ID is invalid: ", column);
         return;
     }
 
     const cells = columnMap.get(column.id);
     if (!cells) {
-        enableClicks(columnList);
+        await enableClicks(columnList);
         console.error("Cells are undefined for column ID: ", column.id);
         return;
     }
     const columnData = boardMap.get(column.id);
     if (!columnData) {
-        enableClicks(columnList);
+        await enableClicks(columnList);
         console.error("ColumnData is undefined for column ID: ", column.id, boardMap);
         return;
     }    
 
     const row = columnData.findIndex(cell => cell === 0);
     if (row === -1){
-        enableClicks(columnList);
+        await enableClicks(columnList);
         console.error("No rows left in column: ", column);
         return ;
     }
@@ -211,7 +218,7 @@ export async function placeToken(column: HTMLElement | null, player1: Player, pl
     columnData[row] = currentPlayer.num;
 
     await updateCell(cells[row], currentPlayer);
-    await updateTurnIndicator(player1, player2, columnList, columnMap, mode);
+    await updateTurnIndicator(player1, player2, columnList, columnMap, "classic");
     enableClicks(columnList);
 }
 
@@ -320,51 +327,6 @@ export function delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export function createSocket4inrowConnection(){
-if (socket4inrow && socket4inrow.readyState !== WebSocket.CLOSED)
-        socket4inrow.close();
-    try{
-        socket4inrow = new WebSocket(`wss://${window.location.hostname}:8443/ws/4inrow`)
-        if (!socket4inrow)
-            return ;
-        socket4inrow.onopen = () => {
-            let id = getClientID();
-            console.log("WebSocket4inrow connection established, sending id:", id);
-            if (id === -1)
-                console.error("Invalid ID, cannot connect to back")
-            else{
-                if (!socket4inrow)
-                    return ;
-                socket4inrow.send(JSON.stringify({
-                    userId: id,
-                    action: "identify"
-                }));
-                console.log("ID succesfully sent");
-            }
-        };
-        socket4inrow.onmessage = (event) => {
-            try{
-                const data = JSON.parse(event.data);
-                
-            }
-            catch(err){
-                console.error("Error on message", err);
-            }
-        };
-        socket4inrow.onerror = (error) => {
-            console.error("WebSocket error:", error);
-        };
-        socket4inrow.onclose = () => {
-            console.log("WebSocket4inrow connection closed");
-            socket4inrow = null;
-        };
-    }
-    catch(err){
-        console.error("Error creating WebSocket4inrow:", err);
-    }
-}
-
-
 export async function pauseGame(columnList: HTMLElement[]): Promise<void> {
     const pauseEl = document.getElementById('pauseConnect');
     if (!pauseEl){
@@ -415,57 +377,46 @@ export async function pauseGame(columnList: HTMLElement[]): Promise<void> {
     return Promise.resolve();
 }
 
-export async function returnToGames(columnList: HTMLElement[]): Promise<void> {
-    const exitBtn = document.getElementById('exitGame');
-    if (!exitBtn){
-        console.error("exitGame element not found.");
-        return Promise.resolve();
+export function createSocket4inrowConnection(){
+if (socket4inrow && socket4inrow.readyState !== WebSocket.CLOSED)
+        socket4inrow.close();
+    try{
+        socket4inrow = new WebSocket(`wss://${window.location.hostname}:8443/ws/4inrow`)
+        if (!socket4inrow)
+            return ;
+        socket4inrow.onopen = () => {
+            let id = getClientID();
+            console.log("WebSocket4inrow connection established, sending id:", id);
+            if (id === -1)
+                console.error("Invalid ID, cannot connect to back")
+            else{
+                if (!socket4inrow)
+                    return ;
+                socket4inrow.send(JSON.stringify({
+                    userId: id,
+                    action: "identify"
+                }));
+                console.log("ID succesfully sent");
+            }
+        };
+        socket4inrow.onmessage = (event) => {
+            try{
+                const data = JSON.parse(event.data);
+                
+            }
+            catch(err){
+                console.error("Error on message", err);
+            }
+        };
+        socket4inrow.onerror = (error) => {
+            console.error("WebSocket error:", error);
+        };
+        socket4inrow.onclose = () => {
+            console.log("WebSocket4inrow connection closed");
+            socket4inrow = null;
+        };
     }
-
-    const pauseBtn = document.getElementById('pauseGame')
-    if (!pauseBtn){
-        console.error("pauseGame element not found.")
-        return Promise.resolve();
+    catch(err){
+        console.error("Error creating WebSocket4inrow:", err);
     }
-
-    const boardEl = document.getElementById('board');
-    if (!boardEl){
-        console.error("board element not found.")
-        return Promise.resolve();
-    }
-
-    const diceEl = document.getElementById('dice-container');
-    if (!diceEl){
-        console.error("dice-container element not found.")
-        return Promise.resolve();
-    }
-
-    disableClicks(columnList);
-    diceEl.style.pointerEvents = 'none';
-    exitBtn.style.pointerEvents = 'none';
-    pauseBtn.style.pointerEvents = 'none';
-    boardEl.style.animation = "mediumOpacity 0.25s ease forwards";
-    await delay(250);
-
-    const returnEl = document.getElementById('returnToGamesConnect');
-    if (!returnEl){
-        console.error("returnToGamesConnect element not found.");
-        return Promise.resolve();
-    }
-    returnEl.style.display = 'block';
-
-    document.getElementById('continue')?.addEventListener('click', async () => {
-        returnEl.style.display = 'none';
-        boardEl.style.animation = "fullOpacity 0.25s ease forwards";
-        diceEl.style.pointerEvents = 'auto';
-        exitBtn.style.pointerEvents = 'auto';
-        pauseBtn.style.pointerEvents = 'auto';
-        enableClicks(columnList);
-        return ;
-    })
-
-    document.getElementById('exit')?.addEventListener('click', () => {
-        localStorage.removeItem(`connect4GameStateclassic`);
-        navigateTo("/games");
-    })
 }
