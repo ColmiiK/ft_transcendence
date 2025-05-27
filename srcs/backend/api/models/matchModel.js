@@ -142,21 +142,28 @@ export function scheduleMatch(data) {
   });
 }
 
+/**
+ * Returns all found scheduled matches of a user
+ * @param {Number} user_id - ID of the given user
+ * @returns {Array} - All found scheduled matches
+ */
 export function getScheduledMatches(user_id) {
   assert(user_id !== undefined, "user_id must exist");
   return new Promise((resolve, reject) => {
     const sql = `
-SELECT
-id AS match_id,
-first_player_id,
-second_player_id,
-status
-FROM
-matches
-WHERE
-(first_player_id = ? OR second_player_id = ?)
-AND
-status = 'scheduled'
+      SELECT
+        id AS match_id,
+        first_player_id,
+        second_player_id,
+        status,
+        game_type,
+        custom_mode
+      FROM
+        matches
+      WHERE
+        (first_player_id = ? OR second_player_id = ?)
+      AND
+        status = 'scheduled'
     `;
     db.all(sql, [user_id, user_id], function (err, rows) {
       if (err) {
