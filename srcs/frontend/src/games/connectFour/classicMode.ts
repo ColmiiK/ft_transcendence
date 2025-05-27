@@ -6,8 +6,9 @@ import {
 	columnClickHandlers,
 	pauseGame,
 	delay,
-	PlayerState,
-	GameState,
+	saveGameState,
+    loadGameState,
+    renderBoardFromState,
 	init as initEngine,
 	clearGame as clearGameEngine,
 	insertDivWinner as insertDivWinnerEngine,
@@ -84,7 +85,6 @@ export function classicMode(data: Games): void {
 			}
 			
 			if (player2.turn && player2.AI && aiColumn && aiIsThinking) {
-				aiIsThinking = false;
 				await aiColumn.click();
 				aiIsThinking = false;
 				aiColumn = null;
@@ -93,13 +93,13 @@ export function classicMode(data: Games): void {
 	}
 
 	async function start(): Promise<void> {
-		const savedState = loadGameState();
+		const savedState = loadGameState("classic");
 		init();
 		if (savedState){
-			renderBoardFromState(savedState)
-			gameActive = false;
+			renderBoardFromState(savedState, player1, player2)
 			if (player2.AI)
 				initAI();
+			gameActive = false;
 			await pauseGame(columnList);
 		}
 		else
@@ -149,14 +149,12 @@ export function classicMode(data: Games): void {
 			return;
 		}
 
-		if (player2.turn && player2.AI && !aiColumn) {
-			return ;
-		}
-		else if (player2.turn && player2.AI && aiColumn){
-			column = aiColumn;
-		}
+		if (player2.turn && player2.AI && !aiColumn) return ;
+		else if (player2.turn && player2.AI && aiColumn) { column = aiColumn; }
+
 		await placeToken(column);
-		await saveGameState("classic");
+		await saveGameState("classic", player1, player2);
+
 		if (checkWin(false)) {
 			insertDivWinner();
 			await disableClicks();
@@ -203,9 +201,8 @@ export function classicMode(data: Games): void {
 			return threatColumns[0];
 		}
 
-		let columnToUse: HTMLElement | null = Math.random() < 0.2
-			? columnList[Math.floor(Math.random() * columnList.length)]
-			: null;
+		let columnToUse: HTMLElement | null = Math.random() < 0.2 ? 
+			columnList[Math.floor(Math.random() * columnList.length)] : null;
 
 		if (!columnToUse && aiWorker){
 			const boardState = {
@@ -262,143 +259,66 @@ export function classicMode(data: Games): void {
 		return detectWinOpportunitiesEngine(boardMap, columnList, player, player1, player2);
 	}
 
-	function getPlayerState(player: Player): PlayerState {
-		const playerS = {
-			num: player.num,
-			color: player.color,
-			turn: player.turn,
-			AI: player.AI,
-		}
-		return playerS;
-	}
-
-	function setPlayerState(player: Player, state: PlayerState) {
-		player.num = state.num;
-		player.color = state.color;
-		player.turn = state.turn;
-		player.AI = state.AI;
-	}
-
-	async function saveGameState(mode: "classic" | "custom") {
-		const boardData: { [columnId: string]: number[] } = {};
-
-		columnList.forEach(column => {
-			const copy = boardMap.get(column.id);
-			if (copy) boardData[column.id] = [...copy];
-		});
-
-		const state: GameState = {
-			mode,
-			boardData,
-			player1: getPlayerState(player1),
-			player2: getPlayerState(player2),
-		};
-
-		localStorage.setItem(`connect4GameStateclassic`, JSON.stringify(state));
-	}
-
-	function loadGameState(): GameState | null {
-		const stateStr = localStorage.getItem(`connect4GameStateclassic`);
-		if (!stateStr) return null;
-
-		const state: GameState = JSON.parse(stateStr);
-		return state;
-	}
-
-	function renderBoardFromState(state: GameState) {
-		setPlayerState(player1, state.player1);
-		setPlayerState(player2, state.player2);
-
-		for (const colId in state.boardData)
-			boardMap.set(colId, [...state.boardData[colId]]);
-
-		columnList.forEach(column => {
-			const cells = columnMap.get(column.id);
-			if (!cells) return;
-
-			for (let row = 0; row < cells.length; row++) {
-				const cell = cells[row];
-				cell.innerHTML = "";
-				cell.className = "cell";
-
-				const cellValue = boardMap.get(column.id)?.[row] || 0;
-
-				if (cellValue === 1) {
-					cell.classList.add("filled", "red-hover");
-					const token = document.createElement("div");
-					token.className = "token red";
-					cell.appendChild(token);
-				} else if (cellValue === 2) {
-					cell.classList.add("filled", "yellow-hover");
-					const token = document.createElement("div");
-					token.className = "token yellow";
-					cell.appendChild(token);
-				} else {
-					if (state.player1.turn) cell.classList.add("red-hover");
-					else if (state.player2.turn && !state.player2.AI) cell.classList.add("yellow-hover");
-				}
-			}
-		});
-	}
-
 	document.getElementById('pauseGame')?.addEventListener('click', async () => {
 		gameActive = gameActive ? false : true;
 		await pauseGame(columnList);
 	})
 
 	document.getElementById('exitGame')?.addEventListener('click', async () => {
-			const exitBtn = document.getElementById('exitGame');
-			if (!exitBtn){
-				console.error("exitGame element not found.");
-				return Promise.resolve();
-			}
-		
-			const pauseBtn = document.getElementById('pauseGame')
-			if (!pauseBtn){
-				console.error("pauseGame element not found.")
-				return Promise.resolve();
-			}
-		
-			const boardEl = document.getElementById('board');
-			if (!boardEl){
-				console.error("board element not found.")
-				return Promise.resolve();
-			}
-		
-			const diceEl = document.getElementById('dice-container');
-			if (!diceEl){
-				console.error("dice-container element not found.")
-				return Promise.resolve();
-			}
-		
-			await disableClicks();
-			diceEl.style.pointerEvents = 'none';
-			exitBtn.style.pointerEvents = 'none';
-			pauseBtn.style.pointerEvents = 'none';
-			boardEl.style.animation = "mediumOpacity 0.25s ease forwards";
-			await delay(250);
-		
-			const returnEl = document.getElementById('returnToGamesConnect');
-			if (!returnEl){
-				console.error("returnToGamesConnect element not found.");
-				return Promise.resolve();
-			}
-			returnEl.style.display = 'block';
-		
-			document.getElementById('continue')?.addEventListener('click', async () => {
-				returnEl.style.display = 'none';
-				boardEl.style.animation = "fullOpacity 0.25s ease forwards";
-				diceEl.style.pointerEvents = 'auto';
-				exitBtn.style.pointerEvents = 'auto';
-				pauseBtn.style.pointerEvents = 'auto';
-				await enableClicks();
-				return ;
-			})
-		
-			document.getElementById('exit')?.addEventListener('click', () => {
-				clearGame();
-				navigateTo("/games");
-			})
+		const exitBtn = document.getElementById('exitGame');
+		if (!exitBtn){
+			console.error("exitGame element not found.");
+			return Promise.resolve();
+		}
+	
+		const pauseBtn = document.getElementById('pauseGame')
+		if (!pauseBtn){
+			console.error("pauseGame element not found.")
+			return Promise.resolve();
+		}
+	
+		const boardEl = document.getElementById('board');
+		if (!boardEl){
+			console.error("board element not found.")
+			return Promise.resolve();
+		}
+	
+		const diceEl = document.getElementById('dice-container');
+		if (!diceEl){
+			console.error("dice-container element not found.")
+			return Promise.resolve();
+		}
+	
+		await disableClicks();
+		diceEl.style.pointerEvents = 'none';
+		exitBtn.style.pointerEvents = 'none';
+		pauseBtn.style.pointerEvents = 'none';
+		boardEl.style.animation = "mediumOpacity 0.25s ease forwards";
+		gameActive = false;
+		await delay(250);
+	
+		const returnEl = document.getElementById('returnToGamesConnect');
+		if (!returnEl){
+			console.error("returnToGamesConnect element not found.");
+			return Promise.resolve();
+		}
+		returnEl.style.display = 'block';
+	
+		document.getElementById('continue')?.addEventListener('click', async () => {
+			returnEl.style.display = 'none';
+			boardEl.style.animation = "fullOpacity 0.25s ease forwards";
+			diceEl.style.pointerEvents = 'auto';
+			exitBtn.style.pointerEvents = 'auto';
+			pauseBtn.style.pointerEvents = 'auto';
+			gameActive = gameActive = true;
+			await enableClicks();
+			return ;
+		})
+	
+		document.getElementById('exit')?.addEventListener('click', () => {
+			clearGame();
+			navigateTo("/games");
+		})
 	})
 
 	start();

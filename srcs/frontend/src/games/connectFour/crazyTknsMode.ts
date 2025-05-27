@@ -6,6 +6,10 @@ import {
     columnClickHandlers,
     crazyTokens,
     pauseGame,
+    saveGameState,
+    loadGameState,
+    updateDice,
+    renderBoardFromState,
     init as initEngine,
     clearGame as clearGameEngine,
     insertDivWinner as insertDivWinnerEngine,
@@ -92,7 +96,6 @@ export function crazyTokensMode(data: Games): void {
 			}
 			
 			if (player2.turn && player2.AI && aiColumn && aiIsThinking) {
-				aiIsThinking = false;
 				await aiColumn.click();
 				aiIsThinking = false;
 				aiColumn = null;
@@ -101,13 +104,14 @@ export function crazyTokensMode(data: Games): void {
 	}
 
     async function start(): Promise<void> {
-     /*    const savedState = loadGameState("classic"); */
+        const savedState = loadGameState("custom");
 		init();
-		/* if (savedState){
-			renderBoardFromState(savedState)
+		if (savedState){
+			renderBoardFromState(savedState, player1, player2)
+            gameActive = false;
 			await pauseGame(columnList);
 		}
-		else */
+		else
 			await enableClicks();
 		handlerEvents();
     }
@@ -127,15 +131,31 @@ export function crazyTokensMode(data: Games): void {
 		});	
 	}
 
+    function resetPlayer(): void {
+        player1.affected = null;
+        player1.count = 0;
+        player1.specialToken = null;
+        player1.useSpecial = false;
+        player1.turnAffected = 0;
+        player1.diceUses = 3;
+        player2.affected = null;
+        player2.count = 0;
+        player2.specialToken = null;
+        player2.useSpecial = false;
+        player2.turnAffected = 0;
+        player2.diceUses = 3;
+    }
+
     function clearGame(): void {
-      /*   localStorage.removeItem(`connect4GameStateclassic`); */
+        localStorage.removeItem(`connect4GameStatecustom`);
         gameActive = false;
         clearGameEngine(player1, player2, columnList, columnMap, boardMap);
+        resetPlayer();
+
         if (aiInterval) {
 			clearInterval(aiInterval);
 			aiInterval = null;
 		}
-		
 		if (aiWorker) {
 			aiWorker.terminate();
 			aiWorker = null;
@@ -160,13 +180,13 @@ export function crazyTokensMode(data: Games): void {
 			clearGame();
 			return;
 		}
+        if (player2.turn && player2.AI && !aiColumn) return ;
+        else if (player2.turn && player2.AI && aiColumn) { column = aiColumn; }
 
         const currentPlayer = player1.turn ? player1 : player2;
         if (currentPlayer.affected && currentPlayer.affected != "🎲" && currentPlayer.turnAffected > 0){
-            if (currentPlayer.turnAffected > 1)
-                currentPlayer.turnAffected--;
-            else
-                await disableEffects(currentPlayer);
+            if (currentPlayer.turnAffected > 1) currentPlayer.turnAffected--;
+            else await disableEffects(currentPlayer);
         }
 
         if (currentPlayer.useSpecial && currentPlayer.affected === "🎲"){
@@ -174,16 +194,15 @@ export function crazyTokensMode(data: Games): void {
             await placeSpecialToken(randomColumn);
             await disableEffects(currentPlayer);
         }
-        else if (currentPlayer.useSpecial)
-            await placeSpecialToken(column)
+        else if (currentPlayer.useSpecial) await placeSpecialToken(column)
         else if (currentPlayer.affected && currentPlayer.affected === "🎲"){
             const randomColumn = columnList[Math.floor(Math.random() * columnList.length)];
             await placeToken(randomColumn);
             await disableEffects(currentPlayer);
         }
-        else
-            await placeToken(column);
-        /* await saveGameState("custom"); */
+        else await placeToken(column);
+        await saveGameState("custom", player1, player2);
+
         if (checkWin(false)) {
 			insertDivWinner();
 			await disableClicks();
@@ -300,7 +319,7 @@ export function crazyTokensMode(data: Games): void {
         }
 
         if (columnToUse && !isColumnPlayable(columnToUse))
-            columnToUse = columnList.find(column => isColumnPlayable(column)) ?? null;
+           columnToUse = columnList.find((column) => isColumnPlayable(column)) || null;
         
         return columnToUse;
     }
@@ -440,13 +459,14 @@ export function crazyTokensMode(data: Games): void {
         diceContainer.classList.add("rolling");
         await delay(1000);
         const randomIndex = Math.floor(Math.random() * crazyTokens.length);
-        const newToken = crazyTokens[randomIndex];
+        const newToken = "👻";
         
         diceIcon.innerText = newToken;
         currentPlayer.specialToken = newToken;
         currentPlayer.diceUses--;
 
         diceContainer.classList.remove("rolling");
+        saveGameState("custom", player1, player2);
     }
 
     /* Disable Effects */
@@ -702,7 +722,7 @@ export function crazyTokensMode(data: Games): void {
 
         token.className = `token ${player.color}`;
         if (player.specialToken === "👻")
-            token.classList.add("ghostToken", "opacity-50", "grayscale");
+            token.classList.add("ghostToken");
         if (player.specialToken === "🎲")
             token.classList.add("diceToken")
         if (player.specialToken === "🔒")
@@ -749,6 +769,8 @@ export function crazyTokensMode(data: Games): void {
         enableClicks();
         currentPlayer.specialToken = null;
         currentPlayer.useSpecial = false;
+        if (columnData[row] == 3)
+            updateDice(player1, player2);
     }
 
     /* Utils */
@@ -757,7 +779,10 @@ export function crazyTokensMode(data: Games): void {
 		await delayEngine(ms);
 	}
 
+    /* Pause and Exit */
+
     document.getElementById('pauseGame')?.addEventListener('click', async () => {
+        gameActive = gameActive ? false : true;
         await pauseGame(columnList);
     })
 
@@ -791,6 +816,7 @@ export function crazyTokensMode(data: Games): void {
         exitBtn.style.pointerEvents = 'none';
         pauseBtn.style.pointerEvents = 'none';
         boardEl.style.animation = "mediumOpacity 0.25s ease forwards";
+        gameActive = false;
         await delay(250);
     
         const returnEl = document.getElementById('returnToGamesConnect');
@@ -806,6 +832,7 @@ export function crazyTokensMode(data: Games): void {
             diceEl.style.pointerEvents = 'auto';
             exitBtn.style.pointerEvents = 'auto';
             pauseBtn.style.pointerEvents = 'auto';
+            gameActive = true;
             await enableClicks();
             return ;
         })
@@ -816,5 +843,9 @@ export function crazyTokensMode(data: Games): void {
         })
 	})
 
+    window.addEventListener('popstate', () => {
+        clearGame();
+    }),
+    
     start();
 }
