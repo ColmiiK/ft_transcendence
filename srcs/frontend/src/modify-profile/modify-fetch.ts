@@ -1,7 +1,7 @@
 import { sendRequest } from "../login-page/login-fetch.js";
 import { showAlert } from "../toast-alert/toast-alert.js";
 import { Profile } from "../types.js"
-import { getTranslation } from "../login-page/login-transcript.js";
+import { getTranslation } from "../functionalities/transcript.js";
 
 export function initModifyFetchEvents() {
 	initData();

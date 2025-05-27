@@ -313,6 +313,8 @@ export function getMatchesHistory(user_id, type) {
         (m.first_player_id = ? OR m.second_player_id = ?)
       AND
         m.game_type = ?
+      AND
+        m.status = 'finished'
       ORDER BY
         m.played_at DESC;
     `;

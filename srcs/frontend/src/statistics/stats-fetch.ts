@@ -1,6 +1,6 @@
 import { sendRequest } from "../login-page/login-fetch.js";
 import { ChartStats, Historical } from "../types.js"
-import { getTranslation } from "../login-page/login-transcript.js"
+import { getTranslation } from "../functionalities/transcript.js"
 
 export function initStatsFetch() {
 	pongCharts();
