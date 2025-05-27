@@ -85,17 +85,13 @@ export function crazyTokensMode(data: Games): void {
 
 		aiWorker = new Worker(new URL('./aiWorker.js', import.meta.url));
 		aiInterval = setInterval(async () => {
-			if (!gameActive) {
-				return;
-			}
-			
-			if (!aiColumn && player2.turn && player2.AI && !aiIsThinking) {
+			if (!aiColumn && player2.turn && player2.AI && !aiIsThinking && gameActive) {
 				console.log("AI is thinking...");
 				aiColumn = await aiToken();
 				console.log("AI chose: ", aiColumn?.id);
 			}
 			
-			if (player2.turn && player2.AI && aiColumn && aiIsThinking) {
+			if (player2.turn && player2.AI && aiColumn && aiIsThinking && gameActive) {
 				await aiColumn.click();
 				aiIsThinking = false;
 				aiColumn = null;
@@ -181,7 +177,10 @@ export function crazyTokensMode(data: Games): void {
 			return;
 		}
         if (player2.turn && player2.AI && !aiColumn) return ;
-        else if (player2.turn && player2.AI && aiColumn) { column = aiColumn; }
+        if (player2.turn && player2.AI && aiColumn){
+            column = aiColumn;
+            aiColumn = null;
+        }
 
         const currentPlayer = player1.turn ? player1 : player2;
         if (currentPlayer.affected && currentPlayer.affected != "🎲" && currentPlayer.turnAffected > 0){
@@ -201,6 +200,7 @@ export function crazyTokensMode(data: Games): void {
             await disableEffects(currentPlayer);
         }
         else await placeToken(column);
+        await updateTurnIndicator();
         await saveGameState("custom", player1, player2);
 
         if (checkWin(false)) {
@@ -251,6 +251,7 @@ export function crazyTokensMode(data: Games): void {
     /* AI Functionality */
 
     async function aiToken(): Promise<HTMLElement | null> {
+        disableClicks();
         if (!gameActive || !aiWorker || !player2.turn || aiColumn || aiIsThinking)
 			return null;
 		aiIsThinking = true;
@@ -267,6 +268,8 @@ export function crazyTokensMode(data: Games): void {
     
         const	threatColumns = detectWinOpportunities(player1);
         let columnToUse: HTMLElement | null = await controlUseDice(threatColumns);
+
+        if (columnToUse) return columnToUse ;
 
 		if (!columnToUse){
 			if (threatColumns.length > 0) {
@@ -321,6 +324,7 @@ export function crazyTokensMode(data: Games): void {
         if (columnToUse && !isColumnPlayable(columnToUse))
            columnToUse = columnList.find((column) => isColumnPlayable(column)) || null;
         
+        enableClicks();
         return columnToUse;
     }
     
@@ -408,23 +412,22 @@ export function crazyTokensMode(data: Games): void {
     async function controlUseDice(threatColumns: HTMLElement[]): Promise<HTMLElement | null> {
 		let		columnToUse: Promise<HTMLElement | null> = Promise.resolve(null);
 		const	blockNeeded = threatColumns.length > 0;
+        const   diceDiv = document.getElementById("dice-container");
         const	needSpecialToken = blockNeeded || Math.random() < 0.5;
 
-        if (!player2.specialToken && player2.diceUses > 0 && needSpecialToken) {
-            await rollDice();
-            await delay(500);
-        }
+        if (!player2.specialToken && player2.diceUses > 0 && needSpecialToken && diceDiv) await diceDiv.click();
+        await(500);
 
         const   totalCells = columnList.length * 6;
         const	filledCells = Array.from(document.getElementsByClassName("filled")).length;
         const   boardFilledRatio = filledCells / totalCells;
-		const  shouldUseSpecial = player2.specialToken ? 
+		const   shouldUseSpecial = player2.specialToken ? 
 			shouldUseSpecialToken(player2.specialToken, blockNeeded, boardFilledRatio) : false;
 
-		if (shouldUseSpecial && player2.specialToken) {
-			await rollDice();
-			await delay(500);
-			const specialColumn = chooseBestColumnForToken(player2.specialToken, threatColumns);
+		if (shouldUseSpecial && player2.specialToken && diceDiv) {
+			await diceDiv.click();
+            await(500);
+			let specialColumn = chooseBestColumnForToken(player2.specialToken, threatColumns);
 			if (specialColumn) 
 				columnToUse = Promise.resolve(Math.random () < 0.2 ? 
 					columnList[Math.floor(Math.random() * columnList.length)] : specialColumn);
@@ -459,7 +462,7 @@ export function crazyTokensMode(data: Games): void {
         diceContainer.classList.add("rolling");
         await delay(1000);
         const randomIndex = Math.floor(Math.random() * crazyTokens.length);
-        const newToken = "👻";
+        const newToken = crazyTokens[randomIndex];
         
         diceIcon.innerText = newToken;
         currentPlayer.specialToken = newToken;
@@ -512,7 +515,6 @@ export function crazyTokensMode(data: Games): void {
             token.parentElement.className = `cell ${player1.turn ?
                 `red-hover` : `yellow-hover`}`;
             token.remove();
-            await delay(300);
             await updateBoard(columnId);
         }
     }
@@ -764,7 +766,6 @@ export function crazyTokensMode(data: Games): void {
         document.getElementById("board")!.style.pointerEvents = 'none';
         await handleSpecialToken(row, currentPlayer, column);
         document.getElementById("board")!.style.pointerEvents = 'auto';
-        await updateTurnIndicator();
 
         enableClicks();
         currentPlayer.specialToken = null;

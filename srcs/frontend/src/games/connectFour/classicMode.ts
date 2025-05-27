@@ -78,13 +78,13 @@ export function classicMode(data: Games): void {
 				return;
 			}
 			
-			if (!aiColumn && player2.turn && player2.AI && !aiIsThinking) {
+			if (!aiColumn && player2.turn && player2.AI && !aiIsThinking && gameActive) {
 				console.log("AI is thinking...");
 				aiColumn = await aiToken();
 				console.log("AI chose: ", aiColumn?.id);
 			}
 			
-			if (player2.turn && player2.AI && aiColumn && aiIsThinking) {
+			if (player2.turn && player2.AI && aiColumn && aiIsThinking && gameActive) {
 				await aiColumn.click();
 				aiIsThinking = false;
 				aiColumn = null;
@@ -150,7 +150,6 @@ export function classicMode(data: Games): void {
 		}
 
 		if (player2.turn && player2.AI && !aiColumn) return ;
-		else if (player2.turn && player2.AI && aiColumn) { column = aiColumn; }
 
 		await placeToken(column);
 		await saveGameState("classic", player1, player2);
