@@ -197,11 +197,16 @@ async function messageInChat(data, userId) {
 					}));
 					let game = data.game_type.split('-')
 					let game_type;
+					let is_custom;
+					if (game[0] !== "classic")
+						is_custom = "custom";
+					else
+						is_custom = "classic";
 					if (game[1] === "connect4")
 						game_type = "connect_four"
 					else
 						game_type = game[1];
-					await scheduleMatch({ game_type: game_type, first_player_id: data.receiver_id, second_player_id: data.sender_id, tournament_id: null, phase: null });
+					await scheduleMatch({ game_type: game_type, custom_mode: is_custom, first_player_id: data.receiver_id, second_player_id: data.sender_id, tournament_id: null, phase: null });
 				}
 				else if (socketsChat.has(sender_id) && socketsChat.has(receiver_id) && data.info === "reject") {
 					const invitation = await createMessage({
