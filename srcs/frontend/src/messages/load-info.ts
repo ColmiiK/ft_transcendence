@@ -314,23 +314,161 @@ export async function chargeChat(chat_id: number, friend_username: string, frien
 
 			chatHistoryTyped.forEach((message) => {
 				let div = document.createElement("div");
-
 				const username = localStorage.getItem("username");
 				if (username) {
 					const sent_at = message.sent_at.substring(11, 16);
-					if (message.sender_username !== username) {
-						div.setAttribute("id", "friend-message");
-						div.innerHTML = `
+					if (message.invitation_type === "message") {
+						if (message.sender_username !== username) {
+							div.setAttribute("id", "friend-message");
+							div.innerHTML = `
 						<div class="message friend-message">
 							<p>${message.body}</p>
 							<p class="hour">${sent_at}</p>
 						</div>`;
-					} else {
-						div.setAttribute("id", "message");
-						div.innerHTML = `<div class="message self-message">
+						} else {
+							div.setAttribute("id", "message");
+							div.innerHTML = `<div class="message self-message">
 							<p>${message.body}<\p>
 							<p class="hour">${sent_at}</p>
 						</div>`;
+						}
+					}
+					else if (message.invitation_type && message.invitation_type === "game") {
+						if (message.invitation_status && message.invitation_status === "pending") {
+							if (message.sender_username === username) {
+								div.setAttribute("id", "message");
+								div.innerHTML = `<div class="message self-message">
+									<p>${message.body}<\p>
+									<p class="hour">${sent_at}</p>
+								</div>`;
+							}
+							else if (message.receiver_id === getClientID()) {
+								div.setAttribute("id", "self-message");
+								div.innerHTML = `
+                 <div class="message friend-message flex flex-col">
+                    <p>${message.body}</p>
+                    <p class="hour">${sent_at}</p>
+                    <div class="game-actions flex gap-2 mt-2">
+                        <button type="button" class="accept-btn px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-white transition-colors">
+                            Accept
+                        </button>
+                        <button type="button" class="reject-btn px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg text-white transition-colors">
+                            Reject
+                        </button>
+                    </div>
+                </div>`;
+
+								const acceptBtn = div.querySelector('.accept-btn') as HTMLButtonElement;
+								const rejectBtn = div.querySelector('.reject-btn') as HTMLButtonElement;
+								const game_type = message.body.substring(27);
+								acceptBtn?.addEventListener('click', (event) => {
+									const date = new Date();
+									date.setHours(date.getHours() + 2);
+									event.preventDefault();
+									if (socketChat) {
+										socketChat.send(JSON.stringify({
+											type: "game",
+											info: "accept",
+											game_type: game_type,
+											sender_id: getClientID(),
+											receiver_id: message.sender_id,
+											body: "Game invitation accepted",
+											chat_id: actual_chat_id,
+											sent_at: date.toISOString(),
+										}));
+										acceptBtn.disabled = true;
+										acceptBtn.textContent = "Accepted ✓";
+										rejectBtn?.remove();
+										acceptBtn.classList.add('bg-gray-500');
+										sendRequest(`PATCH`, `messages/${message.message_id}`, { invitation_status: "accept" });
+									}
+								});
+								rejectBtn?.addEventListener('click', (event) => {
+									const date = new Date();
+									date.setHours(date.getHours() + 2);
+									event.preventDefault()
+									if (socketChat) {
+										socketChat.send(JSON.stringify({
+											type: "game",
+											info: "reject",
+											game_type: game_type,
+											sender_id: getClientID(),
+											receiver_id: message.sender_id,
+											body: "Game invitation rejected",
+											chat_id: actual_chat_id,
+											sent_at: date.toISOString(),
+										}));
+										rejectBtn.disabled = true;
+										rejectBtn.textContent = "Rejected ✗";
+										acceptBtn?.remove();
+										rejectBtn.classList.add('bg-gray-500');
+										sendRequest(`PATCH`, `messages/${message.message_id}`, { invitation_status: "reject" });
+									}
+								});
+							}
+						}
+						else if (message.invitation_status && message.invitation_status === "accept") {
+							if (message.sender_username === username) {
+								div.setAttribute("id", "message");
+								div.innerHTML = `<div class="message self-message">
+									<p>${message.body}<\p>
+									<p class="hour">${sent_at}</p>
+								</div>`;
+							}
+							else if (message.receiver_id === getClientID()) {
+								div.setAttribute("id", "self-message");
+								div.innerHTML = `
+                 <div class="message friend-message flex flex-col">
+                    <p>${message.body}</p>
+                    <p class="hour">${sent_at}</p>
+                    <div class="game-actions flex gap-2 mt-2">
+                        <button type="button" class="accept-btn px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-white transition-colors">
+                            Accept
+                        </button>
+                        <button type="button" class="reject-btn px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg text-white transition-colors">
+                            Reject
+                        </button>
+                    </div>
+                </div>`;
+								const acceptBtn = div.querySelector('.accept-btn') as HTMLButtonElement;
+								const rejectBtn = div.querySelector('.reject-btn') as HTMLButtonElement;
+								acceptBtn.disabled = true;
+								acceptBtn.textContent = "Accepted ✓";
+								rejectBtn?.remove();
+								acceptBtn.classList.add('bg-gray-500');
+							}
+						}
+						else if (message.invitation_status && message.invitation_status === "reject") {
+							if (message.sender_username === username) {
+								div.setAttribute("id", "message");
+								div.innerHTML = `<div class="message self-message">
+									<p>${message.body}<\p>
+									<p class="hour">${sent_at}</p>
+								</div>`;
+							}
+							else if (message.receiver_id === getClientID()) {
+								div.setAttribute("id", "self-message");
+								div.innerHTML = `
+                 <div class="message friend-message flex flex-col">
+                    <p>${message.body}</p>
+                    <p class="hour">${sent_at}</p>
+                    <div class="game-actions flex gap-2 mt-2">
+                        <button type="button" class="accept-btn px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-white transition-colors">
+                            Accept
+                        </button>
+                        <button type="button" class="reject-btn px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg text-white transition-colors">
+                            Reject
+                        </button>
+                    </div>
+                </div>`;
+								const acceptBtn = div.querySelector('.accept-btn') as HTMLButtonElement;
+								const rejectBtn = div.querySelector('.reject-btn') as HTMLButtonElement;
+								rejectBtn.disabled = true;
+								rejectBtn.textContent = "Rejected ✗";
+								acceptBtn?.remove();
+								rejectBtn.classList.add('bg-gray-500');
+							}
+						}
 					}
 				}
 				fragment.appendChild(div);
