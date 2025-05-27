@@ -816,9 +816,5 @@ export function crazyTokensMode(data: Games): void {
         })
 	})
 
-	window.addEventListener('beforeunload', () => {
-		clearGame();
-	});
-
     start();
 }

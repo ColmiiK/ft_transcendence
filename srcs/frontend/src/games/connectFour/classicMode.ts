@@ -97,6 +97,9 @@ export function classicMode(data: Games): void {
 		init();
 		if (savedState){
 			renderBoardFromState(savedState)
+			gameActive = false;
+			if (player2.AI)
+				initAI();
 			await pauseGame(columnList);
 		}
 		else
@@ -303,9 +306,11 @@ export function classicMode(data: Games): void {
 	}
 
 	function renderBoardFromState(state: GameState) {
-		for (const colId in state.boardData) {
+		setPlayerState(player1, state.player1);
+		setPlayerState(player2, state.player2);
+
+		for (const colId in state.boardData)
 			boardMap.set(colId, [...state.boardData[colId]]);
-		}
 
 		columnList.forEach(column => {
 			const cells = columnMap.get(column.id);
@@ -330,16 +335,14 @@ export function classicMode(data: Games): void {
 					cell.appendChild(token);
 				} else {
 					if (state.player1.turn) cell.classList.add("red-hover");
-					else cell.classList.add("yellow-hover");
+					else if (state.player2.turn && !state.player2.AI) cell.classList.add("yellow-hover");
 				}
 			}
 		});
-	
-		setPlayerState(player1, state.player1);
-		setPlayerState(player2, state.player2);
 	}
 
 	document.getElementById('pauseGame')?.addEventListener('click', async () => {
+		gameActive = gameActive ? false : true;
 		await pauseGame(columnList);
 	})
 
@@ -397,10 +400,6 @@ export function classicMode(data: Games): void {
 				navigateTo("/games");
 			})
 	})
-
-	window.addEventListener('beforeunload', () => {
-		clearGame();
-	});
 
 	start();
 }
