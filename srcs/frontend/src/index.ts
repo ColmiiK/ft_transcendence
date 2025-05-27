@@ -16,7 +16,7 @@ import { initTournamentEvents } from "./tournament/tournament.js";
 import { initSelectPageEvent } from "./games/select-game-page.js";
 import { initModifyPageEvents } from "./modify-profile/modify-page.js";
 import { initStatsEvents } from "./statistics/stats-page.js";
-import { applyTranslation } from "./login-page/login-transcript.js";
+import { applyTranslation } from "./functionalities/transcript.js";
 
 const routes = [
 	{

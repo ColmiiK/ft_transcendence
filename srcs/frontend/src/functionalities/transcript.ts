@@ -1,4 +1,4 @@
-import { crazyTokens } from "../games/connectFour/gameEngine";
+import { fetchDisplayTerms, sendRequest } from "../login-page/login-fetch.js";
 
 const locales = [
 	{
@@ -518,41 +518,65 @@ const locales = [
 	},
 ];
 
-const navigatorLanguage = 'fr';
-
-let lang = locales.find(lang => lang.code === navigatorLanguage)
+const navigatorLanguage = localStorage.getItem('language') ? localStorage.getItem('language') : window.navigator.language.substring(0, 2);
+export let lang = locales.find(lang => lang.code === navigatorLanguage)
 						? navigatorLanguage
 						: 'en';
 
 export function applyTranslation() {
-	const translations = locales.find(e => e.code === lang)?.translations;
-
-	// localStorage.setItem("") = lang;
+	const currentLocale = locales.find(e => e.code === lang);
+	const translations = currentLocale?.translations || {};
 
 	const nodes = document.querySelectorAll('[translatekey]');
 	const formNodes = document.querySelectorAll('[data-placeholder]');
 	const buttonNodes = document.querySelectorAll('[data-value]');
 
-	if (!nodes) return;
-
 	nodes?.forEach((node) => {
 		const key = node.getAttribute('translatekey');
-		const translation = translations[key] || key;
-		node.innerHTML = translation;
+		if (key) {
+			const translation = translations[key as keyof typeof translations] || key;
+			node.innerHTML = translation;
+		}
 	});
+	
 	formNodes?.forEach((node) => {
 		const key = node.getAttribute('data-placeholder');
-		const translation = translations[key] || key;
-		node.setAttribute('placeholder', translation);
+		if (key) {
+			const translation = translations[key as keyof typeof translations] || key;
+			node.setAttribute('placeholder', translation);
+		}
 	});
+	
 	buttonNodes?.forEach((node) => {
 		const key = node.getAttribute('data-value');
-		const translation = translations[key] || key;
-		node.setAttribute('value', translation);
-	})
+		if (key) {
+			const translation = translations[key as keyof typeof translations] || key;
+			node.setAttribute('value', translation);
+		}
+	});
 }
 
-export function getTranslation(key: string) {
-	const translation = locales.find(e => e.code === lang).translations[key];
-	return (translation || key);
+export function getTranslation(key: string): string {
+	const currentLocale = locales.find(e => e.code === lang);
+	if (!currentLocale) return key;
+	
+	return currentLocale.translations[key as keyof typeof currentLocale.translations] || key;
+}
+
+export async function setLang(newLang: string) {
+	if (lang === newLang) { return ; }
+	lang = newLang;
+	try {
+		const isLogged = await sendRequest('GET', '/islogged');
+		if (isLogged && isLogged['logged'] === true) {
+			const response = await sendRequest('PATCH', '/users', {language: lang});
+			if (!response || response['error'])
+				throw new Error('Error while saving new language');
+		}
+		localStorage.setItem('language', lang);
+		await fetchDisplayTerms();
+	}
+	catch (error) {
+		console.error(error);
+	}
 }

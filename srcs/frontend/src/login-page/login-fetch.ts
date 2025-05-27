@@ -2,7 +2,7 @@ import { showAlert } from "../toast-alert/toast-alert.js";
 import { navigateTo } from "../index.js";
 import { LoginObject } from "../types.js";
 import { createsocketToastConnection } from "../toast-alert/toast-alert.js";
-import { getTranslation } from "./login-transcript.js";
+import { lang, setLang, getTranslation, applyTranslation } from "../functionalities/transcript.js";
 
 /**
  * @brief Inits the associated Login Fetches and buttons
@@ -120,16 +120,15 @@ async function handleLogin(e: Event) {
  */
 export async function initSession(response: object) {
 	Object.entries(response).forEach(([key, value])=> {
-		if (typeof value !== 'object' || value === null) {
+		if (typeof value !== 'object' || value === null)
 			localStorage.setItem(key, String(value));
-			// console.log("storing: ", key, ", ", String(value));
-		}
-		else {
+		else
 			localStorage.setItem(key, JSON.stringify(value));
-			// console.log("storing: ", key, ", ", JSON.stringify(value));
-		}
 	});
 
+	const savedLang = localStorage.getItem('language');
+	if (savedLang)
+		await setLang(savedLang);
 	navigateTo("/home");
 	createsocketToastConnection();
 } 
@@ -158,7 +157,7 @@ async function handleRegister(e: Event) {
 		if (msg !== "Ok")
 			throw new Error(msg);
 
-		const response = await sendRequest("POST", "register", {username, email, password, confirm_password});
+		const response = await sendRequest("POST", "register", {username, email, password, confirm_password, language: lang});
 		if (response["error"]) {
 			if (response["error"].includes("username"))
 				throw new Error(getTranslation('username_exists'));
@@ -252,7 +251,13 @@ async function recoverPassword(e: Event) {
 
 export async function fetchDisplayTerms() {
 	try {
-		const response = await fetch(`../src/login-page/privacy-policy.html`);
+		let response;
+		if (!localStorage.getItem('language') || localStorage.getItem('language') === 'en')
+			response = await fetch(`../src/login-page/privacy-policy.html`);
+		else if (localStorage.getItem('language') === 'es')
+			response = await fetch(`../src/login-page/privacy-policy-es.html`);
+		else
+			response = await fetch(`../src/login-page/privacy-policy-fr.html`);
 		const content = await response.text();
 		const sectionCondition = document.querySelector("#privacy-policy");
 		if (sectionCondition)
@@ -278,12 +283,12 @@ async function displayTerms() {
 			signInPage.style.display = "none";
 			signUpPage.style.display = "none";
 			termsPage.style.display = "flex";
-			termsButton.innerText = "Sign In";
+			termsButton.innerText = getTranslation('login_sign_in');
 		}
 		else {
 			signInPage.style.display = "flex";
 			termsPage.style.display = "none";
-			termsButton.innerText = "Privacy and Terms Conditions";
+			termsButton.innerText = getTranslation('terms_policy');
 		}
 	})
 }
