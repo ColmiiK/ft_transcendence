@@ -88,8 +88,8 @@ export async function clickFriendProfile(e: Event | null, data: User | null) {
 					<p class="font-bold text-center">${getTranslation('friends_pong_wins')}<span class="font-thin">${friendProfileTyped.pong_games_won}</span></p>
 					<p class="font-bold text-center">${getTranslation('friends_pong_losses')}<span class="font-thin">${friendProfileTyped.pong_games_lost}</span></p>
 					<p class="font-bold text-center">${getTranslation('friends_connect_played')}<span class="font-thin">${friendProfileTyped.connect_four_games_played}</span></p>
-					<p class="font-bold text-center">${getTranslation('friends_connect_wins')}<span class="font-thin">${friendProfileTyped.connect_four_games_played}</span></p>
-					<p class="font-bold text-center">${getTranslation('friends_connect_losses')}<span class="font-thin">${friendProfileTyped.connect_four_games_played}</span></p>
+					<p class="font-bold text-center">${getTranslation('friends_connect_wins')}<span class="font-thin">${friendProfileTyped.connect_four_games_won}</span></p>
+					<p class="font-bold text-center">${getTranslation('friends_connect_losses')}<span class="font-thin">${friendProfileTyped.connect_four_games_lost}</span></p>
 				</div>
 				`
 

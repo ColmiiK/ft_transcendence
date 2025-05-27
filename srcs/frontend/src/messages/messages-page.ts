@@ -181,12 +181,11 @@ export function displayMessage(data: Message) {
   else if (data.type === "game") {
     let messageContainer = document.getElementById("message-history");
     if (!messageContainer) return;
-    const game_type = data.body.substring(29);
-
     let el = document.createElement("div");
     const sent_at = data.sent_at.substring(11, 16);
     if (data.info === "request") {
       if (data.sender_id === getClientID()) {
+        const game_type = data.body.substring(27);
         el.setAttribute("id", "message");
         el.innerHTML = `
                 <div class="message self-message">
@@ -210,7 +209,6 @@ export function displayMessage(data: Message) {
                     </div>
                 </div>`;
 
-
         // Añadir event listeners para los botones
         const acceptBtn = el.querySelector('.accept-btn') as HTMLButtonElement;
         const rejectBtn = el.querySelector('.reject-btn') as HTMLButtonElement;
@@ -229,12 +227,11 @@ export function displayMessage(data: Message) {
               chat_id: actual_chat_id,
               sent_at: date.toISOString(),
             }));
-            // Deshabilitar botones después de aceptar
             acceptBtn.disabled = true;
             acceptBtn.textContent = "Accepted ✓";
             rejectBtn?.remove();
             acceptBtn.classList.add('bg-gray-500');
-            
+            sendRequest(`PATCH`, `messages/${data.message_id}`, { invitation_status: "accept" });
           }
         });
 
@@ -253,11 +250,11 @@ export function displayMessage(data: Message) {
               chat_id: actual_chat_id,
               sent_at: date.toISOString(),
             }));
-            // Deshabilitar botones después de rechazar
             rejectBtn.disabled = true;
             rejectBtn.textContent = "Rejected ✗";
             acceptBtn?.remove();
             rejectBtn.classList.add('bg-gray-500');
+            sendRequest(`PATCH`, `messages/${data.message_id}`, { invitation_status: "reject" });
           }
         });
       }
@@ -265,7 +262,7 @@ export function displayMessage(data: Message) {
     }
     else if (data.info === "accept") {
       console.log(data)
-      if (data.sender_id === getClientID() && actual_chat_id === data.chat_id){
+      if (data.sender_id === getClientID() && actual_chat_id === data.chat_id) {
         el.setAttribute("id", "message");
         el.innerHTML = `
         <div class="message self-message">
@@ -287,7 +284,7 @@ export function displayMessage(data: Message) {
       }
     }
     else if (data.info === "reject") {
-      if (data.sender_id === getClientID() && actual_chat_id === data.chat_id){
+      if (data.sender_id === getClientID() && actual_chat_id === data.chat_id) {
         el.setAttribute("id", "message");
         el.innerHTML = `
         <div class="message self-message">
