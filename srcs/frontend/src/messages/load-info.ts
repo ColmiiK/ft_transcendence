@@ -278,8 +278,6 @@ async function displayFriendInfo(friend_username: string) {
 }
 
 export async function chargeChat(chat_id: number, friend_username: string, friend_avatar: string, page: number = 1) {
-	if (page === 1)
-		console.log("chargeChat information");
 	if (window.innerWidth < 768 && page === 1)
 		toggleMobileDisplay();
 
@@ -503,8 +501,8 @@ export function setupInfiniteScroll() {
 			chatDiv.scrollTop < 100 &&
 			chatDiv.scrollHeight > chatDiv.clientHeight
 		) {
-			setTimeout(() => {
-				handleScroll();
+			setTimeout(async() => {
+				await handleScroll();
 			}, 500);
 		}
 	}
