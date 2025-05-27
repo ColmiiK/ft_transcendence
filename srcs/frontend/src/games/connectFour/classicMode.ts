@@ -79,9 +79,9 @@ export function classicMode(data: Games): void {
 			}
 			
 			if (!aiColumn && player2.turn && player2.AI && !aiIsThinking) {
-				console.log("AI calculando movimiento...");
+				console.log("AI is thinking...");
 				aiColumn = await aiToken();
-				console.log("AI decidió columna:", aiColumn?.id);
+				console.log("AI chose: ", aiColumn?.id);
 			}
 			
 			if (player2.turn && player2.AI && aiColumn && aiIsThinking) {
@@ -323,101 +323,3 @@ export function classicMode(data: Games): void {
 
 	start();
 }
-
-/* function getPlayerState(player: Player): PlayerState {
-		const playerS = {
-			num: player.num,
-			color: player.color,
-			turn: player.turn,
-			specialToken: player.specialToken,
-			diceUses: player.diceUses,
-			useSpecial: player.useSpecial,
-			affected: player.affected,
-			turnAffected: player.turnAffected,
-		}
-		return playerS;
-	}
-
-	function setPlayerState(player: Player, state: PlayerState) {
-		player.num = state.num;
-		player.color = state.color;
-		player.turn = state.turn;
-		player.specialToken = state.specialToken;
-		player.diceUses = state.diceUses;
-		player.useSpecial = state.useSpecial;
-		player.affected = state.affected;
-		player.turnAffected = state.turnAffected;
-	}
-
-	function saveGameState(mode: "classic" | "custom", player1: Player, player2: Player) {
-	const boardData: { [columnId: string]: number[] } = {};
-	columnList.forEach(column => {
-		const data = boardMap.get(column.id);
-		if (data) boardData[column.id] = [...data];
-	});
-
-	const state: GameState = {
-		mode,
-		boardData,
-		player1: getPlayerState(player1),
-		player2: getPlayerState(player2),
-	};
-
-	localStorage.setItem(`connect4GameState${mode}`, JSON.stringify(state));
-	}
-
-	function loadGameState(mode: "classic" | "custom"): GameState | null {
-	const stateStr = localStorage.getItem(`connect4_game_state_${mode}`);
-	if (!stateStr) return null;
-
-	const state: GameState = JSON.parse(stateStr);
-	return state;
-	}
-
-	function renderBoardFromState(state: GameState, player1: Player, player2: Player) {
-	for (const colId in state.boardData) {
-		boardMap.set(colId, [...state.boardData[colId]]);
-	}
-
-	columnList.forEach(column => {
-		const cells = columnMap.get(column.id);
-		if (!cells) return;
-
-		for (let row = 0; row < cells.length; row++) {
-		const cell = cells[row];
-		cell.innerHTML = "";
-		cell.className = "cell";
-
-		const cellValue = boardMap.get(column.id)?.[row] || 0;
-
-		if (cellValue === 1) {
-			cell.classList.add("filled", "red-hover");
-			const token = document.createElement("div");
-			token.className = "token red";
-			cell.appendChild(token);
-		} else if (cellValue === 2) {
-			cell.classList.add("filled", "yellow-hover");
-			const token = document.createElement("div");
-			token.className = "token yellow";
-			cell.appendChild(token);
-		} else if (cellValue === 3) {
-			cell.classList.add("filled");
-			const token = document.createElement("div");
-			token.className = "token ghostToken opacity-50 grayscale";
-			token.innerText = "👻";
-			cell.appendChild(token);
-		} else {
-			if (state.player1.turn) {
-			cell.classList.add("red-hover");
-			} else {
-			cell.classList.add("yellow-hover");
-			}
-		}
-		}
-	});
-	
-	setPlayerState(player1, state.player1);
-	setPlayerState(player2, state.player2);
-	updateTurnIndicator();
-
-} */

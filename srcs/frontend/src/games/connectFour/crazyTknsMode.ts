@@ -90,9 +90,9 @@ export function crazyTokensMode(data: Games): void {
 			}
 			
 			if (!aiColumn && player2.turn && player2.AI && !aiIsThinking) {
-				console.log("AI calculando movimiento...");
+				console.log("AI is thinking...");
 				aiColumn = await aiToken();
-				console.log("AI decidió columna:", aiColumn?.id);
+				console.log("AI chose: ", aiColumn?.id);
 			}
 			
 			if (player2.turn && player2.AI && aiColumn && aiIsThinking) {

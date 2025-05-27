@@ -114,9 +114,9 @@ export function insertDivWinner(player1: Player, player2: Player, columnList: HT
 		if (winner){
 			winner.classList.add(playerWinner);
 			winner.style.display = "block";
-			winner.innerHTML = `¡El <span>${player}</span> ha ganado!`;
+			winner.innerHTML = `¡Player <span>${player}</span> wins!`;
 		}
-        console.log("EL jugador: ", player, " ha ganado.");
+        console.log("Player: ", player, " wins.");
 		disableClicks(columnList);
 }
 
@@ -124,7 +124,7 @@ export function insertDivDraw(columnList: HTMLElement[]): void {
 	const draw = document.getElementById("draw");
 	if (!draw) return;
 
-	draw.innerText = `¡Empate!`;
+	draw.innerText = `¡Draw!`;
 	draw.style.display = "block";
 	disableClicks(columnList);
 }
@@ -190,7 +190,6 @@ async function updateCell(cell: HTMLElement, player: Player): Promise<void> {
 
 export async function placeToken(column: HTMLElement | null, player1: Player, player2: Player, columnMap: Map<string, HTMLElement[]>, boardMap: Map<string, number[]>, columnList: HTMLElement[], mode: string): Promise<void> {
     disableClicks(columnList);
-    console.log(player1.turn, player2.turn)
     if (!column || !column.id) {
         await enableClicks(columnList);
         console.error("Column or column ID is invalid: ", column);
