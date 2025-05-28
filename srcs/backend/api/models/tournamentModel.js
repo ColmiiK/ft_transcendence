@@ -443,8 +443,7 @@ export function getInvitationStatus(tournament_id, user_id) {
         console.error("Error accessing tournament_participants:", err.message);
         return reject(err);
       }
-      if (!row)
-        return resolve(null);
+      if (!row) return resolve(null);
       resolve(row);
     });
   });
@@ -748,4 +747,38 @@ export async function finishTournament(tournament, standings) {
     }),
   ]);
   await setTournamentAsFinished(tournament.tournament_id);
+}
+
+/**
+ * Returns the current tournament for a given user
+ * @param {Number} user_id - ID of the given user
+ * @returns {Object} - The current tournament, if it exists
+ */
+export function getCurrentTournament(user_id) {
+  assert(user_id !== undefined, "user_id must exist");
+  return new Promise((resolve, reject) => {
+    const sql = `
+      SELECT
+        t.name,
+        t.id,
+        t.game_type,
+        t.status
+      FROM
+        tournaments t
+      JOIN
+        tournament_participants tp ON t.id = tp.tournament_id
+      WHERE
+        t.status != 'finished'
+      AND
+        tp.user_id = $user_id
+    `;
+    db.get(sql, { $user_id: user_id }, function (err, row) {
+      if (err) {
+        console.error("Error getting tournament", err.message);
+        return reject(err);
+      }
+      if (!row) resolve(null);
+      resolve(row);
+    });
+  });
 }

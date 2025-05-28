@@ -152,20 +152,37 @@ export function getScheduledMatches(user_id) {
   return new Promise((resolve, reject) => {
     const sql = `
       SELECT
-        id AS match_id,
-        first_player_id,
-        second_player_id,
-        status,
-        game_type,
-        custom_mode
+        m.id AS match_id,
+        m.first_player_id,
+        m.second_player_id,
+        m.status,
+        m.game_type,
+        m.custom_mode,
+        u1.username AS host,
+      CASE
+        WHEN m.first_player_id = $user_id THEN u2.username
+        ELSE u1.username
+      END AS rival_username,
+      CASE
+        WHEN m.first_player_id = $user_id THEN u2.avatar
+        ELSE u1.avatar
+      END AS rival_avatar
       FROM
-        matches
+        matches m
+      JOIN
+        users u1 ON m.first_player_id = u1.id
+      JOIN
+        users u2 ON m.second_player_id = u2.id
       WHERE
-        (first_player_id = ? OR second_player_id = ?)
+        (m.first_player_id = $user_id OR m.second_player_id = $user_id)
       AND
-        status = 'scheduled'
+        m.status = 'scheduled'
+      AND
+        u1.is_deleted = 0
+      AND
+        u2.is_deleted = 0
     `;
-    db.all(sql, [user_id, user_id], function (err, rows) {
+    db.all(sql, { $user_id: user_id }, function (err, rows) {
       if (err) {
         console.error("Error getting matches:", err.message);
         return reject(err);
