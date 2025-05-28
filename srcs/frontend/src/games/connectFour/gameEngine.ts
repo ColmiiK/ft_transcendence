@@ -21,6 +21,7 @@ export interface PlayerState {
   color: string;
   turn: boolean;
   AI: boolean;
+  winner: boolean,
   specialToken?: string | null;
   diceUses?: number;
   useSpecial?: boolean;
@@ -97,11 +98,13 @@ export	function clearGame(player1: Player, player2: Player, columnList: HTMLElem
 
     const winnerDiv = document.getElementById("winner");
     const drawDiv = document.getElementById("draw");
+    const diceDiv = document.getElementById("dice-container");
     if (winnerDiv){
 		winnerDiv.style.display = "none";
         winnerDiv.classList.remove(`${player1.winner ? `${player1.color}` : `${player2.color}`}`);
     }
     if (drawDiv) drawDiv.style.display = "none";
+    if (diceDiv) diceDiv.style.display = "none";
 }
 
 export function insertDivWinner(player1: Player, player2: Player, columnList: HTMLElement[]): void {
@@ -111,9 +114,9 @@ export function insertDivWinner(player1: Player, player2: Player, columnList: HT
 		if (winner){
 			winner.classList.add(playerWinner);
 			winner.style.display = "block";
-			winner.innerHTML = `¡El <span>${player}</span> ha ganado!`;
+			winner.innerHTML = `¡Player <span>${player}</span> wins!`;
 		}
-        console.log("EL jugador: ", player, " ha ganado.");
+        console.log("Player: ", player, " wins.");
 		disableClicks(columnList);
 }
 
@@ -121,12 +124,12 @@ export function insertDivDraw(columnList: HTMLElement[]): void {
 	const draw = document.getElementById("draw");
 	if (!draw) return;
 
-	draw.innerText = `¡Empate!`;
+	draw.innerText = `¡Draw!`;
 	draw.style.display = "block";
 	disableClicks(columnList);
 }
 
-async function updateDice(player1: Player, player2: Player): Promise<void>{
+export async function updateDice(player1: Player, player2: Player): Promise<void>{
         const currentPlayer = player1.turn ? player1 : player2;
 
         const diceContainer = document.getElementById("dice-container");
@@ -144,7 +147,7 @@ async function updateDice(player1: Player, player2: Player): Promise<void>{
         else if (!currentPlayer.specialToken && currentPlayer.diceUses == 0)
             diceIcon.innerText = `❌`;
         else
-            diceIcon.innerText = `⚪`
+            diceIcon.innerText = `⚪`;
 		await delay(300);
 }  
 
@@ -187,7 +190,6 @@ async function updateCell(cell: HTMLElement, player: Player): Promise<void> {
 
 export async function placeToken(column: HTMLElement | null, player1: Player, player2: Player, columnMap: Map<string, HTMLElement[]>, boardMap: Map<string, number[]>, columnList: HTMLElement[], mode: string): Promise<void> {
     disableClicks(columnList);
-    console.log(player1.turn, player2.turn)
     if (!column || !column.id) {
         await enableClicks(columnList);
         console.error("Column or column ID is invalid: ", column);
@@ -218,7 +220,7 @@ export async function placeToken(column: HTMLElement | null, player1: Player, pl
     columnData[row] = currentPlayer.num;
 
     await updateCell(cells[row], currentPlayer);
-    await updateTurnIndicator(player1, player2, columnList, columnMap, "classic");
+    await updateTurnIndicator(player1, player2, columnList, columnMap, mode);
     enableClicks(columnList);
 }
 
@@ -358,7 +360,6 @@ export async function pauseGame(columnList: HTMLElement[]): Promise<void> {
         return Promise.resolve();
     }
 
-    disableClicks(columnList);
     diceEl.style.pointerEvents = 'none';
     exitBtn.style.pointerEvents = 'none';
 
@@ -372,9 +373,107 @@ export async function pauseGame(columnList: HTMLElement[]): Promise<void> {
         diceEl.style.pointerEvents = 'auto';
         boardEl.style.animation = "fullOpacity 0.25s ease forwards";
         pauseEl.style.display = 'none';
-        enableClicks(columnList);
     }
     return Promise.resolve();
+}
+
+export function getPlayerState(player: Player): PlayerState {
+    const playerS = {
+        num: player.num,
+        color: player.color,
+        turn: player.turn,
+        AI: player.AI,
+        winner: player.winner,
+        specialToken: player.specialToken,
+        diceUses: player.diceUses,
+        useSpecial: player.useSpecial,
+        affected: player.affected,
+        turnAffected: player.turnAffected,
+    }
+    return playerS;
+}
+
+export function setPlayerState(player: Player, state: PlayerState) {
+    player.num = state.num;
+    player.color = state.color;
+    player.turn = state.turn;
+    player.AI = state.AI;
+    player.winner = state.winner;
+    player.specialToken = state.specialToken;
+    player.diceUses = state.diceUses;
+    player.useSpecial = state.useSpecial;
+    player.affected = state.affected;
+    player.turnAffected = state.turnAffected;
+}
+
+export function saveGameState(mode: "classic" | "custom", player1: Player, player2: Player) {
+    const boardData: { [columnId: string]: number[] } = {};
+
+    columnList.forEach(column => {
+        const copy = boardMap.get(column.id);
+        if (copy) boardData[column.id] = [...copy];
+    });
+
+    const state: GameState = {
+        mode,
+        boardData,
+        player1: getPlayerState(player1),
+        player2: getPlayerState(player2),
+    };
+
+    localStorage.setItem(`connect4GameState${mode}`, JSON.stringify(state));
+}
+
+export function loadGameState(mode: "classic" | "custom"): GameState | null {
+    const stateStr = localStorage.getItem(`connect4GameState${mode}`);
+    if (!stateStr) return null;
+
+    const state: GameState = JSON.parse(stateStr);
+    return state;
+}
+
+export function renderBoardFromState(state: GameState, player1: Player, player2: Player): void {
+    setPlayerState(player1, state.player1);
+    setPlayerState(player2, state.player2);
+
+    for (const colId in state.boardData)
+        boardMap.set(colId, [...state.boardData[colId]]);
+
+    columnList.forEach(column => {
+        const cells = columnMap.get(column.id);
+        if (!cells) return;
+
+        for (let row = 0; row < cells.length; row++) {
+            const cell = cells[row];
+            cell.innerHTML = "";
+            cell.className = "cell";
+
+            const cellValue = boardMap.get(column.id)?.[row] || 0;
+
+            if (cellValue === 1) {
+                cell.classList.add("filled", "red-hover");
+                const token = document.createElement("div");
+                token.className = "token red";
+                cell.appendChild(token);
+            } else if (cellValue === 2) {
+                cell.classList.add("filled", "yellow-hover");
+                const token = document.createElement("div");
+                token.className = "token yellow";
+                cell.appendChild(token);
+            } else if (cellValue === 3) {
+                cell.classList.add("filled");
+                const token = document.createElement("div");
+                token.className = "token ghostToken opacity-50";
+                token.innerText = "👻";
+                cell.appendChild(token);
+            } else {
+                if (state.player1.turn) cell.classList.add("red-hover");
+                else if (state.player2.turn && !state.player2.AI) cell.classList.add("yellow-hover");
+            }
+        }
+    });
+    if (state.mode === "custom")
+        updateDice(player1, player2);
 }
 
 export function createSocket4inrowConnection(){
