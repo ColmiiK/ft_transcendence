@@ -1,4 +1,13 @@
 /* --> Select game page <-- */
+.pong-icon {
+  fill:none;
+  stroke:var(--dark-pink);
+  stroke-width: 2;
+  stroke-linecap:round;
+  stroke-linejoin: round;
+  stroke-miterlimit: 10;
+}
+
 .game-card {
   display: flex;
 	background-color: var(--accent-pink);
@@ -28,24 +37,21 @@
 	color: var(--dark-blue);
 }
 
-.game-button {
+.tour-button {
+  width: fit-content;
 	margin-top: auto;
 	background-color: var(--dark-pink);
 	border-radius: 15px;
 	transition: all 250ms ease-in-out;
-}
+} */
 
-.game-button:hover {
+.tour-button:hover {
   background-color: #b06289;
 }
 
 /* Refactor this when I have the time */
 .modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  position: absolute;
   border-radius: 15px;
   display: flex;
   justify-content: center;
@@ -55,12 +61,11 @@
 
 .modal-content {
   box-shadow: 0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .3);
-  background: #b7618cb7;
+  background: #b7618cda;
   backdrop-filter: blur(6px) saturate(80%);
   border: 1px solid rgba(255, 255, 255, 0.125);
   padding: 2rem;
   border-radius: 15px;
-  position: relative;
 }
 
 .game-options {
