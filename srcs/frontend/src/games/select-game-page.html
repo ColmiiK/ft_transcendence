@@ -12,7 +12,7 @@
     <div class="gap-4 grid grid-cols-1 lg:grid-cols-3">
       <div class="grid grid-cols-1 gap-4">
          <!-- Pong Card -->
-         <div class="game-card lg:max-w-[20vw] p-8 flex flex-col items-center gap-4 game-button" data-route ='/pong'>
+         <div id="pong-card" class="test game-card lg:max-w-[20vw] p-8 flex flex-col items-center gap-4 game-button">
            <div class="game-icon">
             <svg version="1.1" id="Icons" class="pong-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
               viewBox="0 0 32 32" xml:space="preserve">
@@ -30,8 +30,8 @@
            </div>
          </div>
    
-         <!-- 4 in Row Card -->
-         <div class="game-card lg:max-w-[20vw] p-8 flex flex-col items-center gap-4 game-button" data-route ='/4inrow'>
+         <!-- Connect4 Card -->
+         <div id="connect-card" class="test game-card lg:max-w-[20vw] p-8 flex flex-col items-center gap-4 game-button">
            <div class="game-icon">
             <svg version="1.1" id="Icons" class="pong-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
 	            viewBox="0 0 32 32" xml:space="preserve">
@@ -56,7 +56,7 @@
 
        </div>
       <!-- Tournament Card -->
-      <div class="game-card lg:max-w-[20vw] p-8 flex flex-col items-center justify-center gap-4 game-button" data-route ='/tournament'>
+      <div class="game-card lg:max-w-[20vw] p-8 flex flex-col items-center justify-center gap-4 game-button">
         <div class="game-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="pong-icon" xml:space="preserve">
             <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2z"/>
@@ -65,10 +65,10 @@
         <div class="flex flex-col gap-2 items-center">
           <h2 class="game-title" translatekey="select_tournament_title">Tournament</h2>
           <p class="game-description" translatekey="select_tournament_description">Create tournaments for both games!</p>
-          <button class="tour-button p-2" translatekey="select_tournament_button">
+          <button id="create-tournament" class="tour-button p-2" translatekey="select_tournament_button">
             Create Tournament
           </button>
-          <button class="tour-button p-2 hidden" data-route ='/tournament'>
+          <button id="view-tournament" class="tour-button p-2 hidden" data-route ='/tournament'>
             View Current Tournament
           </button>
         </div>
@@ -94,6 +94,7 @@
             </svg>
           </div>
         </div>
+        <div class="w-full h-full bg-[#b7618c6b] rounded-[15px]"></div>
         </div>
       </div>
     </div>
@@ -103,12 +104,10 @@
       <div class="modal-content flex flex-col gap-4">
         <!-- Game Mode Selection Buttons -->
         <div class="mode-selector flex justify-center gap-4">
-          <button class="mode-button active" data-mode-type="normal" translatekey="select_normal_mode">Normal Mode</button>
-          <button class="mode-button" data-mode-type="custom" translatekey="select_custom_mode">Custom Mode</button>
+          <button id="normal-button" class="mode-button active" translatekey="select_normal_mode">Normal Mode</button>
+          <button id="custom-button" class="mode-button" translatekey="select_custom_mode">Custom Mode</button>
         </div>
-
         <div id="pink-divider"></div>
-    
         <!-- Normal Mode Options -->
         <div class="game-options game-modes normal-modes">
           <button class="option-button" data-mode="local">
@@ -124,7 +123,6 @@
             <span translatekey="select_play_ai">Play vs AI</span>
           </button>
         </div>
-    
         <!-- Custom Mode Options (initially hidden) -->
         <div class="game-options game-modes custom-modes hidden">
           <button class="option-button" data-mode="local-custom">
@@ -140,22 +138,67 @@
             <span translatekey="select_custom_ai">Custom AI</span>
           </button>
         </div>
-    <!-- Tournament options -->
-    <div class="game-options tournament-modes hidden">
-      <button class="option-button" data-mode="create">
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24">
-          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-        </svg>
-        <span translatekey="select_create_tournament">Create Tournament</span>
-      </button>
-      <button class="option-button" data-mode="join">
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24">
-          <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
-        </svg>
-        <span translatekey="select_join_tournament">Join Tournament</span>
-      </button>
+      </div>
     </div>
-  </div>
-</div>
-  </div>
+
+    <!-- Tournament options -->
+    <div class="game-options tournament-modes modal modal-content gap-2 hidden">
+      <div class="flex justify-between items-center">
+        <h1 class="text-5xl text-[var(--dark-purple)]">Create Tournament</h1>
+        <svg class="close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#3B0034">
+          <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+        </svg>
+      </div>
+      <div id="pink-divider"></div>
+      <form class="flex flex-col gap-4">
+        <input type="text" placeholder="Tournament Title" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
+        <div class="grid grid-cols-2 items-center justify-center gap-2">
+          <div class="flex items-center gap-2">
+            <input type="radio" value="classic-pong" name="game-option" class="accent-[var(--dark-purple)] h-[20px] aspect-square">
+            <label for="classic-pong">Classic Pong</label>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="radio" value="classic-connect" name="game-option" class="accent-[var(--dark-purple)] h-[20px] aspect-square">
+            <label for="classic-connect">Classic Connect4</label>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="radio" value="chaos-pong" name="game-option" class="accent-[var(--dark-purple)] h-[20px] aspect-square">
+            <label for="chaos-pong">Chaos Pong</label>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="radio" value="crazy-connect" name="game-option" class="accent-[var(--dark-purple)] h-[20px] aspect-square">
+            <label for="crazy-connect">CrazyTokens Connect4</label>
+          </div>
+        </div>
+
+        <div class="bg-[#3b0034d2] rounded-[15px] py-2 px-4">
+          <div id="login-button" class="flex justify-between cursor-pointer">
+            <p>Add Account</p>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+              <path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z"/>
+            </svg>
+          </div>
+          <div id="login-form" class="hidden flex flex-col w-full items-center gap-2 my-2">
+            <input type="text" placeholder="Username" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
+            <input type="password" placeholder="Password" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
+            <div class="cursor-pointer w-fit signin-user bg-transparent px-2 rounded-[15px] modal-button">Submit</div>
+          </div>
+        </div>
+        <div class="flex w-full items-center gap-2">
+          <input type="text" placeholder="Alias" class="rounded-[15px] w-full h-fit outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
+          <svg class="alias-icon fill-[var(--dark-purple)] bg-[var(--accent-pink)] rounded-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+            <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
+          </svg>
+        </div>
+      </form>
+      <div id="pink-divider"></div>
+      <div class="w-full flex flex-col items-center">
+        <h2 class="text-lg text-[var(--dark-purple)] w-full">Participants</h2>
+        <p class="w-full">Player 1: <span>Default</span></p>
+        <p class="w-full">Player 2: <span>Default</span></p>
+        <p class="w-full">Player 3: <span>Default</span></p>
+        <p class="w-full">Player 4: <span>Default</span></p>
+        <button class="w-fit signin-user p-2 rounded-[15px] modal-button">Start Tournament</button>
+      </div>
+    </div>
 </div>

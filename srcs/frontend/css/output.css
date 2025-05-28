@@ -455,11 +455,7 @@
 /* Refactor this when I have the time */
 
 .modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  position: absolute;
   border-radius: 15px;
   display: flex;
   justify-content: center;
@@ -469,13 +465,12 @@
 
 .modal-content {
   box-shadow: 0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .3);
-  background: #b7618cb7;
+  background: #b7618cda;
   -webkit-backdrop-filter: blur(6px) saturate(80%);
           backdrop-filter: blur(6px) saturate(80%);
   border: 1px solid rgba(255, 255, 255, 0.125);
   padding: 2rem;
   border-radius: 15px;
-  position: relative;
 }
 
 .game-options {
@@ -1211,6 +1206,10 @@
 
 .usingDice {
   animation: usingAnimation 1s ease-in-out;
+}
+
+.ghostToken {
+  background-color: rgba(128, 128, 128, 0.562);
 }
 
 @keyframes rollAnimation {
@@ -2082,6 +2081,11 @@ video {
   margin-right: 1rem;
 }
 
+.my-2 {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
 .my-4 {
   margin-top: 1rem;
   margin-bottom: 1rem;
@@ -2178,6 +2182,10 @@ video {
 
 .h-6 {
   height: 1.5rem;
+}
+
+.h-\[20px\] {
+  height: 20px;
 }
 
 .h-\[95\%\] {
@@ -2464,8 +2472,16 @@ video {
   background-color: #3b0034c6;
 }
 
+.bg-\[\#3b0034d2\] {
+  background-color: #3b0034d2;
+}
+
 .bg-\[\#7d48778f\] {
   background-color: #7d48778f;
+}
+
+.bg-\[\#b7618c6b\] {
+  background-color: #b7618c6b;
 }
 
 .bg-\[\#d087ac50\] {
@@ -2527,6 +2543,10 @@ video {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
 }
 
+.bg-transparent {
+  background-color: transparent;
+}
+
 .fill-\[var\(--dark-purple\)\] {
   fill: var(--dark-purple);
 }
@@ -2585,6 +2605,11 @@ video {
   padding-bottom: 0.625rem;
 }
 
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
 .text-left {
   text-align: left;
 }
@@ -2610,6 +2635,16 @@ video {
 .text-sm {
   font-size: 0.875rem;
   line-height: 1.25rem;
+}
+
+.text-4xl {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
+
+.text-5xl {
+  font-size: 3rem;
+  line-height: 1;
 }
 
 .font-bold {
@@ -2682,6 +2717,10 @@ video {
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+
+.accent-\[var\(--dark-purple\)\] {
+  accent-color: var(--dark-purple);
 }
 
 .opacity-0 {
@@ -2772,7 +2811,7 @@ video {
 :root {
   --accent-pink: #FEE0EF;
   --dark-pink: #D087AB;
-  --back-purple: #3B0034;
+  --back-purple: #3b0034b6;
   --dark-purple: #54184D;
   --dark-blue: #360066;
   --violet: #522b66;
@@ -2903,6 +2942,17 @@ h1 {
 }
 
 .party-icon:hover {
+  cursor: pointer;
+  box-shadow: var(--accent-pink) 0px 0px 2px;
+}
+
+.alias-icon {
+  width: 30px;
+  aspect-ratio: 1/1;
+  transition: 0.3s ease-in-out;
+}
+
+.alias-icon:hover {
   cursor: pointer;
   box-shadow: var(--accent-pink) 0px 0px 2px;
 }
