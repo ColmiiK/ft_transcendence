@@ -162,3 +162,8 @@ export interface GameState {
   opponent_id: number;
   isPlaying: boolean;
 }
+
+export interface GamePlayer {
+	alias: string,
+	isUser: boolean,
+}

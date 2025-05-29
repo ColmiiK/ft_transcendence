@@ -1,4 +1,7 @@
+import { getTranslation } from "../functionalities/transcript.js";
 import { navigateTo } from "../index.js";
+import { showAlert } from "../toast-alert/toast-alert.js";
+import { GamePlayer } from "../types.js"
 
 export function initSelectPageEvent(){
   const homeButton = document.getElementById('home-button') as HTMLButtonElement;
@@ -108,21 +111,121 @@ let count = 1;
 function showTournamentForm() {
   const tournamentForm = document.getElementById('tournament-form');
   const closeButton = document.getElementsByClassName('close-icon')[0] as HTMLButtonElement;
-  let host = document.getElementsByClassName('player')[0] as HTMLSpanElement;
-  const playerAlias = document.getElementById('player-alias') as HTMLInputElement;
   const addAlias = document.getElementsByClassName('alias-icon')[0] as HTMLButtonElement;
+  const addUser = document.getElementById('submit-user') as HTMLButtonElement;
+  const createTournament = document.getElementById('start-tour') as HTMLButtonElement;
+  const playerAlias = document.getElementById('player-alias') as HTMLInputElement;
+  const username = localStorage.getItem('username');
+  let host = document.getElementsByClassName('player')[0] as HTMLSpanElement;
+  host.classList.add('user');
 
   if (!tournamentForm || !closeButton || !host) { return ; }
-  tournamentForm.classList.remove('hidden');
-  closeButton.onclick = () => { tournamentForm.classList.add('hidden') };
-  const username = localStorage.getItem('username');
   host.innerText = username !== null ? username : 'Default';
-  addAlias.onclick = () => { addPlayer(playerAlias.value); }
+  tournamentForm.classList.remove('hidden');
+  closeButton.onclick = () => { closeForm(); };
+  addAlias.onclick = () => { if (addPlayer(playerAlias.value, false)) playerAlias.value = ''; }
+  addUser.onclick = async () => { await isUser(); }
+  createTournament.onclick = () => { startTournament(); }
 }
 
-function addPlayer(playerName: string) {
+function startTournament() {
+  const tournamentTitle = document.getElementById('tour-title') as HTMLInputElement;
+  const modeInputs = document.getElementsByClassName('game-option') as HTMLCollectionOf<HTMLInputElement>;
+  const players = document.getElementsByClassName('player') as HTMLCollectionOf<HTMLSpanElement>;
+  let playersObject: GamePlayer[] = [];
+  if (!tournamentTitle || !modeInputs || !players) { return ; }
+
+  try {
+    if (!tournamentTitle.value) { throw new Error('Missing Tournament title'); }
+    let gameMode;
+    for (let i = 0; i < 4; i++) {
+      if (modeInputs[i].checked)
+        gameMode = modeInputs[i].value;
+      
+      if (players[i].innerText === 'Default')
+        throw new Error('Not enough players');
+      else {
+        playersObject[i] = { alias: "", isUser: false };
+        playersObject[i].alias = players[i].innerText;
+        playersObject[i].isUser = players[i].classList.contains('user');
+      }
+    }
+    if (!gameMode) { throw new Error('Select a Game Mode'); }
+    
+    console.log("Tournament title:", tournamentTitle.value);
+    console.log("Game Mode of the Tournament:", gameMode);
+    console.log("Starting tournament with players:", playersObject);
+
+    navigateTo('/tournament');
+  }
+  catch (error) {
+    showAlert((error as Error).message, 'toast-error');
+  }
+}
+
+function closeForm() {
+  const tournamentForm = document.getElementById('tournament-form');
+  const tournamentTitle = document.getElementById('tour-title') as HTMLInputElement;
+  const modeInputs = document.getElementsByClassName('game-option') as HTMLCollectionOf<HTMLInputElement>;
+  const addDropdown = document.getElementById('login-form') as HTMLButtonElement;
+  const usernameInput = document.getElementById('username') as HTMLInputElement;
+  const passwordInput = document.getElementById('password') as HTMLInputElement;
+  const aliasInput = document.getElementById('player-alias') as HTMLInputElement;
+  const players = document.getElementsByClassName('player') as HTMLCollectionOf<HTMLSpanElement>;
+  if (!tournamentForm || !tournamentTitle || !modeInputs || !addDropdown || !usernameInput 
+    || !passwordInput || !aliasInput || !players) { return ; }
+
+  tournamentTitle.value = '';
+  usernameInput.value = '';
+  passwordInput.value = '';
+  aliasInput.value = '';
+
+  addDropdown.classList.add('hidden');
+
+  for (let i = 0; i < 4; i++) {
+    modeInputs[i].checked = false;
+    players[i].innerText = 'Default';
+    players[i].classList.remove('user');
+  }
+
+  tournamentForm.classList.add('hidden');
+  count = 1;
+}
+
+async function isUser() {
+  const usernameInput = document.getElementById('username') as HTMLInputElement;
+  const passwordInput = document.getElementById('password') as HTMLInputElement;
+  const username = usernameInput.value;
+  const password = passwordInput.value;
+  if (!username || !password) { return ; }
+  // Backend verification
+  if (addPlayer(username, true)) {
+    usernameInput.value = '';
+    passwordInput.value = '';
+  }
+}
+
+function addPlayer(playerName: string, isUser: boolean) {
   let players = document.getElementsByClassName('player') as HTMLCollectionOf<HTMLSpanElement>;
-  if (!players || count > 3 || !playerName) { return ; }
-  players[count].innerText = playerName;
-  count++;
+  let msg = '';
+  if (!players || count > 3 || !playerName) { return (false); }
+  for (let i = 0; i < 4; i++)
+    if (playerName === players[i].innerText) { msg = 'Cannot use the same name twice';}
+  if (playerName.length < 4)
+    msg = 'Player Alias too short';
+  else if (playerName.length > 16)
+    msg = 'Player Alias too long';
+  else if (!/^[a-z0-9]+$/.test(playerName))
+    msg = 'Player Alias can only contain lowercase and digits';
+  
+  if (msg === '') {
+    players[count].innerText = playerName;
+    if (isUser)
+      players[count].classList.add('user');
+    count++;
+    return (true);
+  }
+  
+  showAlert(msg, "toast-error");
+  return (false);
 }
