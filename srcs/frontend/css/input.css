@@ -51,7 +51,7 @@
 :root {
 	--accent-pink: #FEE0EF;
 	--dark-pink: #D087AB;
-	--back-purple: #3B0034;
+	--back-purple: #3b0034b6;
 	--dark-purple: #54184D;
 	--dark-blue: #360066;
 	--violet: #522b66;
@@ -72,7 +72,7 @@ body {
 
 h1 {
 	font-family: "Alkhemikal", serif;
-  font-size:4em;
+  	font-size:4em;
 	color: white;
 }
   
@@ -182,6 +182,17 @@ h1 {
 }
 
 .party-icon:hover {
+	cursor: pointer;
+	box-shadow: var(--accent-pink) 0px 0px 2px;
+}
+
+.alias-icon {
+	width: 30px;
+	aspect-ratio: 1/1;
+	transition: 0.3s ease-in-out;
+}
+
+.alias-icon:hover {
 	cursor: pointer;
 	box-shadow: var(--accent-pink) 0px 0px 2px;
 }

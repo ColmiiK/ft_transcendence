@@ -1,9 +1,9 @@
 <div class="screen-set fade-in">
-	<main id="home-page" class="flex justify-center items-center flex-col standard-purple-card">
-	<header class="flex justify-between items-center w-full m-2.5 p-2.5">
-		<h1 translatekey="home_header">Home Page</h1>
+	<main id="home-page" class="flex justify-center items-center flex-col standard-purple-card gap-2 lg:max-w-[80vw]">
+	<header class="flex justify-between items-end w-full mt-2 p-2.5">
+		<h1 translatekey="home_header" class="hidden lg:flex">Home Page</h1>
 		<div class="relative inline-block text-left" id="profile-photo">
-			<div class="flex justify-center items-center gap-x-10">
+			<div class="flex flex-row-reverse lg:flex-row justify-center items-center gap-x-10">
 				<h2 translatekey="home_welcome">Welcome<span id="username" class="text-[var(--dark-pink)]"> Username</span>!</h2>
 				<div>
 					<button type="button" id="profile-button" class="rounded-full"></button>
@@ -23,14 +23,15 @@
 			</div>
 		</div>
 	</header>
-	<section id="body-section" class="flex flex-1 flex-col md:flex-row justify-evenly gap-x-10">
-		<section id="page-selector" class="grid md:grid-cols-2 gap-4 w-full md:w-2/3">
+	<div id="divider" class="w-full m-0"></div>
+	<section id="body-section" class="flex flex-1 flex-col lg:flex-row justify-evenly gap-10">
+		<section id="page-selector" class="grid lg:grid-cols-2 gap-4 w-full lg:w-7/12">
 			<div translatekey="home_games"id="games" class="page-option">Games</div>
 			<div translatekey="home_friends"id="friends" class="page-option">Friends</div>
 			<div translatekey="home_messages"id="messages" class="page-option">Messages</div>
 			<div translatekey="home_statistics"id="statistics" class="page-option">Statistics</div>
 		</section>
-		<section id="explanation" class="p-2.5 w-full md:w-1/3 flex flex-col justify-between items-center gap-2">
+		<section id="explanation" class="p-2.5 w-full lg:w-5/12 flex flex-col justify-between items-center gap-2">
 		<p translatekey="home_moonbit"class="text-lg font-bold text-white">✨ Welcome to Moonbit! ✨ </p>
 		<p translatekey="home_first_p">Here, you can jump into classic games like <b class="text-white">Pong</b> or <b class="text-white">Connect Four</b>, play quick matches or join friendly <b class="text-white">tournaments</b>, whether it's with people nearby or online players from anywhere.</p>
 		<p translatekey="home_second_p">Feel like chatting? The <b class="text-white">chat</b> is always open: say hi, share a laugh, or plan your next game. You can also check out your <b class="text-white">Friends Page</b>, invite others to play, and see what they're up to.</p>

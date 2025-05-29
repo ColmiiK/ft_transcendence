@@ -420,6 +420,13 @@ export async function blockFriend(friendId: string) {
 		}
 
 		displayFriends();
+		if (socketToast){
+			socketToast.send(JSON.stringify({
+				sender_id: parseInt(friendId),
+				type: "friendRequest",
+				info: "delete",
+			}))
+		}
 	}
 	catch (error) {
 		console.error(error);

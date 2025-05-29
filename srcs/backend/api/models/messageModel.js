@@ -34,8 +34,9 @@ export function createMessage(data) {
         chat_id,
         body,
         invitation_type,
-        invitation_status
-      ) VALUES (?,?,?,?,?,?)`;
+        invitation_status,
+        game_type
+      ) VALUES (?,?,?,?,?,?,?)`;
     const params = [
       data.sender_id,
       data.receiver_id,
@@ -43,6 +44,7 @@ export function createMessage(data) {
       data.body,
       data?.invitation_type || "message",
       data?.invitation_status,
+      data?.game_type
     ];
 
     db.run(sql, params, function (err) {

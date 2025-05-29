@@ -14,36 +14,68 @@ import {
   patchTournament,
   determineFirstBracket,
   setTournamentAsStarted,
+  getCurrentTournament,
 } from "../models/tournamentModel.js";
+import { getUser } from "../models/userModel.js";
 
 export default function createTournamentRoutes(fastify) {
   return [
+    // {
+    //   preHandler: [fastify.authenticate],
+    //   method: "POST",
+    //   url: "/tournaments",
+    //   handler: asyncHandler(async (req, res) => {
+    //     if (!validateInput(req, res, ["name", "player_limit", "game_type"]))
+    //       return;
+    //     const tournament = await createTournament(req.body, req.userId);
+    //     const t_id = tournament.tournament_id;
+    //     await addInvitationToTournament({
+    //       tournament_id: t_id,
+    //       user_id: req.userId,
+    //     });
+    //     await modifyInvitationToTournament(
+    //       {
+    //         status: "confirmed",
+    //         tournament_id: t_id,
+    //       },
+    //       req.userId,
+    //     );
+    //     await addParticipantToTournament(
+    //       {
+    //         tournament_id: t_id,
+    //       },
+    //       req.userId,
+    //     );
+    //     return res.code(201).send(tournament);
+    //   }),
+    // },
     {
       preHandler: [fastify.authenticate],
       method: "POST",
       url: "/tournaments",
       handler: asyncHandler(async (req, res) => {
-        if (!validateInput(req, res, ["name", "player_limit", "game_type"]))
-          return;
-        const tournament = await createTournament(req.body, req.userId);
-        const t_id = tournament.tournament_id;
-        await addInvitationToTournament({
-          tournament_id: t_id,
-          user_id: req.userId,
-        });
-        await modifyInvitationToTournament(
-          {
-            status: "confirmed",
-            tournament_id: t_id,
-          },
-          req.userId,
-        );
-        await addParticipantToTournament(
-          {
-            tournament_id: t_id,
-          },
-          req.userId,
-        );
+        if (!validateInput(req, res, ["name", "game_type", "users"])) return;
+        let tournament = await createTournament(req.body, req.userId);
+        //TODO: add check for exisisting users with only alias
+        for (let i = 0; i < 4; i++) {
+          let user = await getUser(req.body.users[i]);
+          if (!user) {
+            await addParticipantToTournament({
+              tournament_id: tournament.tournament_id,
+              user_id: req.userId,
+              alias: req.body.users[i],
+            });
+          } else {
+            await addParticipantToTournament({
+              tournament_id: tournament.tournament_id,
+              user_id: user.id,
+              alias: user.username,
+            });
+          }
+        }
+        tournament = await getTournamentByID(tournament.tournament_id);
+        await determineFirstBracket(tournament);
+        tournament = await getTournamentByID(tournament.tournament_id);
         return res.code(201).send(tournament);
       }),
     },
@@ -53,8 +85,18 @@ export default function createTournamentRoutes(fastify) {
       url: "/tournaments/:id",
       handler: asyncHandler(async (req, res) => {
         const tournament = await getTournamentByID(req.params.id);
+        console.log("tournament:", tournament);
         if (!tournament)
           return res.code(400).send({ error: "No tournament found" });
+        return res.code(200).send(tournament);
+      }),
+    },
+    {
+      preHandler: [fastify.authenticate],
+      method: "GET",
+      url: "/tournaments/current",
+      handler: asyncHandler(async (req, res) => {
+        const tournament = await getCurrentTournament(req.userId);
         return res.code(200).send(tournament);
       }),
     },
@@ -81,9 +123,11 @@ export default function createTournamentRoutes(fastify) {
       method: "POST",
       url: "/tournaments/isinvited",
       handler: asyncHandler(async (req, res) => {
-        if (!validateInput(req, res, ["tournament_id", "user_id"]))
-          return;
-        const result = await isInvited(req.body.tournament_id, req.body.user_id);
+        if (!validateInput(req, res, ["tournament_id", "user_id"])) return;
+        const result = await isInvited(
+          req.body.tournament_id,
+          req.body.user_id,
+        );
         return res.code(200).send(result);
       }),
     },
@@ -92,9 +136,11 @@ export default function createTournamentRoutes(fastify) {
       method: "POST",
       url: "/tournaments/isparticipant",
       handler: asyncHandler(async (req, res) => {
-        if (!validateInput(req, res, ["tournament_id", "user_id"]))
-          return;
-        const result = await isParticipant(req.body.tournament_id, req.body.user_id);
+        if (!validateInput(req, res, ["tournament_id", "user_id"])) return;
+        const result = await isParticipant(
+          req.body.tournament_id,
+          req.body.user_id,
+        );
         return res.code(200).send(result);
       }),
     },
@@ -103,9 +149,11 @@ export default function createTournamentRoutes(fastify) {
       method: "POST",
       url: "/tournaments/invitationstatus",
       handler: asyncHandler(async (req, res) => {
-        if (!validateInput(req, res, ["tournament_id", "user_id"]))
-          return;
-        const result = await getInvitationStatus(req.body.tournament_id, req.body.user_id);
+        if (!validateInput(req, res, ["tournament_id", "user_id"])) return;
+        const result = await getInvitationStatus(
+          req.body.tournament_id,
+          req.body.user_id,
+        );
         return res.code(200).send(result);
       }),
     },

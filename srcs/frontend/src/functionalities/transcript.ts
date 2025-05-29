@@ -137,7 +137,7 @@ const locales = [
 			messages_crazy_connect: 'CrazyTokens Connect4',
 			messages_not_friend: `You're not friends with this user`,
 			// Select Game
-			select_title: 'Select Game Mode',
+			select_title: 'Game Selection',
 			select_pong_description: 'Classic table tennis game. Challenge your friends in real-time!',
 			select_pong_button: 'Play Pong',
 			select_connect_title: 'Connect 4',
@@ -311,7 +311,7 @@ const locales = [
 			messages_crazy_connect: 'Cuatro en Raya Fichas Alocadas',
 			messages_not_friend: `No eres amigo de este usuario`,
 			// Select Game
-			select_title: 'Selección de Modo de Juego',
+			select_title: 'Selección de Juego',
 			select_pong_description: 'El clásico juego de tenis de mesa. ¡Desafía a tus amigos en tiempo real!',
 			select_pong_button: 'Jugar al Pong',
 			select_connect_title: 'Cuatro en Raya',
@@ -480,7 +480,7 @@ const locales = [
 			messages_classic_connect: 'Puissance 4 Classique',
 			messages_crazy_connect: 'Puissance 4 JetonsFous',
 			messages_not_friend: "Vous n'êtes pas ami avec cet utilisateur",
-			select_title: 'Choisir le mode de jeu',
+			select_title: 'Sélection des jeux',
 			select_pong_description: 'Jeu de tennis de table classique. Défiez vos amis en temps réel !',
 			select_pong_button: 'Jouer à Pong',
 			select_connect_title: 'Puissance 4',

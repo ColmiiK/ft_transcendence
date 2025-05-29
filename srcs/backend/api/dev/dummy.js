@@ -56,7 +56,7 @@ async function debugRegister(name, email) {
   }
 }
 
-import { patchUser } from "../models/userModel.js";
+import { patchUser, getUser } from "../models/userModel.js";
 import { addUserFriendPending, acceptUserFriend } from "../models/userModel.js";
 import { createChat } from "../models/chatModel.js";
 import { createMessage } from "../models/messageModel.js";
@@ -76,72 +76,37 @@ import {
 } from "../models/tournamentModel.js";
 import { finishMatch, getMatch } from "../models/matchModel.js";
 
-async function createTestTournament(name, foo, bar, baz, qux) {
+async function createTestTournament(user, name, game_type, users) {
+  let foo = user;
   console.log("Creating tournament...");
   let tournament = await createTournament(
-    { name: name, player_limit: 4, game_type: "pong" },
+    {
+      name: name,
+      game_type: game_type,
+      users: users,
+    },
     foo.id,
   );
-  console.log("Adding tournament invitations...");
   const t_id = tournament.tournament_id;
-  await addInvitationToTournament({
-    tournament_id: t_id,
-    user_id: foo.id,
-  });
-  await modifyInvitationToTournament(
-    {
-      status: "confirmed",
-      tournament_id: t_id,
-    },
-    foo.id,
-  );
-  await addParticipantToTournament(
-    {
-      tournament_id: t_id,
-    },
-    foo.id,
-  );
-  await addInvitationToTournament({
-    tournament_id: t_id,
-    user_id: bar.id,
-  });
-  await addInvitationToTournament({
-    tournament_id: t_id,
-    user_id: baz.id,
-  });
-  await addInvitationToTournament({
-    tournament_id: t_id,
-    user_id: qux.id,
-  });
-  console.log("Confirming tournament invitations...");
-  await modifyInvitationToTournament(
-    {
-      status: "confirmed",
-      tournament_id: t_id,
-    },
-    bar.id,
-  );
-  await modifyInvitationToTournament(
-    {
-      status: "confirmed",
-      tournament_id: t_id,
-    },
-    baz.id,
-  );
-  await modifyInvitationToTournament(
-    {
-      status: "confirmed",
-      tournament_id: t_id,
-    },
-    qux.id,
-  );
-  await addParticipantToTournament({ tournament_id: t_id }, bar.id);
-  await addParticipantToTournament({ tournament_id: t_id }, baz.id);
-  await addParticipantToTournament({ tournament_id: t_id }, qux.id);
-  console.log("Determining first bracket...");
+  for (let i = 0; i < 4; i++) {
+    let user = await getUser(users[i]);
+    if (!user) {
+      await addParticipantToTournament({
+        tournament_id: tournament.tournament_id,
+        user_id: foo.id,
+        alias: users[i],
+      });
+    } else {
+      await addParticipantToTournament({
+        tournament_id: tournament.tournament_id,
+        user_id: user.id,
+        alias: user.username,
+      });
+    }
+  }
   tournament = await getTournamentByID(t_id);
   await determineFirstBracket(tournament);
-  await setTournamentAsStarted(t_id);
+  tournament = await getTournamentByID(t_id);
   console.log("Finishing first matches...");
   tournament = await getTournamentByID(t_id);
   let match = await getMatch(tournament.tournament_matches[0].match_id);
@@ -292,7 +257,18 @@ export async function createDebug() {
         body: `Test message from ${qux2.username} to ${qux.username} number ${i}`,
       });
     }
-    await createTestTournament("Test Tournament 1", foo, bar, baz, qux);
+    await createTestTournament(foo, "Test Tournament 1", "classic-pong", [
+      foo.username,
+      bar.username,
+      baz.username,
+      qux.username,
+    ]);
+    await createTestTournament(foo, "Test Tournament 2", "classic-pong", [
+      foo.username,
+      "Invited_user_1",
+      "Invited_user_2",
+      "Invited_user_3",
+    ]);
     // await createTestTournament("Test Tournament 2", bar, foo, qux, baz);
     // await createTestTournament("Test Tournament 3", qux, bar, foo, baz);
 
@@ -496,28 +472,28 @@ export async function createDebug() {
       let match;
       match = await createMatch({
         game_type: "connect_four",
-        custom_mode: "Custom one",
+        custom_mode: "CrazyTokens",
         first_player_id: foo.id,
         second_player_id: bar.id,
       });
       await finishMatch(match, 1, 0);
       match = await createMatch({
         game_type: "connect_four",
-        custom_mode: "Custom two",
+        custom_mode: "CrazyTokens",
         first_player_id: foo.id,
         second_player_id: bar.id,
       });
       await finishMatch(match, 0, 1);
       match = await createMatch({
         game_type: "connect_four",
-        custom_mode: "Custom one",
+        custom_mode: "CrazyTokens",
         first_player_id: baz.id,
         second_player_id: qux.id,
       });
       await finishMatch(match, 0, 1);
       match = await createMatch({
         game_type: "connect_four",
-        custom_mode: "Custom two",
+        custom_mode: "CrazyTokens",
         first_player_id: baz.id,
         second_player_id: qux.id,
       });
