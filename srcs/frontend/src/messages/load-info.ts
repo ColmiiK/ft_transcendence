@@ -358,7 +358,7 @@ export async function chargeChat(chat_id: number, friend_username: string, frien
 
 								const acceptBtn = div.querySelector('.accept-btn') as HTMLButtonElement;
 								const rejectBtn = div.querySelector('.reject-btn') as HTMLButtonElement;
-								const game_type = message.body.substring(27);
+								const game_type = message.game_type;
 								acceptBtn?.addEventListener('click', (event) => {
 									const date = new Date();
 									date.setHours(date.getHours() + 2);

@@ -121,6 +121,7 @@ async function messageInChat(data, userId) {
 						is_read: 0,
 						invitation_type: "game",
 						invitation_status: "pending",
+						game_type: data.game_type,
 					})
 					const message_id = invitation.id;
 					if (socketsChat.has(receiver_id)) {
@@ -378,6 +379,7 @@ async function handleGameInvitation(data, sender_id) {
 				is_read: 0,
 				invitation_type: "game",
 				invitation_status: "pending",
+				game_type: data.game_type,
 			})
 		}
 		else if (socketsChat.has(sender_id) && data.info === "accept") {
@@ -531,9 +533,9 @@ export default function createWebSocketsRoutes(fastify) {
 					}
 					else {
 						const data = JSON.parse(notification);
-						console.log(data);
 						const sender_id = parseInt(data.sender_id);
 						const receiver_id = parseInt(data.receiver_id);
+						console.log(data)
 						if (data.type === "friendRequest")
 							friendRequest(data, sender_id, receiver_id);
 						else if (data.type === "tournament")

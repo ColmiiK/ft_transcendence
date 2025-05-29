@@ -261,7 +261,6 @@ export function displayMessage(data: Message) {
       messageContainer.appendChild(el);
     }
     else if (data.info === "accept") {
-      console.log(data)
       if (data.sender_id === getClientID() && actual_chat_id === data.chat_id) {
         el.setAttribute("id", "message");
         el.innerHTML = `
