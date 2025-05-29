@@ -1,5 +1,6 @@
 import { getTranslation } from "../functionalities/transcript.js";
 import { navigateTo } from "../index.js";
+import { sendRequest } from "../login-page/login-fetch.js";
 import { showAlert } from "../toast-alert/toast-alert.js";
 import { GamePlayer } from "../types.js"
 
@@ -128,7 +129,7 @@ function showTournamentForm() {
   createTournament.onclick = () => { startTournament(); }
 }
 
-function startTournament() {
+async function startTournament() {
   const tournamentTitle = document.getElementById('tour-title') as HTMLInputElement;
   const modeInputs = document.getElementsByClassName('game-option') as HTMLCollectionOf<HTMLInputElement>;
   const players = document.getElementsByClassName('player') as HTMLCollectionOf<HTMLSpanElement>;
@@ -145,8 +146,8 @@ function startTournament() {
       if (players[i].innerText === 'Default')
         throw new Error('Not enough players');
       else {
-        playersObject[i] = { alias: "", isUser: false };
-        playersObject[i].alias = players[i].innerText;
+        playersObject[i] = { username: "", isUser: false };
+        playersObject[i].username = players[i].innerText;
         playersObject[i].isUser = players[i].classList.contains('user');
       }
     }
@@ -156,6 +157,10 @@ function startTournament() {
     console.log("Game Mode of the Tournament:", gameMode);
     console.log("Starting tournament with players:", playersObject);
 
+    const response = await sendRequest('POST', '/tournaments', {name: tournamentTitle.value, game_type: gameMode, users: playersObject});
+    if (!response)
+      throw new Error('Error while creating tournament');
+    console.log(response);
     navigateTo('/tournament');
   }
   catch (error) {
@@ -198,10 +203,18 @@ async function isUser() {
   const username = usernameInput.value;
   const password = passwordInput.value;
   if (!username || !password) { return ; }
-  // Backend verification
-  if (addPlayer(username, true)) {
-    usernameInput.value = '';
-    passwordInput.value = '';
+  
+  try {
+    const response = await sendRequest('POST', 'verify', {username, password});
+    if (!response || response['error'])
+      throw new Error(response['error']);
+    if (addPlayer(username, true)) {
+      usernameInput.value = '';
+      passwordInput.value = '';
+    }
+  }
+  catch (error) {
+    showAlert((error as Error).message, 'toast-error');
   }
 }
 

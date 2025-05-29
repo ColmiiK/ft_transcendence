@@ -164,6 +164,6 @@ export interface GameState {
 }
 
 export interface GamePlayer {
-	alias: string,
+	username: string,
 	isUser: boolean,
 }
