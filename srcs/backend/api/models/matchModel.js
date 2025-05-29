@@ -111,17 +111,21 @@ export function scheduleMatch(data) {
         game_type,
         custom_mode,
         first_player_id,
+        first_player_alias,
         second_player_id,
+        second_player_alias,
         tournament_id,
         phase
       )
-      VALUES (?,?,?,?,?,?)
+      VALUES (?,?,?,?,?,?,?,?)
     `;
     const params = [
       data.game_type,
       data.custom_mode,
       data.first_player_id,
+      data.first_player_alias,
       data.second_player_id,
+      data.second_player_alias,
       data.tournament_id,
       data.phase,
     ];
@@ -134,7 +138,9 @@ export function scheduleMatch(data) {
         match_id: this.lastID,
         game_type: data.game_type,
         first_player_id: data.first_player_id,
+        first_player_alias: data.first_player_alias,
         second_player_id: data.second_player_id,
+        second_player_alias: data.second_player_alias,
         tournament_id: data.tournament_id,
         phase: data.phase,
       });

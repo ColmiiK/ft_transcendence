@@ -16,13 +16,12 @@ export function createTournament(data, creatorId) {
       INSERT INTO
         tournaments (
           name,
-          player_limit,
           game_type,
           creator_id
         )
-      VALUES (?, ?, ?, ?)
+      VALUES (?,?,?)
     `;
-    const params = [data.name, data.player_limit, data.game_type, creatorId];
+    const params = [data.name, data.game_type, creatorId];
     db.run(sql, params, function (err) {
       if (err) {
         console.error("Error inserting tournament:", err.message);
@@ -31,7 +30,6 @@ export function createTournament(data, creatorId) {
       resolve({
         tournament_id: this.lastID,
         tournament_name: data.name,
-        player_limit: data.player_limit,
         game_type: data.game_type,
         creator_id: creatorId,
       });
@@ -82,11 +80,14 @@ function getParticipantsOfTournament(tournament_id) {
     const participantsSQL = `
           SELECT
             user_id,
-            final_rank
+            final_rank,
+            alias
           FROM
             tournament_participants
           WHERE
             tournament_id = ?
+          ORDER BY
+            final_rank
         `;
     db.all(participantsSQL, [tournament_id], (err, participants) => {
       if (err) {
@@ -96,6 +97,7 @@ function getParticipantsOfTournament(tournament_id) {
       const tournament_participants = participants.map((part) => ({
         user_id: part.user_id,
         final_rank: part.final_rank,
+        alias: part.alias,
       }));
       resolve(tournament_participants);
     });
@@ -117,6 +119,8 @@ function getMatchesOfTournament(tournament_id) {
             phase,
             first_player_id,
             second_player_id,
+            first_player_alias,
+            second_player_alias,
             first_player_score,
             second_player_score,
             winner_id,
@@ -138,6 +142,8 @@ function getMatchesOfTournament(tournament_id) {
         match_phase: m.phase,
         first_player_id: m.first_player_id,
         second_player_id: m.second_player_id,
+        first_player_alias: m.first_player_alias,
+        second_player_alias: m.second_player_alias,
         first_player_score: m.first_player_score,
         second_player_score: m.second_player_score,
         winner_id: m.winner_id,
@@ -194,7 +200,6 @@ export function getTournamentByID(id) {
         status AS tournament_status,
         game_type,
         creator_id,
-        created_at,
         started_at,
         finished_at
       FROM
@@ -214,19 +219,15 @@ export function getTournamentByID(id) {
         status: row.tournament_status,
         game_type: row.game_type,
         creator_id: row.creator_id,
-        created_at: row.created_at,
         started_at: row.started_at,
         finished_at: row.finished_at,
-        tournament_invitations: [],
         tournament_participants: [],
         tournament_matches: [],
       };
       Promise.all([
-        getInvitationsOfTournament(id),
         getParticipantsOfTournament(id),
         getMatchesOfTournament(id),
-      ]).then(([invitations, participants, matches]) => {
-        result.tournament_invitations = invitations;
+      ]).then(([participants, matches]) => {
         result.tournament_participants = participants;
         result.tournament_matches = matches;
         resolve(result);
@@ -336,27 +337,26 @@ export function modifyInvitationToTournament(data, user_id) {
 /**
  * Adds a participant to a tournament
  * @param {Object} data - Payload of the tournament
- * @param {Number} user_id - ID of the user
  * @returns {Object} - Success message
  */
-export function addParticipantToTournament(data, user_id) {
+export function addParticipantToTournament(data) {
   assert(data !== undefined, "data must exist");
-  assert(user_id !== undefined, "user_id must exist");
   return new Promise((resolve, reject) => {
     const sql = `
       INSERT INTO
         tournament_participants (
           tournament_id,
-          user_id
+          user_id,
+          alias
         )
-      VALUES (?, ?)
+      VALUES (?, ?, ?)
     `;
-    db.run(sql, [data.tournament_id, user_id], function (err) {
+    db.run(sql, [data.tournament_id, data.user_id, data.alias], function (err) {
       if (err) {
         console.error("Error inserting tournament participant: ", err.message);
         return reject(err);
       }
-      resolve({ success: "invitation confirmed" });
+      resolve({ success: "Participant added to tournament" });
     });
   });
 }
@@ -566,23 +566,35 @@ export function setTournamentAsFinished(id) {
  */
 export async function determineFirstBracket(tournament) {
   assert(tournament !== undefined, "tournament must exist");
-  const participants = tournament.tournament_participants.map((p) => p.user_id);
+  const participants = tournament.tournament_participants.map(
+    ({ user_id, alias }) => ({
+      user_id,
+      alias,
+    }),
+  );
   for (let i = participants.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [participants[i], participants[j]] = [participants[j], participants[i]];
   }
+  const [game_type, custom_mode] = tournament.game_type.split("-");
   const matches = await Promise.all([
     scheduleMatch({
-      game_type: tournament.game_type,
-      first_player_id: participants[0],
-      second_player_id: participants[1],
+      game_type: game_type,
+      custom_mode: custom_mode,
+      first_player_id: participants[0].user_id,
+      first_player_alias: participants[0].alias,
+      second_player_id: participants[1].user_id,
+      second_player_alias: participants[1].alias,
       tournament_id: tournament.tournament_id,
       phase: "semifinals",
     }),
     scheduleMatch({
-      game_type: tournament.game_type,
-      first_player_id: participants[2],
-      second_player_id: participants[3],
+      game_type: game_type,
+      custom_mode: custom_mode,
+      first_player_id: participants[2].user_id,
+      first_player_alias: participants[2].alias,
+      second_player_id: participants[3].user_id,
+      second_player_alias: participants[3].alias,
       tournament_id: tournament.tournament_id,
       phase: "semifinals",
     }),
@@ -600,21 +612,42 @@ export async function determineSecondBracket(tournament) {
   const winners = [];
   const losers = [];
   for (let i = 0; i < 2; i++) {
-    winners.push(tournament.tournament_matches[i].winner_id);
-    losers.push(tournament.tournament_matches[i].loser_id);
+    winners.push({
+      id: tournament.tournament_matches[i].winner_id,
+      alias:
+        tournament.tournament_matches[i].first_player_score >
+        tournament.tournament_matches[i].second_player_score
+          ? tournament.tournament_matches[i].first_player_alias
+          : tournament.tournament_matches[i].second_player_alias,
+    });
+    losers.push({
+      id: tournament.tournament_matches[i].loser_id,
+      alias:
+        tournament.tournament_matches[i].first_player_score <
+        tournament.tournament_matches[i].second_player_score
+          ? tournament.tournament_matches[i].first_player_alias
+          : tournament.tournament_matches[i].second_player_alias,
+    });
   }
+  const [game_type, custom_mode] = tournament.game_type.split("-");
   const matches = await Promise.all([
     scheduleMatch({
-      game_type: tournament.game_type,
-      first_player_id: winners[0],
-      second_player_id: winners[1],
+      game_type: game_type,
+      custom_mode: custom_mode,
+      first_player_id: winners[0].id,
+      first_player_alias: winners[0].alias,
+      second_player_id: winners[1].id,
+      second_player_alias: winners[1].alias,
       tournament_id: tournament.tournament_id,
       phase: "finals",
     }),
     scheduleMatch({
-      game_type: tournament.game_type,
-      first_player_id: losers[0],
-      second_player_id: losers[1],
+      game_type: game_type,
+      custom_mode: custom_mode,
+      first_player_id: losers[0].id,
+      first_player_alias: losers[0].alias,
+      second_player_id: losers[1].id,
+      second_player_alias: losers[1].alias,
       tournament_id: tournament.tournament_id,
       phase: "tiebreaker",
     }),
@@ -631,12 +664,41 @@ export async function determineFinalStandings(tournament) {
   const standings = [];
   tournament.tournament_matches.forEach((match) => {
     if (match.match_phase === "finals") {
-      standings.push({ position: 1, id: match.winner_id });
-      standings.push({ position: 2, id: match.loser_id });
+      standings.push({
+        position: 1,
+        id: match.winner_id,
+        alias:
+          match.first_player_score > match.second_player_score
+            ? match.first_player_alias
+            : match.second_player_alias,
+      });
+      standings.push({
+        position: 2,
+        id: match.loser_id,
+        alias:
+          match.first_player_score < match.second_player_score
+            ? match.first_player_alias
+            : match.second_player_alias,
+      });
     }
     if (match.match_phase === "tiebreaker") {
-      standings.push({ position: 3, id: match.winner_id });
-      standings.push({ position: 4, id: match.loser_id });
+      standings.push({
+        position: 3,
+        id: match.winner_id,
+        alias:
+          match.first_player_score > match.second_player_score
+            ? match.first_player_alias
+            : match.second_player_alias,
+      });
+      standings.push({
+        position: 4,
+        id: match.loser_id,
+
+        alias:
+          match.first_player_score < match.second_player_score
+            ? match.first_player_alias
+            : match.second_player_alias,
+      });
     }
   });
   return standings;
@@ -701,13 +763,13 @@ export async function finishedMatchesInTournament(tournament_id) {
 
 /**
  * Patches the participants table
- * @param {Number} user_id - ID of the user
+ * @param {String} user_alias - Alias of the user
  * @param {Number} tournament_id - ID of the tournament
  * @param {Object} updates - Updatable fields
  * @returns {Object} - Updated fields
  */
-export async function patchParticipants(user_id, tournament_id, updates) {
-  assert(user_id !== undefined, "user_id must exist");
+export async function patchParticipants(user_alias, tournament_id, updates) {
+  assert(user_alias !== undefined, "user_alias must exist");
   assert(tournament_id !== undefined, "tournament_id must exist");
   assert(updates !== undefined, "updates must exist");
   return new Promise((resolve, reject) => {
@@ -715,11 +777,11 @@ export async function patchParticipants(user_id, tournament_id, updates) {
       .map((key) => `${key} = ?`)
       .join(", ");
     const params = Object.values(updates);
-    params.push(user_id, tournament_id);
+    params.push(user_alias, tournament_id);
     const sql = `
       UPDATE tournament_participants
       SET ${fields}
-      WHERE user_id = ? AND tournament_id = ?
+      WHERE alias = ? AND tournament_id = ?
     `;
     db.run(sql, params, function (err) {
       if (err) {
@@ -741,7 +803,7 @@ export async function finishTournament(tournament, standings) {
   assert(standings !== undefined, "standings must exist");
   await Promise.all([
     standings.map(async (stand) => {
-      return await patchParticipants(stand.id, tournament.tournament_id, {
+      return await patchParticipants(stand.alias, tournament.tournament_id, {
         final_rank: stand.position,
       });
     }),

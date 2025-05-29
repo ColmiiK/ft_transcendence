@@ -85,12 +85,11 @@ db.serialize(() => {
     CREATE TABLE IF NOT EXISTS tournaments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name VARCHAR(255) NOT NULL,
-    player_limit INTEGER NOT NULL,
+    player_limit INTEGER DEFAULT 4,
     game_type VARCHAR(255) NOT NULL,
-    status VARCHAR(255) NOT NULL DEFAULT 'creating',
+    status VARCHAR(255) NOT NULL DEFAULT 'in_progress',
     creator_id INTEGER NOT NULL,
-    created_at DATETIME DEFAULT (datetime('now', '+2 hours')),
-    started_at DATETIME,
+    started_at DATETIME DEFAULT (datetime('now', '+2 hours')),
     finished_at DATETIME,
     FOREIGN KEY (creator_id) REFERENCES users(id)
     )`,
@@ -107,25 +106,8 @@ db.serialize(() => {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     tournament_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
+    alias VARCHAR(255),
     final_rank INTEGER,
-    FOREIGN KEY (tournament_id) REFERENCES tournaments(id)
-    FOREIGN KEY (user_id) REFERENCES users(id)
-    )`,
-    (err) => {
-      if (err) {
-        return console.error("Error creating table:", err.message);
-      }
-      console.log("Tournament players table ready.");
-    },
-  );
-  db.run(
-    `
-    CREATE TABLE IF NOT EXISTS tournament_invitations (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    tournament_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL,
-    status VARCHAR(255) NOT NULL DEFAULT 'pending',
-    invited_at DATETIME DEFAULT (datetime('now', '+2 hours')),
     FOREIGN KEY (tournament_id) REFERENCES tournaments(id)
     FOREIGN KEY (user_id) REFERENCES users(id)
     )`,
@@ -150,7 +132,9 @@ db.serialize(() => {
     custom_mode VARCHAR(255) DEFAULT 'Classic',
     status VARCHAR(255) NOT NULL DEFAULT 'scheduled',
     first_player_id INTEGER NOT NULL,
+    first_player_alias VARCHAR(255),
     second_player_id INTEGER NOT NULL,
+    second_player_alias VARCHAR(255),
     first_player_score INTEGER,
     second_player_score INTEGER,
     turns_played INTEGER,
