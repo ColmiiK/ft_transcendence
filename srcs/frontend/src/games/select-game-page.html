@@ -142,7 +142,7 @@
     </div>
 
     <!-- Tournament options -->
-    <div class="game-options tournament-modes modal modal-content gap-2 hidden">
+    <div id="tournament-form" class="game-options tournament-modes modal modal-content gap-2 hidden">
       <div class="flex justify-between items-center">
         <h1 class="text-5xl text-[var(--dark-purple)]">Create Tournament</h1>
         <svg class="close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#3B0034">
@@ -185,7 +185,7 @@
           </div>
         </div>
         <div class="flex w-full items-center gap-2">
-          <input type="text" placeholder="Alias" class="rounded-[15px] w-full h-fit outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
+          <input id='player-alias' type="text" placeholder="Alias" class="rounded-[15px] w-full h-fit outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
           <svg class="alias-icon fill-[var(--dark-purple)] bg-[var(--accent-pink)] rounded-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
             <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
           </svg>
@@ -194,10 +194,10 @@
       <div id="pink-divider"></div>
       <div class="w-full flex flex-col items-center">
         <h2 class="text-lg text-[var(--dark-purple)] w-full">Participants</h2>
-        <p class="w-full">Player 1: <span>Default</span></p>
-        <p class="w-full">Player 2: <span>Default</span></p>
-        <p class="w-full">Player 3: <span>Default</span></p>
-        <p class="w-full">Player 4: <span>Default</span></p>
+        <p class="w-full">Player 1: <span class="player">Default</span></p>
+        <p class="w-full">Player 2: <span class="player">Default</span></p>
+        <p class="w-full">Player 3: <span class="player">Default</span></p>
+        <p class="w-full">Player 4: <span class="player">Default</span></p>
         <button class="w-fit signin-user p-2 rounded-[15px] modal-button">Start Tournament</button>
       </div>
     </div>

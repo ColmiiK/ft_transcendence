@@ -101,4 +101,28 @@ function showGameOptions(game: string) {
       }
     });
   });
+} 
+
+let count = 1;
+
+function showTournamentForm() {
+  const tournamentForm = document.getElementById('tournament-form');
+  const closeButton = document.getElementsByClassName('close-icon')[0] as HTMLButtonElement;
+  let host = document.getElementsByClassName('player')[0] as HTMLSpanElement;
+  const playerAlias = document.getElementById('player-alias') as HTMLInputElement;
+  const addAlias = document.getElementsByClassName('alias-icon')[0] as HTMLButtonElement;
+
+  if (!tournamentForm || !closeButton || !host) { return ; }
+  tournamentForm.classList.remove('hidden');
+  closeButton.onclick = () => { tournamentForm.classList.add('hidden') };
+  const username = localStorage.getItem('username');
+  host.innerText = username !== null ? username : 'Default';
+  addAlias.onclick = () => { addPlayer(playerAlias.value); }
+}
+
+function addPlayer(playerName: string) {
+  let players = document.getElementsByClassName('player') as HTMLCollectionOf<HTMLSpanElement>;
+  if (!players || count > 3 || !playerName) { return ; }
+  players[count].innerText = playerName;
+  count++;
 }
