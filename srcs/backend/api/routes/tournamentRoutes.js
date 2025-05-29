@@ -58,12 +58,12 @@ export default function createTournamentRoutes(fastify) {
         let tournament = await createTournament(req.body, req.userId);
         //TODO: add check for exisisting users with only alias
         for (let i = 0; i < 4; i++) {
-          let user = await getUser(req.body.users[i]);
+          let user = await getUser(req.body.users[i].username);
           if (!user) {
             await addParticipantToTournament({
               tournament_id: tournament.tournament_id,
               user_id: req.userId,
-              alias: req.body.users[i],
+              alias: req.body.users[i].username,
             });
           } else {
             await addParticipantToTournament({
