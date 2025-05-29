@@ -45,11 +45,20 @@ export function loadInfo(data: MessageObject) {
 function dropDown() {
 	const dropdownButton = document.getElementById("party-invitation");
 	const dropdownOptions = document.getElementById("party-options");
+	let isOpen = false;
+
 	if (!dropdownButton || !dropdownOptions)
 		return;
-
-	dropdownButton.addEventListener("click", () => {
-		dropdownButton.focus();
+	dropdownButton.addEventListener("click", (e) => {
+		e.stopPropagation();
+		isOpen = !isOpen;
+		dropdownOptions.style.display = isOpen ? "block" : "none";
+	});
+	document.addEventListener("click", () => {
+		if (isOpen) {
+			isOpen = false;
+			dropdownOptions.style.display = "none";
+		}
 	});
 	dropdownButton.addEventListener("focus", () => {
 		dropdownOptions.style.display = "block";
@@ -105,7 +114,8 @@ async function navigatePartyInvitations(key: string) {
 	if (!socketChat)
 		return;
 	socketChat.send(JSON.stringify(invitation));
-	displayMessage(invitation);
+	if (invitation)
+		displayMessage(invitation);
 }
 
 async function showChats(input: string) {
@@ -501,7 +511,7 @@ export function setupInfiniteScroll() {
 			chatDiv.scrollTop < 100 &&
 			chatDiv.scrollHeight > chatDiv.clientHeight
 		) {
-			setTimeout(async() => {
+			setTimeout(async () => {
 				await handleScroll();
 			}, 500);
 		}
