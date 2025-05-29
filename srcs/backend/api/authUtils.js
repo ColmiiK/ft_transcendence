@@ -94,6 +94,23 @@ export async function loginGoogleUser(credential) {
   return result;
 }
 
+//TODO: Needs testing
+export async function verifyGoogleUser(credential) {
+  assert(credential !== undefined, "credential must exist");
+  const client = new OAuth2Client(process.env.CLIENT_ID);
+  const ticket = await client.verifyIdToken({
+    idToken: credential,
+    audience: process.env.CLIENT_ID,
+  });
+  const payload = ticket.getPayload();
+  const email = payload["email"];
+  let user = await getUser(email, true);
+  if (!user) {
+    return { error: "User not found" };
+  }
+  return true;
+}
+
 /**
  * Starts the 2FA process by generating a secret and
  * returning a QR for the user to scan

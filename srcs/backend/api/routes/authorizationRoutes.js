@@ -58,6 +58,31 @@ export default function createAuthRoutes(fastify) {
     },
     {
       preHandler: [fastify.authenticate],
+      method: "POST",
+      url: "/verify",
+      handler: asyncHandler(async (req, res) => {
+        if (!validateInput(req, res, ["username", "password"])) return;
+        const user = await getUser(req.body.username, true);
+        if (!user || user.username === "anonymous")
+          return res.code(404).send({ error: "User not found" });
+        const result = await checkCurrentPassword(user, req.body.password);
+        return res.code(200).send(result);
+      }),
+    },
+    {
+      //TODO: Needs testing
+      preHandler: [fastify.authenticate],
+      method: "POST",
+      url: "/verify/google",
+      handler: asyncHandler(async (req, res) => {
+        if (!validateInput(req, res, ["credential"])) return;
+        const result = await verifyGoogleUser(req.body.credential);
+        if (result["error"]) return res.code(400).send(result);
+        return res.code(200).send(result);
+      }),
+    },
+    {
+      preHandler: [fastify.authenticate],
       method: "GET",
       url: "/logout",
       handler: asyncHandler(async (req, res) => {
