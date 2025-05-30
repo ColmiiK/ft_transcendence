@@ -109,7 +109,6 @@ function resetPassword() {
 	const closeButton = document.getElementsByClassName("close-icon")[0] as HTMLButtonElement;
 	if (!closeButton) return;
 	closeButton.onclick = () => {
-    console.log("here")
     resetPasswordDialog.style.display = "none";
     resetPasswordDialog.close();
   };
