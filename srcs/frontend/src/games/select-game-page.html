@@ -53,7 +53,6 @@
              <p class="game-description" translatekey="select_connect_description">Connect four pieces in a row to win. Strategic and fun!</p>
            </div>
          </div>
-
        </div>
       <!-- Tournament Card -->
       <div class="game-card lg:max-w-[20vw] p-8 flex flex-col items-center justify-center gap-4 game-button">
@@ -98,68 +97,87 @@
         </div>
       </div>
     </div>
+</div>
 
-
-    <div id="game-options-modal" class="modal hidden">
-      <div class="modal-content flex flex-col gap-4">
-        <!-- Game Mode Selection Buttons -->
-        <div class="mode-selector flex justify-center gap-4">
-          <button id="normal-button" class="mode-button active" translatekey="select_normal_mode">Normal Mode</button>
-          <button id="custom-button" class="mode-button" translatekey="select_custom_mode">Custom Mode</button>
-        </div>
-        <div id="pink-divider"></div>
-        <!-- Normal Mode Options -->
-        <div class="game-options game-modes normal-modes">
-          <button class="option-button flex flex-col justify-between items-center w-full"" data-mode="local">
-            <div class="flex justify-between items-center w-full">
-              <div class="flex">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24">
-                  <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
-                </svg>
-                <span translatekey="select_local">Local Game</span>
-              </div>
-              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
-                <path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z"/>
+<div id='overlay' class="absolute screen-set">
+  <div id="game-options-modal" class="modal hidden">
+    <div class="modal-content flex flex-col gap-4">
+      <!-- Game Mode Selection Buttons -->
+      <div class="mode-selector flex justify-center gap-4">
+        <button id="normal-button" class="mode-button active" translatekey="select_normal_mode">Normal Mode</button>
+        <button id="custom-button" class="mode-button" translatekey="select_custom_mode">Custom Mode</button>
+      </div>
+      <div id="pink-divider"></div>
+      <!-- Normal Mode Options -->
+      <div class="game-options game-modes normal-modes">
+        <button class="local-button flex flex-col justify-between items-center w-full" data-mode="local">
+          <div id="local-button" class="flex w-full justify-between cursor-pointer">
+            <div class="flex gap-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24">
+                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
               </svg>
+              <span translatekey="select_local">Local Game</span>
             </div>
-            <div id="login-form" class="flex flex-col w-full items-center gap-2 my-2">
-              <input id='username' type="text" placeholder="Username" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
-              <input id='password' type="password" placeholder="Password" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
-              <div id='submit-user' class="cursor-pointer w-fit signin-user bg-transparent px-2 rounded-[15px] modal-button">Submit</div>
-            </div>
-          </button>
-          <button class="option-button" data-mode="ai">
-            <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24">
-              <path d="M22 11h-4.17l3.24-3.24-1.41-1.42L15 11h-2V9l4.66-4.66-1.42-1.41L13 6.17V2h-2v4.17L7.76 2.93 6.34 4.34 11 9v2H9L4.34 6.34 2.93 7.76 6.17 11H2v2h4.17l-3.24 3.24 1.41 1.42L9 13h2v2l-4.66 4.66 1.42 1.41L11 17.83V22h2v-4.17l3.24 3.24 1.42-1.41L13 15v-2h2l4.66 4.66 1.41-1.42L17.83 13H22z"/>
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 -960 960 960">
+              <path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z"/>
             </svg>
-            <span translatekey="select_play_ai">Play vs AI</span>
-          </button>
-        </div>
-        <!-- Custom Mode Options (initially hidden) -->
-        <div class="game-options game-modes custom-modes hidden">
-          <button class="option-button flex justify-between items-center w-full" data-mode="local-custom">
-            <div class="flex">
+          </div>
+          <div id="local-form" class="hidden flex flex-col w-full items-center gap-2 my-2">
+            <div id="pink-divider" class="w-full"></div>
+            <p class="w-full text-start">Player 1: <span class="host">Default</span></p>
+            <p class="w-full text-start">Player 2: <span></span></p>
+            <input id='local-alias' type="text" placeholder="Alias" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
+            <p>or</p>
+            <input id='local-username' type="text" placeholder="Username" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
+            <input id='local-password' type="password" placeholder="Password" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
+            <div id='start-classic' class="cursor-pointer w-fit signin-user bg-transparent px-2 rounded-[15px] modal-button">Start Game</div>
+          </div>
+        </button>
+        <button class="option-button" data-mode="ai">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24">
+            <path d="M22 11h-4.17l3.24-3.24-1.41-1.42L15 11h-2V9l4.66-4.66-1.42-1.41L13 6.17V2h-2v4.17L7.76 2.93 6.34 4.34 11 9v2H9L4.34 6.34 2.93 7.76 6.17 11H2v2h4.17l-3.24 3.24 1.41 1.42L9 13h2v2l-4.66 4.66 1.42 1.41L11 17.83V22h2v-4.17l3.24 3.24 1.42-1.41L13 15v-2h2l4.66 4.66 1.41-1.42L17.83 13H22z"/>
+          </svg>
+          <span translatekey="select_play_ai">Play vs AI</span>
+        </button>
+      </div>
+      <!-- Custom Mode Options (initially hidden) -->
+      <div class="game-options game-modes custom-modes hidden">
+        <button class="local-button flex flex-col justify-between items-center w-full" data-mode="local-custom">
+          <div id="custom-local-button" class="flex w-full justify-between cursor-pointer">
+            <div class="flex gap-4">
               <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24">
                 <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
               </svg>
               <span translatekey="select_custom_local">Custom Local</span>
             </div>
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 -960 960 960">
               <path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z"/>
             </svg>
-          </button>
-          <button class="option-button" data-mode="ai-custom">
-            <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24">
-              <path d="M22 11h-4.17l3.24-3.24-1.41-1.42L15 11h-2V9l4.66-4.66-1.42-1.41L13 6.17V2h-2v4.17L7.76 2.93 6.34 4.34 11 9v2H9L4.34 6.34 2.93 7.76 6.17 11H2v2h4.17l-3.24 3.24 1.41 1.42L9 13h2v2l-4.66 4.66 1.42 1.41L11 17.83V22h2v-4.17l3.24 3.24 1.42-1.41L13 15v-2h2l4.66 4.66 1.41-1.42L17.83 13H22z"/>
-            </svg>
-            <span translatekey="select_custom_ai">Custom AI</span>
-          </button>
-        </div>
+          </div>
+          <div id="custom-local-form" class="hidden flex flex-col w-full items-center gap-2 my-2">
+            <div id="pink-divider" class="w-full"></div>
+            <p class="w-full text-start">Player 1: <span class="host">Default</span></p>
+            <p class="w-full text-start">Player 2: <span></span></p>
+            <input id='custom-alias' type="text" placeholder="Alias" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
+            <p>or</p>
+            <input id='custom-username' type="text" placeholder="Username" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
+            <input id='custom-password' type="password" placeholder="Password" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
+            <div id='start-custom' class="cursor-pointer w-fit signin-user bg-transparent px-2 rounded-[15px] modal-button">Start Game</div>
+          </div>
+        </button>
+        <button class="option-button" data-mode="ai-custom">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24">
+            <path d="M22 11h-4.17l3.24-3.24-1.41-1.42L15 11h-2V9l4.66-4.66-1.42-1.41L13 6.17V2h-2v4.17L7.76 2.93 6.34 4.34 11 9v2H9L4.34 6.34 2.93 7.76 6.17 11H2v2h4.17l-3.24 3.24 1.41 1.42L9 13h2v2l-4.66 4.66 1.42 1.41L11 17.83V22h2v-4.17l3.24 3.24 1.42-1.41L13 15v-2h2l4.66 4.66 1.41-1.42L17.83 13H22z"/>
+          </svg>
+          <span translatekey="select_custom_ai">Custom AI</span>
+        </button>
       </div>
     </div>
+  </div>
 
-    <!-- Tournament options -->
-    <div id="tournament-form" class="game-options tournament-modes modal modal-content gap-2 hidden">
+
+  <!-- Tournament options -->
+    <div id="tournament-form" class="hidden game-options tournament-modes modal modal-content gap-2">
       <div class="flex justify-between items-center">
         <h1 class="text-5xl text-[var(--dark-purple)]">Create Tournament</h1>
         <svg class="close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#3B0034">

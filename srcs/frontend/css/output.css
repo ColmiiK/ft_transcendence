@@ -397,6 +397,10 @@
 
 /* --> Games page <-- */
 
+#overlay {
+  z-index: -1;
+}
+
 /* --> Select game page <-- */
 
 .pong-icon {
@@ -502,9 +506,21 @@
   transition: all 250ms ease-in;
 }
 
+.local-button .icon {
+  width: 24px;
+  height: 24px;
+}
+
+.local-button {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background: var(--dark-purple);
+  border-radius: 15px;
+}
+
 .option-button:hover {
   background: var(--accent-pink);
-  border-color: var(--dark-purple);
   color: var(--dark-purple);
 }
 
@@ -2616,6 +2632,10 @@ video {
 
 .text-center {
   text-align: center;
+}
+
+.text-start {
+  text-align: start;
 }
 
 .indent-2 {
