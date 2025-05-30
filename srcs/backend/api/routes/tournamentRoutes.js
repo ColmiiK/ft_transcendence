@@ -55,15 +55,23 @@ export default function createTournamentRoutes(fastify) {
       url: "/tournaments",
       handler: asyncHandler(async (req, res) => {
         if (!validateInput(req, res, ["name", "game_type", "users"])) return;
-        let tournament = await createTournament(req.body, req.userId);
-        //TODO: add check for exisisting users with only alias
         for (let i = 0; i < 4; i++) {
-          let user = await getUser(req.body.users[i]);
+          let user = await getUser(req.body.users[i].username);
+          if (user) {
+            if (!req.body.users[i].isUser)
+              return res.code(400).send({
+                error: `Username ${user.username} belongs to an existing user`,
+              });
+          }
+        }
+        let tournament = await createTournament(req.body, req.userId);
+        for (let i = 0; i < 4; i++) {
+          let user = await getUser(req.body.users[i].username);
           if (!user) {
             await addParticipantToTournament({
               tournament_id: tournament.tournament_id,
               user_id: req.userId,
-              alias: req.body.users[i],
+              alias: req.body.users[i].username,
             });
           } else {
             await addParticipantToTournament({

@@ -298,6 +298,7 @@ export function getMatchesHistory(user_id, type) {
         m.custom_mode,
         m.is_offline,
         m.rival_alias,
+        m.tournament_id,
       CASE
         WHEN m.first_player_id = ? THEN m.first_player_score
         ELSE m.second_player_score
@@ -338,6 +339,8 @@ export function getMatchesHistory(user_id, type) {
         m.game_type = ?
       AND
         m.status = 'finished'
+      AND
+        m.tournament_id = 0
       ORDER BY
         m.played_at DESC;
     `;
@@ -392,6 +395,7 @@ export function getMatchesGeneralStats(user_id, type) {
         WHERE winner_id = ?
         AND status = 'finished'
         AND game_type = ?
+        AND tournament_id = 0
       `;
 
     const lossesQuery = `
@@ -400,6 +404,7 @@ export function getMatchesGeneralStats(user_id, type) {
         WHERE loser_id = ?
         AND status = 'finished'
         AND game_type = ?
+        AND tournament_id = 0
       `;
 
     const standardGamesQuery = `
