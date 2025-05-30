@@ -499,13 +499,11 @@ export async function setupInfiniteScroll() {
 	const chatDiv = document.getElementById("message-history");
 	if (!chatDiv) return;
 	if (hasMoreMessages) {
-		chatDiv.addEventListener("scroll", handleScroll);
-		if (
-			chatDiv.scrollTop < 100 &&
-			chatDiv.scrollHeight > chatDiv.clientHeight
-		) {
-				 await handleScroll();
-		}
+		chatDiv.addEventListener("scroll", () => {
+      if (chatDiv.scrollTop < 100 && chatDiv.scrollHeight > chatDiv.clientHeight) {
+        handleScroll();
+      }
+    });
 	}
 }
 
