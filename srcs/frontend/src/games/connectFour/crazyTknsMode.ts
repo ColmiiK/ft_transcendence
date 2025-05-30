@@ -85,20 +85,19 @@ export function crazyTokensMode(data: Games): void {
 
 		aiWorker = new Worker(new URL('./aiWorker.js', import.meta.url));
 		aiInterval = setInterval(async () => {
-			if (!gameActive) {
-				return;
-			}
-			
-			if (!aiColumn && player2.turn && player2.AI && !aiIsThinking) {
+            if (!gameActive) return ;
+			if (player2.turn && player2.AI && !aiColumn && !aiIsThinking && gameActive) {
 				console.log("AI is thinking...");
+                aiIsThinking = true;
+                await disableClicks();
 				aiColumn = await aiToken();
 				console.log("AI chose: ", aiColumn?.id);
 			}
-			
-			if (player2.turn && player2.AI && aiColumn && aiIsThinking) {
-				await aiColumn.click();
-				aiIsThinking = false;
-				aiColumn = null;
+			else if (player2.turn && player2.AI && aiColumn && aiIsThinking && gameActive) {
+                await enableClicks();
+                await aiColumn.click();
+                aiColumn = null;
+                aiIsThinking = false;
 			}
 		}, 1000);
 	}
@@ -108,6 +107,8 @@ export function crazyTokensMode(data: Games): void {
 		init();
 		if (savedState){
 			renderBoardFromState(savedState, player1, player2)
+            if (player2.AI)
+				initAI();
             gameActive = false;
 			await pauseGame(columnList);
 		}
@@ -161,6 +162,7 @@ export function crazyTokensMode(data: Games): void {
 			aiWorker = null;
 		}
 		aiColumn = null;
+         aiIsThinking = false;
     }
 
     /* Click Functionality */
@@ -176,14 +178,18 @@ export function crazyTokensMode(data: Games): void {
     /* Handle Column Click */
 
     async function handleColumnClick(column: HTMLElement): Promise<void> {
+        await disableClicks();
+
         if (!gameActive || player1.winner || player2.winner) {
 			clearGame();
 			return;
 		}
-        if (player2.turn && player2.AI && !aiColumn) return ;
-        else if (player2.turn && player2.AI && aiColumn) { column = aiColumn; }
+
+        if (player2.turn && player2.AI && aiColumn)
+            column = aiColumn;
 
         const currentPlayer = player1.turn ? player1 : player2;
+
         if (currentPlayer.affected && currentPlayer.affected != "🎲" && currentPlayer.turnAffected > 0){
             if (currentPlayer.turnAffected > 1) currentPlayer.turnAffected--;
             else await disableEffects(currentPlayer);
@@ -194,13 +200,21 @@ export function crazyTokensMode(data: Games): void {
             await placeSpecialToken(randomColumn);
             await disableEffects(currentPlayer);
         }
-        else if (currentPlayer.useSpecial) await placeSpecialToken(column)
+        else if (currentPlayer.useSpecial) 
+            await placeSpecialToken(column)
         else if (currentPlayer.affected && currentPlayer.affected === "🎲"){
             const randomColumn = columnList[Math.floor(Math.random() * columnList.length)];
             await placeToken(randomColumn);
             await disableEffects(currentPlayer);
         }
-        else await placeToken(column);
+        else 
+            await placeToken(column);
+
+        if (player1.turn && player2.AI && aiColumn){
+            aiColumn = null;
+            aiIsThinking = false;
+        }
+
         await saveGameState("custom", player1, player2);
 
         if (checkWin(false)) {
@@ -212,6 +226,8 @@ export function crazyTokensMode(data: Games): void {
 			await disableClicks();
             gameActive = false;
 		}
+
+        await enableClicks();
     }
 
     /* Insert Div Win / Draw */
@@ -251,76 +267,83 @@ export function crazyTokensMode(data: Games): void {
     /* AI Functionality */
 
     async function aiToken(): Promise<HTMLElement | null> {
-        if (!gameActive || !aiWorker || !player2.turn || aiColumn || aiIsThinking)
-			return null;
-		aiIsThinking = true;
+        if (!gameActive || !aiWorker || !player2.turn || aiColumn){
+            return null;
+        }
 
 		if (player2.affected && player2.affected === "🌫️"){
 			console.log("AI is blind");
-            return columnList[Math.floor(Math.random() * columnList.length)];
+            const randomCol = columnList[Math.floor(Math.random() * columnList.length)];
+            return isColumnPlayable(randomCol) ? randomCol : 
+               columnList.find(col => isColumnPlayable(col)) || null;
 		}
 
         const winColumns = detectWinOpportunities(player2);
-        if (winColumns.length > 0) {
-            return winColumns[0];
-        }
-    
+        if (winColumns.length > 0 && winColumns[0]) return winColumns[0];
+
         const	threatColumns = detectWinOpportunities(player1);
         let columnToUse: HTMLElement | null = await controlUseDice(threatColumns);
 
-		if (!columnToUse){
-			if (threatColumns.length > 0) {
-                return threatColumns[0];
-			}
-            columnToUse = Math.random() < 0.2 
-                ? (columnList[Math.floor(Math.random() * columnList.length)] ?? null) 
-                : null;
-		}
+        if (columnToUse) return columnToUse ;
+
+        if (threatColumns.length > 0) return threatColumns[0];
+
+		if (Math.random() < 0.3) {
+            const playableColumns = columnList.filter(col => isColumnPlayable(col));
+            if (playableColumns.length > 0)
+                return playableColumns[Math.floor(Math.random() * playableColumns.length)];
+        }
 
         if (!columnToUse && aiWorker){
-            const boardState = {
-                boardMap: Object.fromEntries(
-                    Array.from(boardMap.entries()).map(([key, value]) => [key, [...value]])
-                ),
-                columnIds: columnList.map(col => col.id),
-                player1: { num: player1.num },
-                player2: { num: player2.num }
-            };
-            
-            const bestColumnId = await new Promise<string>((resolve, reject) => {
-				if (!aiWorker || !gameActive) {
-					reject('Worker not available or game not active');
-					return;
-				}
+            try {
+                const boardState = {
+                    boardMap: Object.fromEntries(
+                        Array.from(boardMap.entries()).map(([key, value]) => [key, [...value]])
+                    ),
+                    columnIds: columnList.map(col => col.id),
+                    player1: { num: player1.num },
+                    player2: { num: player2.num }
+                };
+                
+                const bestColumnId = await new Promise<string>((resolve, reject) => {
+                    if (!aiWorker || !gameActive) {
+                        reject('Worker not available or game not active');
+                        return;
+                    }
 
-				const timeout = setTimeout(() => {
-					reject('AI timeout');
-				}, 5000);
+                    const timeout = setTimeout(() => {
+                        reject('AI timeout');
+                    }, 5000);
 
-				aiWorker.onmessage = (e) => {
-					clearTimeout(timeout);
-					resolve(e.data);
-				};
+                    aiWorker.onmessage = (e) => {
+                        clearTimeout(timeout);
+                        resolve(e.data);
+                    };
 
-				aiWorker.onerror = () => {
-					clearTimeout(timeout);
-					reject('Worker error');
-				};
+                    aiWorker.onerror = () => {
+                        clearTimeout(timeout);
+                        reject('Worker error');
+                    };
 
-				aiWorker.postMessage({ 
-					boardState,
-					depth: 5
-				});
-			}).catch(error => {
-				console.warn('AI Worker error:', error);
-				return columnList[Math.floor(Math.random() * columnList.length)].id;
-			});
-			columnToUse = columnList.find(col => col.id === bestColumnId) || null;
+                    aiWorker.postMessage({ 
+                        boardState,
+                        depth: 5
+                    });
+                }).catch(error => {
+                    console.warn('AI Worker error:', error);
+                    return columnList[Math.floor(Math.random() * columnList.length)].id;
+                });
+                columnToUse = columnList.find(col => col.id === bestColumnId) || null;
+            } catch (error) {
+                console.warn('AI Worker failed, using fallback:', error);
+                const playableColumns = columnList.filter(col => isColumnPlayable(col));
+                columnToUse = playableColumns.length > 0 ? 
+                         playableColumns[Math.floor(Math.random() * playableColumns.length)] : null;
+            }
         }
 
         if (columnToUse && !isColumnPlayable(columnToUse))
            columnToUse = columnList.find((column) => isColumnPlayable(column)) || null;
-        
         return columnToUse;
     }
     
@@ -408,23 +431,22 @@ export function crazyTokensMode(data: Games): void {
     async function controlUseDice(threatColumns: HTMLElement[]): Promise<HTMLElement | null> {
 		let		columnToUse: Promise<HTMLElement | null> = Promise.resolve(null);
 		const	blockNeeded = threatColumns.length > 0;
-        const	needSpecialToken = blockNeeded || Math.random() < 0.5;
+        const   diceDiv = document.getElementById("dice-container");
+        const	needSpecialToken = blockNeeded || Math.random() < 1;
 
-        if (!player2.specialToken && player2.diceUses > 0 && needSpecialToken) {
-            await rollDice();
-            await delay(500);
-        }
+        if (!player2.specialToken && player2.diceUses > 0 && needSpecialToken && diceDiv) await diceDiv.click();
+        await delay(500);
 
         const   totalCells = columnList.length * 6;
         const	filledCells = Array.from(document.getElementsByClassName("filled")).length;
         const   boardFilledRatio = filledCells / totalCells;
-		const  shouldUseSpecial = player2.specialToken ? 
+		const   shouldUseSpecial = player2.specialToken ? 
 			shouldUseSpecialToken(player2.specialToken, blockNeeded, boardFilledRatio) : false;
 
-		if (shouldUseSpecial && player2.specialToken) {
-			await rollDice();
-			await delay(500);
-			const specialColumn = chooseBestColumnForToken(player2.specialToken, threatColumns);
+		if (shouldUseSpecial && player2.specialToken && diceDiv) {
+			await diceDiv.click();
+            await delay(500);
+			let specialColumn = chooseBestColumnForToken(player2.specialToken, threatColumns);
 			if (specialColumn) 
 				columnToUse = Promise.resolve(Math.random () < 0.2 ? 
 					columnList[Math.floor(Math.random() * columnList.length)] : specialColumn);
@@ -459,7 +481,7 @@ export function crazyTokensMode(data: Games): void {
         diceContainer.classList.add("rolling");
         await delay(1000);
         const randomIndex = Math.floor(Math.random() * crazyTokens.length);
-        const newToken = "👻";
+        const newToken = crazyTokens[randomIndex];
         
         diceIcon.innerText = newToken;
         currentPlayer.specialToken = newToken;
@@ -512,7 +534,6 @@ export function crazyTokensMode(data: Games): void {
             token.parentElement.className = `cell ${player1.turn ?
                 `red-hover` : `yellow-hover`}`;
             token.remove();
-            await delay(300);
             await updateBoard(columnId);
         }
     }
@@ -745,13 +766,13 @@ export function crazyTokensMode(data: Games): void {
         const cells = columnMap.get(column.id);
         const columnData = boardMap.get(column.id);
 		if (!cells || !columnData) {
-            enableClicks();
+            await enableClicks();
             return;
         }
 
         const row = columnData.findIndex(cell => cell === 0);
         if (row === -1) {
-            enableClicks();
+            await enableClicks();
             return;
         }
         
@@ -764,13 +785,13 @@ export function crazyTokensMode(data: Games): void {
         document.getElementById("board")!.style.pointerEvents = 'none';
         await handleSpecialToken(row, currentPlayer, column);
         document.getElementById("board")!.style.pointerEvents = 'auto';
-        await updateTurnIndicator();
 
         enableClicks();
         currentPlayer.specialToken = null;
         currentPlayer.useSpecial = false;
         if (columnData[row] == 3)
             updateDice(player1, player2);
+        await updateTurnIndicator();
     }
 
     /* Utils */
