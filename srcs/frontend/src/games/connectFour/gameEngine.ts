@@ -31,7 +31,7 @@ export interface PlayerState {
 
 export interface GameState {
   mode: "classic" | "custom";
-  boardData: { [columnId: string]: number[] };
+  boardData: Record<string, { player: number, emoji: string | null }[]>;
   player1: PlayerState;
   player2: PlayerState;
 }
@@ -406,22 +406,35 @@ export function setPlayerState(player: Player, state: PlayerState) {
     player.turnAffected = state.turnAffected;
 }
 
-export function saveGameState(mode: "classic" | "custom", player1: Player, player2: Player) {
-    const boardData: { [columnId: string]: number[] } = {};
+export  function saveGameState(mode: "classic" | "custom", player1: Player, player2: Player): void {
+    const boardData: Record<string, { player: number, emoji: string | null }[]> = {};
 
-    columnList.forEach(column => {
-        const copy = boardMap.get(column.id);
-        if (copy) boardData[column.id] = [...copy];
-    });
+    for (const [colId, colData] of boardMap.entries()) {
+        const cells = columnMap.get(colId);
+        if (!cells) continue;
 
-    const state: GameState = {
+        const cellStates = colData.map((cellValue, rowIndex) => {
+            const cell = cells[rowIndex];
+            const token = cell.querySelector('.token');
+            const emoji = token?.textContent || null;
+
+            return {
+            player: cellValue,
+            emoji,
+            };
+        });
+
+        boardData[colId] = cellStates;
+    }
+
+    const gameState = {
         mode,
         boardData,
         player1: getPlayerState(player1),
         player2: getPlayerState(player2),
     };
 
-    localStorage.setItem(`connect4GameState${mode}`, JSON.stringify(state));
+    localStorage.setItem(`connect4GameState${mode}`, JSON.stringify(gameState));
 }
 
 export function loadGameState(mode: "classic" | "custom"): GameState | null {
@@ -432,48 +445,62 @@ export function loadGameState(mode: "classic" | "custom"): GameState | null {
     return state;
 }
 
-export function renderBoardFromState(state: GameState, player1: Player, player2: Player): void {
-    setPlayerState(player1, state.player1);
-    setPlayerState(player2, state.player2);
+export function renderBoardFromState(gameState: GameState, player1: Player, player2: Player): void {
+    setPlayerState(player1, gameState.player1);
+    setPlayerState(player2, gameState.player2);
 
-    for (const colId in state.boardData)
-        boardMap.set(colId, [...state.boardData[colId]]);
+    for (const [colId, cellData] of Object.entries(gameState.boardData)) {
+        boardMap.set(colId, cellData.map(c => c.player));
+        
+        const cells = columnMap.get(colId);
+        if (!cells) continue;
 
-    columnList.forEach(column => {
-        const cells = columnMap.get(column.id);
-        if (!cells) return;
+        cellData.forEach((cellState, rowIndex) => {
+            const cell = cells[rowIndex];
+            cell.innerHTML = '';
+            
+            const currentPlayer = player1.turn ? player1 : player2;
+            cell.className = `cell ${currentPlayer.color}-hover`;
 
-        for (let row = 0; row < cells.length; row++) {
-            const cell = cells[row];
-            cell.innerHTML = "";
-            cell.className = "cell";
+            if (cellState.player !== 0) {
+                const token = document.createElement('div');
+                token.className = 'token';
 
-            const cellValue = boardMap.get(column.id)?.[row] || 0;
+                if (cellState.player === 1) {
+                    token.classList.add('red');
+                } else if (cellState.player === 2) {
+                    token.classList.add('yellow');
+                }
 
-            if (cellValue === 1) {
-                cell.classList.add("filled", "red-hover");
-                const token = document.createElement("div");
-                token.className = "token red";
+                if (cellState.emoji) {
+                    token.textContent = cellState.emoji;
+                    
+                    switch (cellState.emoji) {
+                        case "👻":
+                            token.classList.add("ghostToken");
+                            break;
+                        case "🎲":
+                            token.classList.add("diceToken");
+                            break;
+                        case "🔒":
+                            token.classList.add("lockToken");
+                            break;
+                        case "🌫️":
+                            token.classList.add("blindToken");
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
                 cell.appendChild(token);
-            } else if (cellValue === 2) {
-                cell.classList.add("filled", "yellow-hover");
-                const token = document.createElement("div");
-                token.className = "token yellow";
-                cell.appendChild(token);
-            } else if (cellValue === 3) {
-                cell.classList.add("filled");
-                const token = document.createElement("div");
-                token.className = "token ghostToken opacity-50";
-                token.innerText = "👻";
-                cell.appendChild(token);
-            } else {
-                if (state.player1.turn) cell.classList.add("red-hover");
-                else if (state.player2.turn && !state.player2.AI) cell.classList.add("yellow-hover");
+                cell.classList.add('filled');
+                cell.classList.remove('red-hover', 'yellow-hover');
             }
-        }
-    });
-    if (state.mode === "custom")
-        updateDice(player1, player2);
+        });
+    }
+
+    if (gameState.mode === "custom") updateDice(player1, player2);
 }
 
 export function createSocket4inrowConnection(){

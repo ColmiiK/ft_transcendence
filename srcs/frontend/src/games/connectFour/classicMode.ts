@@ -103,6 +103,7 @@ export function classicMode(data: Games): void {
 		else
 			await enableClicks();
 		handlerEvents();
+		/* history.replaceState(null, "", "/games"); */
 	}
 
 	function handlerEvents(){
