@@ -163,7 +163,6 @@ export function createsocketToastConnection() {
 				}
 				else if (data.type === "game") {
 					if (data.info === "request") {
-						console.log(data)
 						async function handleAccept(data: any) {
 							if (socketToast) {
 								socketToast.send(JSON.stringify({

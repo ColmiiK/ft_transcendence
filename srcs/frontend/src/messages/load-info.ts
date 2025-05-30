@@ -534,9 +534,7 @@ async function handleScroll() {
 
 export async function getChatInfo(chat_id: number): Promise<ChatInfo | null> {
 	try {
-		//console.log(chat_id)
-		const chat_info = await sendRequest('GET', `/chats/identify/${chat_id}`); // da un fallo raro cuando mando dos invitaciones seguidas
-		//console.log(chat_info);
+		const chat_info = await sendRequest('GET', `/chats/identify/${chat_id}`);
 		if (!chat_info)
 			throw new Error("Error fetching chat information");
 		return chat_info;

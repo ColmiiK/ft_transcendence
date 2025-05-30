@@ -7,8 +7,6 @@ import { asyncWebSocketHandler } from "./utils.js";
 
 const socketsChat = new Map();
 const socketsToast = new Map();
-//const socketsPong = new Map();
-//const socketsFourInARow = new Map();
 const socketsTournament = new Map();
 
 async function messageInChat(data, userId) {
@@ -482,7 +480,6 @@ export default function createWebSocketsRoutes(fastify) {
 						messageInChat(data, userId);
 				})
 				socket.on("close", () => {
-					console.log("Client disconnected from /chat");
 					socketsChat.delete(userId);
 				})
 			})
@@ -535,7 +532,6 @@ export default function createWebSocketsRoutes(fastify) {
 						const data = JSON.parse(notification);
 						const sender_id = parseInt(data.sender_id);
 						const receiver_id = parseInt(data.receiver_id);
-						console.log(data)
 						if (data.type === "friendRequest")
 							friendRequest(data, sender_id, receiver_id);
 						else if (data.type === "tournament")
@@ -547,7 +543,6 @@ export default function createWebSocketsRoutes(fastify) {
 					}
 				})
 				socket.on("close", async () => {
-					console.log("Client disconnected from /toast");
 					await patchUser(userId, { is_online: 0 });
 					socketsToast.forEach((clientSocket, clientId) => {
 						try {
@@ -566,114 +561,7 @@ export default function createWebSocketsRoutes(fastify) {
 				})
 			})
 		},
-		/*	{
-					url: "/pong",
-					method: "GET",
-					websocket: true,
-					handler: asyncWebSocketHandler(async (socket) => {
-						let userId = null;
-						socket.on("message", async pong => {
-							const game = pong.toString();
-							const data = JSON.parse(game);
-							if (userId === null){
-								try{
-									userId = data.userId;
-									if (userId){
-										socketsPong.set(userId, socket);
-										socket.send(JSON.stringify({
-											type: "connection",
-											status: "success",
-											message: "Connected"
-										}));
-										console.log(data);
-									}
-									}
-									catch (err){
-									console.error("Error can't get ID:", err);
-									socket.send(JSON.stringify({
-										type: "error",
-										message: "Invalid Id"
-									}));
-								}
-							}
-							else{
-								if (data.type === "start_game"){
-									const gameId = `pong:${Date.now()}:${userId}`
-									const opponent = socketsPong.get(data.opponent_id);
-									if (opponent){
-									console.log("hola")
-										await fastify.cache.set(
-											`game:${gameId}`,
-											JSON.stringify({
-												player1: userId,
-												player2: data.opponent_id,
-												ball: { x: 50, y: 50, velX: 0, velY: 0 },
-												score: { player1: 0, player2: 0 },
-												status: "playing",
-											}),
-											3600
-										);
-										socket.send(JSON.stringify({
-										type: "game_started",
-										gameId,
-										opponent: data.opponent_id,
-										role: "player1"
-										}));
-										opponent.send(JSON.stringify({
-												type: "game_started",
-												gameId,
-												opponent: userId,
-												role: "player2"
-										}));
-									}
-								}
-							}
-						})
-						socket.on("close", () => {
-							console.log("Client disconnected from /pong");
-							socketsPong.delete(userId);
-						})
-					})
-				},
-				{
-					url: "/4inrow",
-					method: "GET",
-					websocket: true,
-					handler: asyncWebSocketHandler(async (socket) => {
-						let userId = null;
-						socket.on("message", async InARow => {
-							const game = InARow.toString();
-							const data= JSON.parse(game)
-							if (userId === null){
-								try{
-									userId = data.userId;
-									if (userId){
-										socketsFourInARow.set(userId, socket);
-										socket.send(JSON.stringify({
-											type: "connection",
-											status: "success",
-											message: "Connected"
-										}));
-									}
-									}
-									catch (err){
-									console.error("Error can't get ID:", err);
-									socket.send(JSON.stringify({
-										type: "error",
-										message: "Invalid Id"
-									}));
-								}
-							}
-							else{
-		
-							}
-						})
-						socket.on("close", () => {
-							console.log("Client disconnected from /fourInARow");
-							socketsFourInARow.delete(userId);
-						})
-					})
-				},
+		/*
 				{
 					url: "/tournament",
 					method: "GET",
