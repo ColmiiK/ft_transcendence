@@ -479,7 +479,7 @@ export async function chargeChat(chat_id: number, friend_username: string, frien
 				chatDiv.scrollTop = chatDiv.scrollHeight;
 			}
 			actual_chat_id = chat_id;
-			setupInfiniteScroll();
+			await setupInfiniteScroll();
 			return chatHistoryTyped.length === 20;
 		} catch (error) {
 			console.error(error);
@@ -492,7 +492,7 @@ export async function chargeChat(chat_id: number, friend_username: string, frien
 let currentPage = 1;
 let hasMoreMessages = true;
 
-export function setupInfiniteScroll() {
+export async function setupInfiniteScroll() {
 	const chatDiv = document.getElementById("message-history");
 	if (!chatDiv) return;
 	if (hasMoreMessages) {
@@ -501,9 +501,7 @@ export function setupInfiniteScroll() {
 			chatDiv.scrollTop < 100 &&
 			chatDiv.scrollHeight > chatDiv.clientHeight
 		) {
-			setTimeout(async() => {
-				await handleScroll();
-			}, 500);
+				 await handleScroll();
 		}
 	}
 }
