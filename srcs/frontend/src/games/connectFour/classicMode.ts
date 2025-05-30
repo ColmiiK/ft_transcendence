@@ -74,9 +74,7 @@ export function classicMode(data: Games): void {
 
 		aiWorker = new Worker(new URL('./aiWorker.js', import.meta.url));
 		aiInterval = setInterval(async () => {
-			if (!gameActive) {
-				return;
-			}
+			if (!gameActive) return;
 			
 			if (!aiColumn && player2.turn && player2.AI && !aiIsThinking && gameActive) {
 				console.log("AI is thinking...");

@@ -220,6 +220,7 @@ export async function placeToken(column: HTMLElement | null, player1: Player, pl
     columnData[row] = currentPlayer.num;
 
     await updateCell(cells[row], currentPlayer);
+    await updateTurnIndicator(player1, player2, columnList, columnMap, mode);
     enableClicks(columnList);
 }
 
