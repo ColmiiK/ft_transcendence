@@ -77,6 +77,7 @@ function toggleNickForm() {
 		updateNick(nickInput.value);
 		nickInput.value = "";
 	}
+	nickInput.onblur = () => { nickForm.requestSubmit() };
 }
 
 function toggleDescriptionForm() {
@@ -99,6 +100,7 @@ function toggleDescriptionForm() {
 		updateDescription(descriptionInput.value);
 		descriptionInput.value = "";
 	}
+	descriptionInput.onblur = () => { descriptionForm.requestSubmit() };
 }
 
 function openFileSelector() {
