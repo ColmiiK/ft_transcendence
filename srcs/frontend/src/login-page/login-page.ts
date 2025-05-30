@@ -106,13 +106,13 @@ function resetPassword() {
 		if (form)
 			form.reset();
 	});
-	resetPasswordDialog.addEventListener("click", (e) => {
-		const target = e.target as HTMLElement;
-		if (target.classList.contains("close-icon")) {
-			resetPasswordDialog.style.display = "none";
-			resetPasswordDialog.close();
-		}
-	});
+	const closeButton = document.getElementsByClassName("close-icon")[0] as HTMLButtonElement;
+	if (!closeButton) return;
+	closeButton.onclick = () => {
+    console.log("here")
+    resetPasswordDialog.style.display = "none";
+    resetPasswordDialog.close();
+  };
 }
 
 function popUp() {
