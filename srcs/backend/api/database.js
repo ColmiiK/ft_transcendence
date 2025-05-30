@@ -140,7 +140,7 @@ db.serialize(() => {
     turns_played INTEGER,
     winner_id INTEGER,
     loser_id INTEGER,
-    tournament_id INTEGER,
+    tournament_id INTEGER DEFAULT 0,
     phase VARCHAR(255),
     created_at DATETIME DEFAULT(datetime('now', '+2 hours', 'subsec')),
     played_at DATETIME,
