@@ -78,6 +78,22 @@ db.serialize(() => {
   );
 });
 
+// Bot-as
+db.serialize(() => {
+  db.run(
+    `
+    INSERT INTO users ( username, email, avatar)
+    VALUES ( 'bot-as', 'botas@gmail.com', '')
+    `,
+    (err) => {
+      if (err) {
+        return console.error("Error creating Bot-as", err.message);
+      }
+      console.log("Bot-as created successfully.");
+    },
+  );
+});
+
 // Tournaments
 db.serialize(() => {
   db.run(
