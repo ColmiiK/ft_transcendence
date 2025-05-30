@@ -576,7 +576,7 @@ export async function determineFirstBracket(tournament) {
     const j = Math.floor(Math.random() * (i + 1));
     [participants[i], participants[j]] = [participants[j], participants[i]];
   }
-  const [game_type, custom_mode] = tournament.game_type.split("-");
+  const [custom_mode, game_type] = tournament.game_type.split("-");
   const matches = await Promise.all([
     scheduleMatch({
       game_type: game_type,
@@ -629,7 +629,7 @@ export async function determineSecondBracket(tournament) {
           : tournament.tournament_matches[i].second_player_alias,
     });
   }
-  const [game_type, custom_mode] = tournament.game_type.split("-");
+  const [custom_mode, game_type] = tournament.game_type.split("-");
   const matches = await Promise.all([
     scheduleMatch({
       game_type: game_type,
