@@ -249,9 +249,9 @@ export async function recentChats() {
 						last_chat = chat.chat_id;
 						const friend_avatar = document.getElementById(`friend-avatar-${chat.friend_id}`) as HTMLImageElement;
 						if (!friend_avatar) { return; }
-          const chat_input = document.getElementById("chat-input") as HTMLInputElement;
-          if (!chat_input) { return; }
-          chat_input.value = "";
+						const chat_input = document.getElementById("chat-input") as HTMLInputElement;
+						if (!chat_input) { return; }
+						chat_input.value = "";
 						chargeChat(chat.chat_id, chat.friend_username, friend_avatar.src);
 					}
 				});
@@ -500,10 +500,10 @@ export async function setupInfiniteScroll() {
 	if (!chatDiv) return;
 	if (hasMoreMessages) {
 		chatDiv.addEventListener("scroll", () => {
-      if (chatDiv.scrollTop < 100 && chatDiv.scrollHeight > chatDiv.clientHeight) {
-        handleScroll();
-      }
-    });
+			if (chatDiv.scrollTop < 100 && chatDiv.scrollHeight > chatDiv.clientHeight) {
+				handleScroll();
+			}
+		});
 	}
 }
 
