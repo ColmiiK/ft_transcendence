@@ -115,6 +115,7 @@ export function crazyTokensMode(data: Games): void {
 		else
 			await enableClicks();
 		handlerEvents();
+       /*  history.replaceState(null, "", "/games"); */
     }
 
     function handlerEvents(){
