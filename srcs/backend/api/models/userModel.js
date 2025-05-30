@@ -500,6 +500,8 @@ export function findMatchingUsers(username, user_id) {
         u.is_deleted = 0
       AND
         u.id IS NOT ?
+      AND
+        u.username IS NOT 'bot-as'
     `;
     db.all(sql, [user_id, user_id, username + "%", user_id], (err, rows) => {
       if (err) {
