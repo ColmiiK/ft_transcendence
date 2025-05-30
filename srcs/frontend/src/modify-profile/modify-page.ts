@@ -75,6 +75,7 @@ function toggleNickForm() {
 		nickSpan.innerText = nickInput.value;
 		nickSpan.classList.remove('hidden');
 		updateNick(nickInput.value);
+		nickInput.value = "";
 	}
 }
 
@@ -96,6 +97,7 @@ function toggleDescriptionForm() {
 		descriptionSpan.innerText = descriptionInput.value;
 		descriptionSpan.classList.remove('hidden');
 		updateDescription(descriptionInput.value);
+		descriptionInput.value = "";
 	}
 }
 
