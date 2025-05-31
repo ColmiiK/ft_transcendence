@@ -864,10 +864,6 @@ export function crazyTokensMode(data: Games): void {
             navigateTo("/games");
         })
 	})
-
-    window.addEventListener('popstate', () => {
-        clearGame();
-    }),
     
     start();
 }
