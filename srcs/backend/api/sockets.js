@@ -46,7 +46,7 @@ async function messageInChat(data, userId) {
 				else if (!socketsChat.has(receiver_id) && socketsToast.has(receiver_id))
 					toastReceiver.send(JSON.stringify({ type: "chatToast", body: `You have a message from ${username}` }))
 			}
-			else if (data.type === "tournament") {
+			/*else if (data.type === "tournament") {
 				const tournament_id = data.tournament.tournament_id;
 				await addInvitationToTournament({ tournament_id: tournament_id, user_id: receiver_id });
 				await modifyInvitationToTournament({ status: "pending", tournament_id: tournament_id }, receiver_id);
@@ -104,9 +104,8 @@ async function messageInChat(data, userId) {
 					}
 					else if (data.info === "reject") {
 						await modifyInvitationToTournament({ status: "denied", tournament_id: tournament_id }, sender_id);
-					}
-				}
-			}
+					}4
+				}*/
 			else if (data.type === "game") { //Auto rechazar la invitacion si se hacen multiples en el mismo chat
 				const receiver_id = parseInt(data.receiver_id);
 				if (data.info === "request") {

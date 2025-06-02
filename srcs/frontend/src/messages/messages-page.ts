@@ -3,10 +3,10 @@ import { navigateTo } from "../index.js";
 import { Message, MessageObject, Tournament } from "../types.js";
 import { sendRequest } from "../login-page/login-fetch.js";
 import { showAlert } from "../toast-alert/toast-alert.js";
-import { createSocketTournamentConnection } from "../tournament/tournament.js";
+//import { createSocketTournamentConnection } from "../tournament/tournament.js";
+//let activeTournament: Tournament | null = null;
 
 export let socketChat: WebSocket | null = null;
-let activeTournament: Tournament | null = null;
 
 export function initMessagesEvents(data: MessageObject) {
   moveToHome();
@@ -56,9 +56,8 @@ function createSocketConnection() {
     socketChat.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        if (data.sender_id && data.body) {
+        if (data.sender_id && data.body)
           displayMessage(data);
-        }
       }
       catch (err) {
         console.error("Error on message", err);
@@ -108,7 +107,7 @@ export function displayMessage(data: Message) {
     el.scrollIntoView({ behavior: 'smooth' });
     recentChats();
   }
-  else if (data.type === "tournament" && data.tournament) {
+  /*else if (data.type === "tournament" && data.tournament) {
     let messageContainer = document.getElementById("message-history");
     if (!messageContainer) return;
 
@@ -177,7 +176,7 @@ export function displayMessage(data: Message) {
     }
     messageContainer.appendChild(el);
     el.scrollIntoView({ behavior: 'smooth' });
-  }
+  }*/
   else if (data.type === "game") {
     let messageContainer = document.getElementById("message-history");
     if (!messageContainer) return;
@@ -209,7 +208,6 @@ export function displayMessage(data: Message) {
                     </div>
                 </div>`;
 
-        // Añadir event listeners para los botones
         const acceptBtn = el.querySelector('.accept-btn') as HTMLButtonElement;
         const rejectBtn = el.querySelector('.reject-btn') as HTMLButtonElement;
         acceptBtn?.addEventListener('click', (event) => {
@@ -325,7 +323,7 @@ async function setupMessageForm() {
     if (message && socketChat) {
       const date = new Date();
       date.setHours(date.getHours() + 2);
-      if (message.startsWith('/tournament')) {
+      /*if (message.startsWith('/tournament')) {
         const args = message.slice('/tournament'.length).trim().split('-game');
         const tournament_name = args[0].trim();
         const game_type = args[1]?.trim().toLowerCase();
@@ -376,20 +374,18 @@ async function setupMessageForm() {
         }
         else if (!activeTournament)
           showAlert("Can't invite before creating a tournament", "toast-error")
+      }*/
+      let fullMessage: Message = {
+        body: message,
+        chat_id: actual_chat_id,
+        receiver_id: friendID,
+        sender_id: getClientID(),
+        sent_at: date.toISOString(),
+        read: false,
+        type: "message",
       }
-      else {
-        let fullMessage: Message = {
-          body: message,
-          chat_id: actual_chat_id,
-          receiver_id: friendID,
-          sender_id: getClientID(),
-          sent_at: date.toISOString(),
-          read: false,
-          type: "message",
-        }
-        socketChat.send(JSON.stringify(fullMessage));
-        displayMessage(fullMessage);
-      }
+      socketChat.send(JSON.stringify(fullMessage));
+      displayMessage(fullMessage);
     }
     input.value = "";
   });

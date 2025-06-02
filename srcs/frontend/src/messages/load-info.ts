@@ -5,6 +5,7 @@ import { navigateTo } from "../index.js";
 import { showAlert } from "../toast-alert/toast-alert.js";
 import { displayMessage, getClientID, socketChat } from "./messages-page.js"
 import { getTranslation } from "../functionalities/transcript.js";
+
 export let actual_chat_id: number;
 
 export function loadInfo(data: MessageObject) {
@@ -27,7 +28,7 @@ export function loadInfo(data: MessageObject) {
 
 	document.addEventListener("click", (event) => {
 		const target = event.target as Node;
-		// If click is outside the search form
+
 		if (!searchForm.contains(target)) {
 			friendInput.style.boxShadow = "";
 			friendInput.value = "";
@@ -202,6 +203,7 @@ async function displayFirstChat(data: MessageObject) {
 	// Opens the most recent chat when navigated to messages page
 	try {
 		const recentChats = await sendRequest('GET', 'chats/last');
+		//console.log(recentChats)
 		if (!recentChats)
 			throw new Error("Error displaying the first chat");
 

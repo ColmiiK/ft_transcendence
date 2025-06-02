@@ -3,8 +3,6 @@ import { displayFriends, displayInvitations, showMatches, debounce } from "../fr
 import { Tournament } from "../types.js";
 //import { createSocketTournamentConnection } from "../tournament/tournament.js";
 import { sendRequest } from "../login-page/login-fetch.js";
-import { createSocket4inrowConnection } from "../games/connectFour/gameEngine.js";
-//import { createSocketPongConnection } from "../games/pong/gameEngine.js";
 
 export let socketToast: WebSocket | null;
 let toastTimeout: NodeJS.Timeout;
@@ -195,9 +193,6 @@ export function createsocketToastConnection() {
 						}
 						showAlert(data.body, "toast-success", () => handleAccept(data), () => handleReject(data));
 					}
-					else if (data.info === "accept") {
-						showAlert("Your invitation has been accepted, starting game", "toast-success");
-					}
 				}
 			}
 			catch (err) {
@@ -258,7 +253,6 @@ export function showAlert(msg: string, toastType: string, acceptCallback?: () =>
 		return;
 	defineToastFeatures(toastType);
 	toastText.innerText = msg;
-	// Show/hide action buttons based on callbacks
 	if (acceptButton && rejectButton) {
 		if (acceptCallback && rejectCallback) {
 			acceptButton.classList.remove("hidden");
