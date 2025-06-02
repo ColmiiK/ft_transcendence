@@ -278,6 +278,7 @@ export function classicPong(data: Games): void{
 		localStorage.removeItem('gameState');
 		player1.counter = 0;
 		player2.counter = 0;
+		console.log('llamando funcioon');
 		document.getElementById('counter1')!.innerText = '0';
 		document.getElementById('counter2')!.innerText = '0';
 	}

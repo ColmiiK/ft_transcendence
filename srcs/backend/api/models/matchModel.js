@@ -15,15 +15,19 @@ export function createMatch(data) {
         game_type,
         custom_mode,
         first_player_id,
-        second_player_id
+        first_player_alias,
+        second_player_id,
+        second_player_alias
       )
-      VALUES (?,?,?,?)
+      VALUES (?,?,?,?,?,?)
     `;
     const params = [
       data.game_type,
       data.custom_mode,
       data.first_player_id,
+      data.first_player_alias,
       data.second_player_id,
+      data.second_player_alias,
     ];
     db.run(sql, params, function (err) {
       if (err) {
@@ -34,7 +38,9 @@ export function createMatch(data) {
         id: this.lastID,
         game_type: data.game_type,
         first_player_id: data.first_player_id,
+        first_player_alias: data.first_player_alias,
         second_player_id: data.second_player_id,
+        second_player_alias: data.second_player_alias,
       });
     });
   });
@@ -165,14 +171,9 @@ export function getScheduledMatches(user_id) {
         m.game_type,
         m.custom_mode,
         u1.username AS host,
-      CASE
-        WHEN m.first_player_id = $user_id THEN u2.username
-        ELSE u1.username
-      END AS rival_username,
-      CASE
-        WHEN m.first_player_id = $user_id THEN u2.avatar
-        ELSE u1.avatar
-      END AS rival_avatar
+        m.first_player_alias,
+        m.second_player_alias,
+        u1.avatar AS host_avatar
       FROM
         matches m
       JOIN

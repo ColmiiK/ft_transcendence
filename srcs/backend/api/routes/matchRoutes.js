@@ -20,6 +20,8 @@ import {
   finishTournament,
 } from "../models/tournamentModel.js";
 
+import { getUser } from "../models/userModel.js";
+
 export default function createMatchRoutes(fastify) {
   return [
     {
@@ -138,6 +140,12 @@ export default function createMatchRoutes(fastify) {
           ])
         )
           return;
+        const first_user = await getUser(req.body.first_player_id);
+        const second_user = await getUser(req.body.second_player_id);
+        if (!first_user || !second_user)
+          return res.code(400).send({ error: "User not found" });
+        req.body["first_player_alias"] = first_user.username;
+        req.body["second_player_alias"] = second_user.username;
         const match = await createMatch(req.body);
         return res.code(201).send(match);
       }),

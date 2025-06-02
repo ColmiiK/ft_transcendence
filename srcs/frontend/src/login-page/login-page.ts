@@ -14,7 +14,7 @@ export async function initLoginEvents() {
 		resetPassword();
 		initLoginFetches();
 		googleSignIn();
-	
+
 		setTimeout(() => {
 			const googleButton = document.getElementsByClassName("g_id_signin")[0];
 			const loadingIcon = document.getElementsByClassName("animate-spin")[0];
@@ -26,7 +26,7 @@ export async function initLoginEvents() {
 	}
 }
 
-export function dropDown(){
+export function dropDown() {
 	const dropdownButton = document.getElementById("menu-button");
 	const dropdownOptions = document.getElementById("language-options");
 	if (!dropdownButton || !dropdownOptions)
@@ -106,13 +106,12 @@ function resetPassword() {
 		if (form)
 			form.reset();
 	});
-	resetPasswordDialog.addEventListener("click", (e) => {
-		const target = e.target as HTMLElement;
-		if (target.classList.contains("close-icon")) {
-			resetPasswordDialog.style.display = "none";
-			resetPasswordDialog.close();
-		}
-	});
+	const closeButton = document.getElementsByClassName("close-icon")[0] as HTMLButtonElement;
+	if (!closeButton) return;
+	closeButton.onclick = () => {
+		resetPasswordDialog.style.display = "none";
+		resetPasswordDialog.close();
+	};
 }
 
 function popUp() {
@@ -131,8 +130,8 @@ function googleSignIn() {
 	const googleButton = document.getElementsByClassName("g_id_signin")[0];
 	if (googleButton)
 		googleButton.setAttribute('data-locale', userLang);
-	var s = document.createElement( 'script' );
+	var s = document.createElement('script');
 	s.id = "google-script";
-	s.setAttribute( 'src', `https://accounts.google.com/gsi/client` );
-	document.body.appendChild( s );
+	s.setAttribute('src', `https://accounts.google.com/gsi/client`);
+	document.body.appendChild(s);
 };
