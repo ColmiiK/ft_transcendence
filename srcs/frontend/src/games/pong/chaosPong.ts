@@ -1,6 +1,6 @@
 import { 
     Player, GeneralData, PaddleCollision, BallData, AIData, OnresizeData, init, 
-    resetBall, updateScore, setAI, countDown, pauseGame, returnToGames,
+    resetBall, updateScore, setAI, countDown, pauseGame, returnToGames, checkLost,
 	play as playEngine, stop as stopEngine, moveBall as moveBallEngine
 } from './gameEngine.js';
 
@@ -96,7 +96,8 @@ export function chaosPong(data: Games): void {
 		const savedState = localStorage.getItem("gameState");
 		if (savedState){
 			loadGameState();
-			await pauseGame(generalData, ballData);
+            if (!checkLost(generalData, ballData, AIData, player1, player2, width))
+                 await pauseGame(generalData, ballData);
 		}
 		if (!savedState){
 			await countDown(ballData, true);
@@ -482,14 +483,6 @@ export function chaosPong(data: Games): void {
 		}
 	};
 
-	async function clearGameState(){
-		localStorage.removeItem('gameState');
-		player1.counter = 0;
-		player2.counter = 0;
-		document.getElementById('counter1')!.innerText = '0';
-		document.getElementById('counter2')!.innerText = '0';
-	}
-
 	window.addEventListener('beforeunload', () => {
 		saveGameState();
 	});
@@ -500,18 +493,19 @@ export function chaosPong(data: Games): void {
 		setOnresize();
 	});
 
-	window.addEventListener("popstate", async () => {
-		await stop();
-		await clearGameState();
-	});
-
     document.getElementById('pauseGame')?.addEventListener('click', async () => {
         await pauseGame(generalData, ballData);
     })
 
-    document.getElementById('exitGame')?.addEventListener('click', async () => {
-        await returnToGames(generalData, ballData, AIData);
-    })
+	document.getElementById('exitGame')?.addEventListener('click', async () => {
+		if (checkLost(generalData, ballData, AIData, player1, player2, width)){
+			let cont = document.getElementById("continue");
+			let pauseDiv = document.getElementById("pauseGame")
+			if (cont) cont.style.display = "none";
+			if (pauseDiv) pauseDiv.style.display = "none";
+		}
+		await returnToGames(generalData, ballData, AIData, player1, player2);
+	})
 
 	setOnresize();
 	initialize();

@@ -85,7 +85,6 @@ export function crazyTokensMode(data: Games): void {
 
 		aiWorker = new Worker(new URL('./aiWorker.js', import.meta.url));
 		aiInterval = setInterval(async () => {
-            console.log(player2.turn, player2.AI, aiColumn, aiIsThinking, gameActive)
             if (!gameActive) return ;
 			if (player2.turn && player2.AI && !aiColumn && !aiIsThinking && gameActive) {
 				console.log("AI is thinking...");
@@ -102,20 +101,40 @@ export function crazyTokensMode(data: Games): void {
 		}, 1000);
 	}
 
+    function checkState(): boolean {
+		if (!checkWin(false) && !checkDraw()) return false;
+		if (checkWin(false)){
+			insertDivWinner();
+			disableClicks();
+		}
+		else if (checkDraw()){
+			insertDivDraw();
+			disableClicks();
+		}
+		const pauseBtn = document.getElementById('pauseGame')
+		if (!pauseBtn){
+			console.error("pauseGame element not found.")
+			return false;
+		}
+		pauseBtn.style.display = 'none';
+		const cnt = document.getElementById("continue");
+		if (cnt) cnt.style.display = "none";
+		return true;
+	}
+
     async function start(): Promise<void> {
         const savedState = loadGameState("custom");
 		init();
 		if (savedState){
 			renderBoardFromState(savedState, player1, player2)
-            if (player2.AI)
+			if (player2.AI)
 				initAI();
-            gameActive = false;
-			await pauseGame();
+			gameActive = false;
+            if (!checkState()) await pauseGame();
 		}
-		else
-			await enableClicks();
+		else await enableClicks();
 		handlerEvents();
-       /*  history.replaceState(null, "", "/games"); */
+        saveGameState("custom", player1, player2)
     }
 
     function handlerEvents(){
@@ -216,15 +235,7 @@ export function crazyTokensMode(data: Games): void {
 
         await saveGameState("custom", player1, player2);
 
-        if (checkWin(false)) {
-			insertDivWinner();
-			await disableClicks();
-            gameActive = false;
-		} else if (checkDraw()) {
-			insertDivDraw();
-			await disableClicks();
-            gameActive = false;
-		}
+        if (checkState()) gameActive = false
 
         await enableClicks();
     }
@@ -812,16 +823,6 @@ export function crazyTokensMode(data: Games): void {
     document.getElementById('pauseGame')?.addEventListener('click', async () => {
         gameActive = gameActive ? false : true;
         await pauseGame();
-        if (checkWin(false)){
-			insertDivWinner();
-			await disableClicks();
-			gameActive = false;
-		}
-		else if (checkDraw()){
-			insertDivDraw();
-			await disableClicks();
-			gameActive = false;
-		}
     })
 
 	document.getElementById('exitGame')?.addEventListener('click', async () => {
