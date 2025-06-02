@@ -74,6 +74,18 @@
 	animation: blinkPause 1.5s infinite;
 }
 
+#winnerPong {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: white;
+	font-size: clamp(0.5rem, 3.5vw, 3rem);
+	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.976);
+	display: none;
+	animation: blinkPause 1.5s infinite;
+}
+
 @keyframes blinkPause {
 	0%, 100% { opacity: 1; }
 	50% { opacity: 0.5; }
