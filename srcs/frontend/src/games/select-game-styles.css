@@ -138,3 +138,20 @@
   background: var(--accent-pink);
   color: var(--dark-purple);
 }
+
+.ready-to-play-card {
+  display: flex;
+	height: fit-content;
+	border-radius: 15px;
+	background-color: var(--dark-purple);
+	opacity: 80%;
+	padding: 10px;
+	margin: 5px;
+  transition: all 250ms ease-in;
+}
+
+.ready-to-play-card:hover {
+  cursor: pointer;
+  box-shadow: var(--accent-pink) 0px 0px 10px;
+  opacity: 100%;
+}

@@ -445,28 +445,28 @@ export async function createDebug() {
         first_player_id: foo.id,
         second_player_id: bar.id,
       });
-      await finishMatch(match, 10, 5);
+      // await finishMatch(match, 10, 5);
       match = await createMatch({
         game_type: "pong",
         custom_mode: "Chaos",
         first_player_id: foo.id,
         second_player_id: bar.id,
       });
-      await finishMatch(match, 6, 10);
+      // await finishMatch(match, 6, 10);
       match = await createMatch({
         game_type: "pong",
         custom_mode: "Chaos",
         first_player_id: baz.id,
         second_player_id: qux.id,
       });
-      await finishMatch(match, 10, 5);
+      // await finishMatch(match, 10, 5);
       match = await createMatch({
         game_type: "pong",
         custom_mode: "Chaos",
         first_player_id: baz.id,
         second_player_id: qux.id,
       });
-      await finishMatch(match, 6, 10);
+      // await finishMatch(match, 6, 10);
     }
     for (let i = 0; i < 5; i++) {
       let match;

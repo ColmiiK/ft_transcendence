@@ -72,7 +72,7 @@
           </button>
         </div>
       </div>
-      <div class="game-card lg:max-w-[20vw] p-8 flex flex-col items-center gap-4">
+      <div class="game-card lg:max-w-[20vw] max-h-[70vh] p-8 flex flex-col items-center gap-4 overflow-y-auto">
         <div class="flex items-center gap-4">
           <h2 class="game-title">Ready to Play</h2>
           <div class="game-icon">
@@ -93,10 +93,10 @@
             </svg>
           </div>
         </div>
-        <div class="w-full h-full bg-[#b7618c6b] rounded-[15px]"></div>
-        </div>
+        <section id='ready-games' class="w-full h-[95%] flex flex-col bg-[#b7618c6b] rounded-[15px] overflow-y-auto overflow-x-clip"></section>
       </div>
     </div>
+  </div>
 </div>
 
 <div id='overlay' class="absolute screen-set">
