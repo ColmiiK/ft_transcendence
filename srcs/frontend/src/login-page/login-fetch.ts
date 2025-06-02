@@ -284,11 +284,13 @@ async function displayTerms() {
 			signUpPage.style.display = "none";
 			termsPage.style.display = "flex";
 			termsButton.innerText = getTranslation('login_sign_in');
+			termsButton.setAttribute('translatekey', 'login_sign_in');
 		}
 		else {
 			signInPage.style.display = "flex";
 			termsPage.style.display = "none";
 			termsButton.innerText = getTranslation('terms_policy');
+			termsButton.setAttribute('translatekey', 'terms_policy');
 		}
 	})
 }

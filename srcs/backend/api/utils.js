@@ -106,7 +106,16 @@ export function validateInput(req, res, requiredFields) {
       return;
     }
   }
-
+  if (requiredFields.includes("users")) {
+    const users = req.body.users;
+    const usernames = users.map((user) => user.username);
+    const isUnique = new Set(usernames).size === usernames.length;
+    console.log("isUnique:", isUnique);
+    if (!isUnique) {
+      res.code(400).send({ error: "Usernames are not all unique" });
+      return;
+    }
+  }
   return true;
 }
 

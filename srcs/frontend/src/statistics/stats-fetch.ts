@@ -168,7 +168,7 @@ async function pongHistorical() {
 							<img id="friend-avatar-${match.rival_id}" class="friend-avatar-${match.rival_id} card-avatar rounded-full m-1.5" src="${match.rival_avatar}" alt="Avatar">
 						</div>
 						<div id="friend-status" class="flex flex-col justify-between items-end px-4 w-full">
-							<p>${match.custom_mode} - ${match.user_score}-${match.rival_score}</p>
+							<p>${match.custom_mode.capitalize()} - ${match.user_score}-${match.rival_score}</p>
 							<h3 class="self-start">${match.rival_username}</h3>
 							<p class="opacity-50 text-sm">${match.played_at.substring(0, 10)}</p>
 						</div>
@@ -340,7 +340,7 @@ async function connect4Historical() {
 							<img id="friend-avatar-${match.rival_id}" class="friend-avatar-${match.rival_id} card-avatar rounded-full m-1.5" src="${match.rival_avatar}" alt="Avatar">
 						</div>
 						<div id="friend-status" class="flex flex-col justify-between items-end px-4 w-full">
-							<p>${match.custom_mode} - ${match.user_score}-${match.rival_score}</p>
+							<p>${match.custom_mode.capitalize()} - ${match.user_score}-${match.rival_score}</p>
 							<h3 class="self-start">${match.rival_username}</h3>
 							<p class="opacity-50 text-sm">${match.played_at.substring(0, 10)}</p>
 						</div>

@@ -1,6 +1,7 @@
 import { getTranslation } from "../functionalities/transcript.js";
 import { navigateTo } from "../index.js";
 import { sendRequest } from "../login-page/login-fetch.js";
+import { googleSignIn } from "../login-page/login-page.js";
 import { chargeChat } from "../messages/load-info.js";
 import { showAlert } from "../toast-alert/toast-alert.js";
 import { GamePlayer, Scheduled } from "../types.js"
@@ -30,9 +31,30 @@ export async function initSelectPageEvent(){
   loginButton.onclick = (e: Event) => {
     e.preventDefault();
     loginForm?.classList.toggle('hidden');
+		googleSignIn();
+		setTimeout(() => {
+			const googleButton = document.getElementsByClassName("g_id_signin")[0];
+			const loadingIcon = document.getElementsByClassName("animate-spin")[0];
+			if (!googleButton || !loadingIcon) { return; }
+			googleButton.classList.remove("opacity-0");
+			loadingIcon.classList.add("hidden");
+			googleButton.classList.add("googleButton");
+		}, 500);
   }
 
   chargeReadyToPlay();
+}
+
+(window as any).handleGoogleVerify = async (response: object) => {
+	try {
+		const data = await sendRequest('POST', 'google/verify', response);
+		if (data["error"])
+		  throw new Error(data["error"]);
+    addPlayer(data.username, true);
+	}
+	catch (error) {
+		console.log(error);
+	}
 }
 
 async function chargeReadyToPlay() {
@@ -54,8 +76,8 @@ async function chargeReadyToPlay() {
 						</div>
 						<div id="friend-status" class="flex flex-col justify-between items-end px-4 w-full">
               <p><b>Host:</b> ${match.host}</p>
-							<h3>${match.second_player_alias} VS ${match.first_player_alias}</h3>
-							<p class='opacity-80 text-sm'>${match.game_type} - ${match.custom_mode}</p>
+							<h3>${match.first_player_alias} VS ${match.second_player_alias}</h3>
+							<p class='opacity-80 text-sm'>${match.game_type.capitalize()} - ${match.custom_mode.capitalize()}</p>
 						</div>
 					`;
       section.onclick = () => { goToMatch(match); };
@@ -69,6 +91,10 @@ async function chargeReadyToPlay() {
 
 function goToMatch(match: Scheduled) {
   console.log("Seleccionando partida", match.match_id, match.first_player_alias, match.second_player_alias, match.game_type, match.custom_mode);
+  if (localStorage.getItem("username") !== match.host) {
+    showAlert('You are not the host of this match', 'toast-error');
+    return;
+  }
   if (match.game_type === 'pong')
     navigateTo("/pong", { gameMode: 'local', isCustom: !match.custom_mode.includes('classic') });
   else
@@ -312,7 +338,10 @@ function showTournamentForm() {
   overlay.style.zIndex = '10';
   tournamentForm.classList.remove('hidden');
   closeButton.onclick = () => { closeForm(); };
-  addAlias.onclick = () => { if (addPlayer(playerAlias.value, false)) playerAlias.value = ''; }
+  addAlias.onclick = () => { 
+    if (addPlayer(playerAlias.value, false)) playerAlias.value = '';
+    playerAlias.focus();
+  }
   addUser.onclick = async () => { await isUser(); }
   createTournament.onclick = () => { startTournament(); }
 }
