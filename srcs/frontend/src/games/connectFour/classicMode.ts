@@ -98,7 +98,7 @@ export function classicMode(data: Games): void {
 			if (player2.AI)
 				initAI();
 			gameActive = false;
-			await pauseGame(columnList);
+			await pauseGame();
 		}
 		else
 			await enableClicks();
@@ -259,7 +259,7 @@ export function classicMode(data: Games): void {
 
 	document.getElementById('pauseGame')?.addEventListener('click', async () => {
 		gameActive = gameActive ? false : true;
-		await pauseGame(columnList);
+		await pauseGame();
 		if (checkWin(false)){
 			insertDivWinner();
 			await disableClicks();

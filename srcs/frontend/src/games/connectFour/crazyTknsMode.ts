@@ -110,7 +110,7 @@ export function crazyTokensMode(data: Games): void {
             if (player2.AI)
 				initAI();
             gameActive = false;
-			await pauseGame(columnList);
+			await pauseGame();
 		}
 		else
 			await enableClicks();
@@ -430,7 +430,7 @@ export function crazyTokensMode(data: Games): void {
 		let		columnToUse: Promise<HTMLElement | null> = Promise.resolve(null);
 		const	blockNeeded = threatColumns.length > 0;
         const   diceDiv = document.getElementById("dice-container");
-        const	needSpecialToken = blockNeeded || Math.random() < 1;
+        const	needSpecialToken = blockNeeded || Math.random() < 0.5;
 
         if (!player2.specialToken && player2.diceUses > 0 && needSpecialToken && diceDiv) await diceDiv.click();
         await delay(500);
@@ -811,7 +811,7 @@ export function crazyTokensMode(data: Games): void {
 
     document.getElementById('pauseGame')?.addEventListener('click', async () => {
         gameActive = gameActive ? false : true;
-        await pauseGame(columnList);
+        await pauseGame();
         if (checkWin(false)){
 			insertDivWinner();
 			await disableClicks();

@@ -330,7 +330,7 @@ export function delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export async function pauseGame(columnList: HTMLElement[]): Promise<void> {
+export async function pauseGame(): Promise<void> {
     const pauseEl = document.getElementById('pauseConnect');
     if (!pauseEl){
         console.error("pauseConnect element not found.");
