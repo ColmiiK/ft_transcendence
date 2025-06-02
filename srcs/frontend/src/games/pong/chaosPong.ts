@@ -93,11 +93,11 @@ export function chaosPong(data: Games): void {
     };
 
 	async function start(): Promise<void> {
-		const savedState = localStorage.getItem("gameState");
+		const savedState = localStorage.getItem("gameStatecustom");
 		if (savedState){
 			loadGameState();
             if (!checkLost(generalData, ballData, AIData, player1, player2, width))
-                 await pauseGame(generalData, ballData);
+                await pauseGame(generalData, ballData);
 		}
 		if (!savedState){
 			await countDown(ballData, true);
@@ -436,11 +436,11 @@ export function chaosPong(data: Games): void {
                 targetY: AIData.targetY
             }
 		};
-		localStorage.setItem('gameState', JSON.stringify(gameState));
+		localStorage.setItem('gameStatecustom', JSON.stringify(gameState));
 	}
 
 	function loadGameState() {
-		const savedState = localStorage.getItem('gameState');
+		const savedState = localStorage.getItem('gameStatecustom');
 
 		if (savedState) {
             const gameState = JSON.parse(savedState);
@@ -471,28 +471,6 @@ export function chaosPong(data: Games): void {
 		}
     }
 
-	const initialize = () => {
-		if (document.readyState === 'complete') {
-			setOnresize();
-			start();
-		} else {
-			window.addEventListener('load', () => {
-				setOnresize();
-				start();
-			});
-		}
-	};
-
-	window.addEventListener('beforeunload', () => {
-		saveGameState();
-	});
-
-	document.addEventListener('DOMContentLoaded', function() {
-		start();
-		loadGameState();
-		setOnresize();
-	});
-
     document.getElementById('pauseGame')?.addEventListener('click', async () => {
         await pauseGame(generalData, ballData);
     })
@@ -504,9 +482,9 @@ export function chaosPong(data: Games): void {
 			if (cont) cont.style.display = "none";
 			if (pauseDiv) pauseDiv.style.display = "none";
 		}
-		await returnToGames(generalData, ballData, AIData, player1, player2);
+		await returnToGames(generalData, ballData, AIData, player1, player2, "custom");
 	})
 
 	setOnresize();
-	initialize();
+	start();
 }

@@ -123,11 +123,10 @@ const routes = [
 		accesible: false,
     	event: (data: object) => {
       		const mode = data as Games;
-			if (!mode.isCustom){
+			if (mode.isCustom || localStorage.getItem(`gameStatecustom`))
+				chaosPong(mode);
+			else if (!mode.isCustom || localStorage.getItem(`gameStateclassic`))
 				classicPong(mode);
-			}
-			else
-				chaosPong(mode)
     	}
 	},
  	{

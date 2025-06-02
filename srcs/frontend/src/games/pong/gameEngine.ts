@@ -316,7 +316,7 @@ export async function pauseGame(generalData: GeneralData, ballData: BallData): P
 	return Promise.resolve();
 }
 
-export async function returnToGames(generalData: GeneralData, ballData: BallData, AIData: AIData, player1: Player, player2: Player): Promise<void> {
+export async function returnToGames(generalData: GeneralData, ballData: BallData, AIData: AIData, player1: Player, player2: Player, mode: "classic" | "custom"): Promise<void> {
 	const exitBtn = document.getElementById('exitGame');
 	if (!exitBtn){
 		console.error("exitGame element not found.");
@@ -357,12 +357,12 @@ export async function returnToGames(generalData: GeneralData, ballData: BallData
 
 	document.getElementById('exit')?.addEventListener('click', () => {
 		stop(generalData, AIData, ballData);
-		clearGameState(player1, player2);
+		clearGameState(player1, player2, mode);
 		navigateTo("/games");
 	})
 
-	function clearGameState(player1: Player, player2: Player){
-		localStorage.removeItem('gameState');
+	function clearGameState(player1: Player, player2: Player, mode: "classic" | "custom"){
+		localStorage.removeItem(`gameState${mode}`);
 		player1.counter = 0;
 		player2.counter = 0;
 		document.getElementById('counter1')!.innerText = '0';
