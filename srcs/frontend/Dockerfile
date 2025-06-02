@@ -6,8 +6,8 @@ RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 
 FROM nginx:alpine
 RUN apk add --no-cache \
-      nodejs=22.13.1-r0 \
-      npm=10.9.1-r0 \
+      nodejs \
+      npm \
       supervisor=4.2.5-r5
 COPY --from=certificate /certificate /etc/nginx/ssl
 WORKDIR /usr/share/nginx/html
