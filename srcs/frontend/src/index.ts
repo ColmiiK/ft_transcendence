@@ -135,7 +135,6 @@ const routes = [
 		accesible: false,
     	event: (data: object) => {
 			const mode = data as Games;
-
 			if (mode.isCustom || localStorage.getItem(`connect4GameStatecustom`))
 				crazyTokensMode(mode);
 			else if (!mode.isCustom || localStorage.getItem(`connect4GameStateclassic`))

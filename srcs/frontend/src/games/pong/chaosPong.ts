@@ -104,7 +104,7 @@ export function chaosPong(data: Games): void {
 			init(generalData, ballData, player1, player2, width);
 		}
 		generalData.controlGame = setInterval(play, generalData.time);
-		powerUpData.controlPowerUp = setInterval(spawnPowerUp, 5000);
+		powerUpData.controlPowerUp = setInterval(spawnPowerUp, 10000);
 		if (AIData.activate) 
 			AIData.controlAI = setInterval(moveAI, AIData.timeToRefresh);
 	}
@@ -116,13 +116,6 @@ export function chaosPong(data: Games): void {
 		moveBall();
 		playEngine(generalData, ballData, AIData, player1, player2, paddleCollisionData, width, height);
 		saveGameState();
-	}
-
-	function stop(): void {
-		saveGameState();
-		stopEngine(generalData, AIData, ballData);
-		if (powerUpData.controlPowerUp)
-            clearInterval(powerUpData.controlPowerUp);
 	}
 
 	function moveBall(){
@@ -227,19 +220,19 @@ export function chaosPong(data: Games): void {
         powerUpData.powerUp.classList.add('powerUpAppear');
 
         powerUpData.timeout = setTimeout(() => {
-        powerUpData.powerUp?.classList.add('powerUpBlink');
-        setTimeout(() => {
-			if (! powerUpData.powerUp) return ;
-            powerUpData.powerUp.classList.remove('powerUpBlink');
-            powerUpData.powerUp.classList.add('powerUpDisappear');
+            powerUpData.powerUp?.classList.add('powerUpBlink');
             setTimeout(() => {
-				if (! powerUpData.powerUp) return ;
-                powerUpData.powerUp.style.display = "none";
-                powerUpData.powerUp.classList.remove('powerUpAppear', 'powerUpDisappear');
-                powerUpData.active = false;
-            }, 400);
-        }, 600);
-    }, 6000);
+                if (! powerUpData.powerUp) return ;
+                powerUpData.powerUp.classList.remove('powerUpBlink');
+                powerUpData.powerUp.classList.add('powerUpDisappear');
+                setTimeout(() => {
+                    if (! powerUpData.powerUp) return ;
+                    powerUpData.powerUp.style.display = "none";
+                    powerUpData.powerUp.classList.remove('powerUpAppear', 'powerUpDisappear');
+                    powerUpData.active = false;
+                }, 400);
+            }, 600);
+        }, 5000);
     }
 
     function checkBallPowerUpCollision(): void {
@@ -256,6 +249,9 @@ export function chaosPong(data: Games): void {
     function activatePowerUp(): void {
         const power = powerUpData.types[Math.floor(Math.random() * powerUpData.types.length)];
 
+        clearInterval(powerUpData.controlPowerUp!);
+        powerUpData.active = true;
+
         switch (power) {
             case 'paddleSize':
                 activePaddleSize();
@@ -271,13 +267,12 @@ export function chaosPong(data: Games): void {
                 break;
         }
 
-		if (powerUpData.powerUp) {
-			powerUpData.powerUp.style.display = "none";
-			powerUpData.powerUp.classList.remove('powerUpAnimate', 'powerUpDisappear');
-		}
+        if (powerUpData.powerUp) {
+            powerUpData.powerUp.style.display = "none";
+            powerUpData.powerUp.classList.remove('powerUpAnimate', 'powerUpDisappear');
+        }
 
-		clearTimeout(powerUpData.timeout);
-		powerUpData.active = false;
+        clearTimeout(powerUpData.timeout);
     }
 
     function activePaddleSize(){
@@ -286,7 +281,6 @@ export function chaosPong(data: Games): void {
         paddle.classList.add('paddleGrowEffect');
         paddleAffected.classList.add('paddleLittleEffect');
         generalData.paddleMargin = height * 0.05;
-
         if (paddle.offsetTop < generalData.paddleMargin)
             paddle.style.top = `${generalData.paddleMargin}px`;
         else if (paddle.offsetTop + paddle.clientHeight > height - generalData.paddleMargin)
@@ -314,11 +308,13 @@ export function chaosPong(data: Games): void {
                 paddleAffected.style.top = `${generalData.paddleMargin}px`;
             else if (paddleAffected.offsetTop + paddleAffected.clientHeight > height - generalData.paddleMargin)
                 paddleAffected.style.top = `${height - generalData.paddleMargin - paddleAffected.clientHeight}px`;
+             setTimeout(() => {
+                paddle.classList.remove('paddleGrowToNormalEffect');
+                paddleAffected.classList.remove('paddleLittleToNormalEffect');
+                powerUpData.active = false;
+                powerUpData.controlPowerUp = setInterval(spawnPowerUp, 5000);
+            }, 5000);
         }, 5000);
-        setTimeout(() => {
-            paddle.classList.remove('paddleGrowToNormalEffect');
-            paddleAffected.classList.remove('paddleLittleToNormalEffect');
-        }, 1500);
     }
 
     function activeBallSpeed(){
@@ -328,12 +324,9 @@ export function chaosPong(data: Games): void {
         const trailInterval = setInterval(() => {
             const trail = document.createElement("div");
             trail.className = "ballTrailClone";
-    
-            trail.style.left = `${ballData.ball.offsetLeft - ballData.velX}px`
+            trail.style.left = `${ballData.ball.offsetLeft - ballData.velX}px`;
             trail.style.top = `${ballData.ball.offsetTop - ballData.velY}px`;
-    
             document.getElementById("game")?.appendChild(trail);
-    
             setTimeout(() => trail.remove(), 400);
         }, 50);
 
@@ -341,15 +334,21 @@ export function chaosPong(data: Games): void {
             ballData.velX /= 1.5;
             ballData.velY /= 1.5;
             clearInterval(trailInterval);
+
+            powerUpData.active = false;
+            powerUpData.controlPowerUp = setInterval(spawnPowerUp, 5000);
         }, 5000);
     }
 
     function activePaddleSpeed(){
         const playerAffected = ballData.velX < 0 ? player1 : player2;
-        playerAffected.paddleSpeed = 0.06;
+        playerAffected.paddleSpeed = 0.08;
 
         setTimeout(() => {
             playerAffected.paddleSpeed = 0.04;
+
+            powerUpData.active = false;
+            powerUpData.controlPowerUp = setInterval(spawnPowerUp, 5000);
         }, 5000);
     }
 
@@ -359,6 +358,9 @@ export function chaosPong(data: Games): void {
 
         setTimeout(() => {
             playerAffected.keysAffected = false;
+
+            powerUpData.active = false;
+            powerUpData.controlPowerUp = setInterval(spawnPowerUp, 5000);
         }, 5000);
     }
 
@@ -482,6 +484,7 @@ export function chaosPong(data: Games): void {
 			if (cont) cont.style.display = "none";
 			if (pauseDiv) pauseDiv.style.display = "none";
 		}
+        saveGameState();
 		await returnToGames(generalData, ballData, AIData, player1, player2, "custom");
 	})
 

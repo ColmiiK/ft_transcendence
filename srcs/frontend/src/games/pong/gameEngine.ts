@@ -133,10 +133,12 @@ export function checkLost(generalData: GeneralData, ballData: BallData, AIData: 
 export function updateScore(paddle: HTMLElement, player1: Player, player2: Player): void {
 	if (paddle === player1.paddle && player1.counter < 10) {
 		player1.counter++;
-		document.getElementById('counter1')!.innerHTML = player1.counter.toString();
+		const counter1 = document.getElementById('counter1');
+		if (counter1) counter1.innerHTML = player1.counter.toString();
 	} else if (paddle === player2.paddle && player2.counter < 10){
 		player2.counter++;
-		document.getElementById('counter2')!.innerHTML = player2.counter.toString();
+		const counter2 = document.getElementById('counter2');
+		if (counter2) counter2.innerHTML = player2.counter.toString();
 	}
 }
 
