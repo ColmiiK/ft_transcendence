@@ -260,6 +260,16 @@ export function classicMode(data: Games): void {
 	document.getElementById('pauseGame')?.addEventListener('click', async () => {
 		gameActive = gameActive ? false : true;
 		await pauseGame(columnList);
+		if (checkWin(false)){
+			insertDivWinner();
+			await disableClicks();
+			gameActive = false;
+		}
+		else if (checkDraw()){
+			insertDivDraw();
+			await disableClicks();
+			gameActive = false;
+		}
 	})
 
 	document.getElementById('exitGame')?.addEventListener('click', async () => {

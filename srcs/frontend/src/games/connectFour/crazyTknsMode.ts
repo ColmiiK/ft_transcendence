@@ -85,6 +85,7 @@ export function crazyTokensMode(data: Games): void {
 
 		aiWorker = new Worker(new URL('./aiWorker.js', import.meta.url));
 		aiInterval = setInterval(async () => {
+            console.log(player2.turn, player2.AI, aiColumn, aiIsThinking, gameActive)
             if (!gameActive) return ;
 			if (player2.turn && player2.AI && !aiColumn && !aiIsThinking && gameActive) {
 				console.log("AI is thinking...");
@@ -96,8 +97,7 @@ export function crazyTokensMode(data: Games): void {
 			else if (player2.turn && player2.AI && aiColumn && aiIsThinking && gameActive) {
                 await enableClicks();
                 await aiColumn.click();
-                aiColumn = null;
-                aiIsThinking = false;
+                if (aiIsThinking && !aiColumn) aiIsThinking = false;
 			}
 		}, 1000);
 	}
@@ -163,7 +163,7 @@ export function crazyTokensMode(data: Games): void {
 			aiWorker = null;
 		}
 		aiColumn = null;
-         aiIsThinking = false;
+        aiIsThinking = false;
     }
 
     /* Click Functionality */
@@ -186,8 +186,11 @@ export function crazyTokensMode(data: Games): void {
 			return;
 		}
 
-        if (player2.turn && player2.AI && aiColumn)
+        if (player2.turn && player1.AI && !aiColumn) return ;
+        if (player2.turn && player2.AI && aiColumn){
             column = aiColumn;
+            aiColumn = null;
+        }
 
         const currentPlayer = player1.turn ? player1 : player2;
 
@@ -210,11 +213,6 @@ export function crazyTokensMode(data: Games): void {
         }
         else 
             await placeToken(column);
-
-        if (player1.turn && player2.AI && aiColumn){
-            aiColumn = null;
-            aiIsThinking = false;
-        }
 
         await saveGameState("custom", player1, player2);
 
@@ -253,6 +251,7 @@ export function crazyTokensMode(data: Games): void {
 
     async function placeToken(column: HTMLElement): Promise<void> {
         await placeTokenEngine(column, player1, player2, columnMap, boardMap, columnList, "crazy");
+        if (aiIsThinking && player1.turn && player2.AI) aiIsThinking = false;
     }
 
     /* Check Win / Draw */
@@ -268,9 +267,7 @@ export function crazyTokensMode(data: Games): void {
     /* AI Functionality */
 
     async function aiToken(): Promise<HTMLElement | null> {
-        if (!gameActive || !aiWorker || !player2.turn || aiColumn){
-            return null;
-        }
+        if (!gameActive || !aiWorker || !player2.turn || aiColumn) return null;
 
 		if (player2.affected && player2.affected === "🌫️"){
 			console.log("AI is blind");
@@ -375,18 +372,18 @@ export function crazyTokensMode(data: Games): void {
     	const	opponentTokens = countTokens(player1.num);
 
 		switch (token) {
-            case "💣":
+           case "💣":
                 return boardFilledRatio >= 0.5;
             case "🔒":
                 return blockNeeded;
-            case "👻":
+             case "👻":
                 return boardFilledRatio >= 0.5;
             case "🌫️":
             	return blockNeeded || opponentTokens > playerTokens + 4;
 			case "🌀":
             	return opponentTokens > playerTokens && boardFilledRatio > 0.35;
             case "🎲":
-                return blockNeeded || opponentTokens > playerTokens + 4;;
+                return blockNeeded || opponentTokens > playerTokens + 4;
             default:
                 return false;
         }
@@ -503,6 +500,7 @@ export function crazyTokensMode(data: Games): void {
         let tokens = Array.from(document.getElementsByClassName("lockToken"));
         tokens.forEach((token) => {
             (token as HTMLElement).innerText = "";
+            (token as HTMLElement).classList.remove("lockToken");
         });
     }
 
@@ -513,6 +511,11 @@ export function crazyTokensMode(data: Games): void {
             (token as HTMLElement).style.backgroundColor = token.classList.contains("red") ? "red" : "yellow";
             (token as HTMLElement).innerText = "";
         });
+
+        let blind = Array.from(document.getElementsByClassName("blindToken"))
+        blind.forEach((tkn) => {
+            (tkn as HTMLElement).classList.remove("blindToken")
+        })
     }
 
     async function disableGhost(): Promise<void> {
@@ -543,6 +546,7 @@ export function crazyTokensMode(data: Games): void {
         let tokens = Array.from(document.getElementsByClassName("diceToken"));
         tokens.forEach((token) => {
             (token as HTMLElement).innerText = "";
+            (token as HTMLElement).classList.remove("diceToken");
         });
     }
 
@@ -760,7 +764,7 @@ export function crazyTokensMode(data: Games): void {
     }
 
     async function placeSpecialToken(column: HTMLElement): Promise<void> {
-        disableClicks();
+        await disableClicks();
 
         const currentPlayer = player1.turn ? player1 : player2;
         
@@ -787,12 +791,14 @@ export function crazyTokensMode(data: Games): void {
         await handleSpecialToken(row, currentPlayer, column);
         document.getElementById("board")!.style.pointerEvents = 'auto';
 
-        enableClicks();
         currentPlayer.specialToken = null;
         currentPlayer.useSpecial = false;
         if (columnData[row] == 3)
             updateDice(player1, player2);
         await updateTurnIndicator();
+        if (aiIsThinking && player2.AI) aiIsThinking = false;
+        await delay(100);
+        await enableClicks();
     }
 
     /* Utils */
@@ -806,6 +812,16 @@ export function crazyTokensMode(data: Games): void {
     document.getElementById('pauseGame')?.addEventListener('click', async () => {
         gameActive = gameActive ? false : true;
         await pauseGame(columnList);
+        if (checkWin(false)){
+			insertDivWinner();
+			await disableClicks();
+			gameActive = false;
+		}
+		else if (checkDraw()){
+			insertDivDraw();
+			await disableClicks();
+			gameActive = false;
+		}
     })
 
 	document.getElementById('exitGame')?.addEventListener('click', async () => {
