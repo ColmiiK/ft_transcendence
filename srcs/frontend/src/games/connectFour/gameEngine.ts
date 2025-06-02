@@ -189,7 +189,7 @@ async function updateCell(cell: HTMLElement, player: Player): Promise<void> {
 }
 
 export async function placeToken(column: HTMLElement | null, player1: Player, player2: Player, columnMap: Map<string, HTMLElement[]>, boardMap: Map<string, number[]>, columnList: HTMLElement[], mode: string): Promise<void> {
-    disableClicks(columnList);
+    await disableClicks(columnList);
     if (!column || !column.id) {
         await enableClicks(columnList);
         console.error("Column or column ID is invalid: ", column);
@@ -221,7 +221,8 @@ export async function placeToken(column: HTMLElement | null, player1: Player, pl
 
     await updateCell(cells[row], currentPlayer);
     await updateTurnIndicator(player1, player2, columnList, columnMap, mode);
-    enableClicks(columnList);
+    await delay(100);
+    await enableClicks(columnList);
 }
 
 export function checkDraw(boardMap: Map<string, number[]>, columnList: HTMLElement[]): boolean {
@@ -329,7 +330,7 @@ export function delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export async function pauseGame(columnList: HTMLElement[]): Promise<void> {
+export async function pauseGame(): Promise<void> {
     const pauseEl = document.getElementById('pauseConnect');
     if (!pauseEl){
         console.error("pauseConnect element not found.");
@@ -497,6 +498,14 @@ export function renderBoardFromState(gameState: GameState, player1: Player, play
                 cell.classList.add('filled');
                 cell.classList.remove('red-hover', 'yellow-hover');
             }
+        });
+    }
+
+    let blindTkn = Array.from(document.getElementsByClassName("blindToken"));
+    if (blindTkn.length > 0){
+        let tokens = Array.from(document.getElementsByClassName("token"));
+        tokens.forEach(token => {
+            (token as HTMLElement).style.backgroundColor = "gray";
         });
     }
 
