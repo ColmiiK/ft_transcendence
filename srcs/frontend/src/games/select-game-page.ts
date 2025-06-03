@@ -2,7 +2,6 @@ import { getTranslation } from "../functionalities/transcript.js";
 import { navigateTo } from "../index.js";
 import { sendRequest } from "../login-page/login-fetch.js";
 import { googleSignIn } from "../login-page/login-page.js";
-import { chargeChat } from "../messages/load-info.js";
 import { showAlert } from "../toast-alert/toast-alert.js";
 import { GamePlayer, Scheduled } from "../types.js"
 let count = 1;
