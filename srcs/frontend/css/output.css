@@ -661,6 +661,18 @@
   animation: blinkPause 1.5s infinite;
 }
 
+#winnerPong {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: clamp(0.5rem, 3.5vw, 3rem);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.976);
+  display: none;
+  animation: blinkPause 1.5s infinite;
+}
+
 @keyframes blinkPause {
   0%, 100% {
     opacity: 1;
@@ -1048,6 +1060,7 @@
   border: white solid 2px;
   border-radius: 2%;
   padding: clamp(5px, 1vw, 10px) clamp(10px, 2vw, 20px);
+  z-index: 10;
 }
 
 #returnToGamesConnect > p {
@@ -1152,6 +1165,8 @@
 
 #winner {
   position: absolute;
+  top: 23%;
+  left: 10%;
   display: none;
   border: 2px solid rgb(0, 77, 112);
   background-color: rgb(24, 127, 245);
@@ -1165,7 +1180,7 @@
   text-align: center;
   align-content: center;
   color: white;
-  font-size: 120%;
+  font-size: 4vw;
 }
 
 .yellow>span {
@@ -1182,6 +1197,8 @@
 
 #draw {
   position: absolute;
+  top: 23%;
+  left: 10%;
   display: none;
   border: 5px solid rgb(7, 39, 76);
   background-color: rgb(24, 127, 245);
@@ -2243,20 +2260,16 @@ video {
   max-height: 60px;
 }
 
-.max-h-\[90vh\] {
-  max-height: 90vh;
-}
-
 .max-h-\[70vh\] {
   max-height: 70vh;
 }
 
-.max-h-\[85vh\] {
-  max-height: 85vh;
+.max-h-\[90vh\] {
+  max-height: 90vh;
 }
 
-.max-h-\[75vh\] {
-  max-height: 75vh;
+.max-h-\[50px\] {
+  max-height: 50px;
 }
 
 .min-h-\[250px\] {
@@ -2269,6 +2282,10 @@ video {
 
 .min-h-\[80vh\] {
   min-height: 80vh;
+}
+
+.min-h-\[50px\] {
+  min-height: 50px;
 }
 
 .w-10 {
@@ -2302,10 +2319,6 @@ video {
 
 .flex-1 {
   flex: 1 1 0%;
-}
-
-.flex-grow {
-  flex-grow: 1;
 }
 
 .grow {
@@ -2597,6 +2610,10 @@ video {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
 }
 
+.bg-\[var--\(\)\] {
+  background-color: var--();
+}
+
 .fill-\[var\(--dark-purple\)\] {
   fill: var(--dark-purple);
 }
@@ -2722,6 +2739,10 @@ video {
 
 .lowercase {
   text-transform: lowercase;
+}
+
+.capitalize {
+  text-transform: capitalize;
 }
 
 .italic {
