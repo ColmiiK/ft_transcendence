@@ -5,6 +5,7 @@ import { googleSignIn } from "../login-page/login-page.js";
 import { showAlert } from "../toast-alert/toast-alert.js";
 import { GamePlayer, Scheduled } from "../types.js"
 let count = 1;
+let lastClickedMode: string;
 
 export async function initSelectPageEvent(){
   count = 1;
@@ -15,8 +16,14 @@ export async function initSelectPageEvent(){
   const pongCard = document.getElementById('pong-card');
   const connectCard = document.getElementById('connect-card');
   if (!pongCard || !connectCard) { return ; }
-  pongCard.onclick = (event: Event) => { showModal(event) };
-  connectCard.onclick = (event: Event) => { showModal(event) };
+  pongCard.onclick = (event: Event) => { 
+    lastClickedMode = 'pong';
+    showModal(event);
+  };
+  connectCard.onclick = (event: Event) => { 
+    lastClickedMode = '4inrow';
+    showModal(event);
+  };
 
   const createTournament = document.getElementById('create-tournament');
   const viewTournament = document.getElementById('view-tournament');
@@ -30,15 +37,7 @@ export async function initSelectPageEvent(){
   loginButton.onclick = (e: Event) => {
     e.preventDefault();
     loginForm?.classList.toggle('hidden');
-		googleSignIn();
-		setTimeout(() => {
-			const googleButton = document.getElementsByClassName("g_id_signin")[0];
-			const loadingIcon = document.getElementsByClassName("animate-spin")[0];
-			if (!googleButton || !loadingIcon) { return; }
-			googleButton.classList.remove("opacity-0");
-			loadingIcon.classList.add("hidden");
-			googleButton.classList.add("googleButton");
-		}, 500);
+    showGoogleButton();
   }
 
   chargeReadyToPlay();
@@ -49,10 +48,22 @@ export async function initSelectPageEvent(){
 		const data = await sendRequest('POST', 'google/verify', response);
 		if (data["error"])
 		  throw new Error(data["error"]);
-    addPlayer(data.username, true);
+    const classicForm = document.getElementById('local-form');
+    const customForm = document.getElementById('custom-local-form');
+    const msg = parsePlayer(data.username);
+      if (msg !== '')
+        throw new Error(msg);
+    const username = localStorage.getItem("username");
+    if (!classicForm || !customForm || !username) { return ; }
+    if (!classicForm.classList.contains('hidden'))
+      navigateTo(`/${lastClickedMode}`, { gameMode: lastClickedMode, isCustom: false, first_user_alias: username, second_user_alias: data.username });
+    else if (!customForm.classList.contains('hidden'))
+      navigateTo(`/${lastClickedMode}`, { gameMode: lastClickedMode, isCustom: true, first_user_alias: username, second_user_alias: data.username });
+    else
+      addPlayer(data.username, true);
 	}
 	catch (error) {
-		console.log(error);
+    showAlert((error as Error).message, 'toast-error');
 	}
 }
 
@@ -192,6 +203,20 @@ function isElementOrAncestor(element: HTMLElement, id: string): boolean {
     return false;
   }
 
+function showGoogleButton() {
+		googleSignIn();
+		setTimeout(() => {
+			const googleButtons = document.getElementsByClassName("g_id_signin");
+			const loadingIcons = document.getElementsByClassName("animate-spin");
+			if (!googleButtons || !loadingIcons) { return; }
+      for (let i = 0; i < googleButtons.length; i++) {
+          googleButtons[i].classList.remove("opacity-0");
+          googleButtons[i].classList.add("googleButton");
+          loadingIcons[i].classList.add("hidden");
+      }
+		}, 500);
+}
+
 function showGameOptions(game: string) {
   const optionsModal = document.getElementById('game-options-modal');
   if (!optionsModal) { return ; }
@@ -212,13 +237,19 @@ function showGameOptions(game: string) {
   const classicButton = document.getElementById('local-button') as HTMLButtonElement;
   const classicForm = document.getElementById('local-form');
   const classicStart = document.getElementById('start-classic') as HTMLButtonElement;
-  classicButton.onclick = () => { classicForm?.classList.toggle('hidden') };
+  classicButton.onclick = () => {
+    showGoogleButton();
+    classicForm?.classList.toggle('hidden')
+  };
   classicStart.onclick = () => { validateGame(game, 'local') };
   
   const customButton = document.getElementById('custom-local-button') as HTMLButtonElement;
   const customForm = document.getElementById('custom-local-form');
   const customStart = document.getElementById('start-custom') as HTMLButtonElement;
-  customButton.onclick = () => { customForm?.classList.toggle('hidden') };
+  customButton.onclick = () => { 
+    showGoogleButton();
+    customForm?.classList.toggle('hidden')
+  };
   customStart.onclick = () => { validateGame(game, 'local-custom') };
 
   // Local with AI
