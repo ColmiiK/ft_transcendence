@@ -208,7 +208,7 @@ async function displayFirstChat(data: MessageObject) {
 			throw new Error("Error displaying the first chat");
 
 		const recentChatsTyped = recentChats as LastMessage[];
-		if (recentChatsTyped) {
+		if (recentChatsTyped.length > 0) {
 			if (Object.keys(data).length !== 0)
 				chargeChat(data.chat_id, data.friend_username, data.friend_avatar);
 			else
@@ -236,6 +236,8 @@ export async function recentChats() {
 				if (entry !== searchForm)
 					entry.remove();
 			});
+			if (recentChatsTyped.length === 0)
+				return ;
 			last_chat = recentChatsTyped[0].chat_id;
 
 			recentChatsTyped.forEach((chat) => {
