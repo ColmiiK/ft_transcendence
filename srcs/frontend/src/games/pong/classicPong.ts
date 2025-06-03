@@ -77,8 +77,8 @@ export function classicPong(data: Games): void{
 		const savedState = localStorage.getItem("gameStateclassic");
 		if (savedState){
 			loadGameState();
-			if (!checkLost(generalData, ballData, AIData, player1, player2, width))
-				await pauseGame(generalData, ballData);
+			if (!checkLost(generalData, ballData, AIData, null, player1, player2, width))
+				await pauseGame(generalData, ballData, null);
 		}
 		if (!savedState){
 			await countDown(ballData, true);
@@ -94,7 +94,7 @@ export function classicPong(data: Games): void{
 
 		setOnresize();
 		moveBall();
-		playEngine(generalData, ballData, AIData, player1, player2, paddleCollisionData, width, height);
+		playEngine(generalData, ballData, AIData, player1, player2, width, height, null);
 		saveGameState();
 	}
 
@@ -261,17 +261,18 @@ export function classicPong(data: Games): void{
 	}
 
 	document.getElementById('pauseGame')?.addEventListener('click', async () => {
-		await pauseGame(generalData, ballData);
+		await pauseGame(generalData, ballData, null);
 	})
 
 	document.getElementById('exitGame')?.addEventListener('click', async () => {
-		if (checkLost(generalData, ballData, AIData, player1, player2, width)){
+		if (checkLost(generalData, ballData, AIData, null ,player1, player2, width)){
 			let cont = document.getElementById("continue");
 			let pauseDiv = document.getElementById("pauseGame")
 			if (cont) cont.style.display = "none";
 			if (pauseDiv) pauseDiv.style.display = "none";
 		}
-		await returnToGames(generalData, ballData, AIData, player1, player2, "classic");
+		saveGameState();
+		await returnToGames(generalData, ballData, AIData, player1, player2, "classic", null);
 	})
 
 	setOnresize();

@@ -1,6 +1,7 @@
 import { getClientID } from "../../messages/messages-page.js";
 import { GameState } from "../../types.js";
 import { navigateTo } from "../../index.js";
+import { chaosPong } from "./chaosPong.js";
 
 //export let socketPong: WebSocket | null;
 //let current_game: GameState | null = null;
@@ -57,20 +58,40 @@ export interface OnresizeData {
 	newSpeed: number;
 }
 
+export interface PowerUpType {
+	posX: number,
+	posY: number,
+	paddleAffected: HTMLElement | null,
+	powerUp: HTMLElement | null,
+	types: Array<string>,
+	active: boolean,
+	power: string | null,
+	timeout: NodeJS.Timeout | number;
+	controlPowerUp: NodeJS.Timeout | null;
+	powerUpStartTime: number | null;
+	powerUpDuration: number;
+	powerUpRemainingTime: number;
+	spawnStartTime: number | null;
+	spawnRemainingTime: number;
+	isPaused: boolean;
+}
+
 export function init(generalData: GeneralData, ballData: BallData, player1: Player, player2: Player, width: number): void {
 	resetBall(generalData, ballData, player1, player2, width);
 }
 
-export function play(generalData: GeneralData, ballData: BallData, AIData: AIData, player1: Player, player2: Player, paddleCollisionData: PaddleCollision, width: number, height: number): void {
+export function play(generalData: GeneralData, ballData: BallData, AIData: AIData, player1: Player, player2: Player, width: number, height: number, PowerUpData: PowerUpType | null): void {
 	movePaddle(player1, player2, generalData, AIData, height);
-	checkLost(generalData, ballData, AIData, player1, player2, width);
+	checkLost(generalData, ballData, AIData, PowerUpData, player1, player2, width);
 }
 
-export async function stop(generalData: GeneralData, AIData: AIData, ballData: BallData): Promise<void> {
+export async function stop(generalData: GeneralData, AIData: AIData, ballData: BallData, PowerUpData: PowerUpType | null): Promise<void> {
 	if (generalData.controlGame) 
 		clearInterval(generalData.controlGame);
 	if (AIData.activate && AIData.controlAI) 
 		clearInterval(AIData.controlAI);
+	if (PowerUpData && PowerUpData.controlPowerUp)
+		clearInterval(PowerUpData.controlPowerUp)
 	ballData.ball.style.display = "none";
 }
 
@@ -108,13 +129,13 @@ export function insertWinner(winner: string){
 	gameEl.style.animation = "mediumOpacity";
 }
 
-export function checkLost(generalData: GeneralData, ballData: BallData, AIData: AIData, player1: Player, player2: Player, width: number): boolean {
+export function checkLost(generalData: GeneralData, ballData: BallData, AIData: AIData, PowerUpData: PowerUpType | null, player1: Player, player2: Player, width: number): boolean {
 	if (ballData.ball.offsetLeft >= width) {
 		updateScore(player1.paddle, player1, player2);
 		if (player1.counter < 10) init(generalData, ballData, player1, player2, width);
 		else {
 			insertWinner("Player 1");
-			stop(generalData, AIData, ballData);
+			stop(generalData, AIData, ballData, PowerUpData);
 			return true;
 		}
 	}
@@ -123,7 +144,7 @@ export function checkLost(generalData: GeneralData, ballData: BallData, AIData: 
 		if (player2.counter < 10) init(generalData, ballData, player1, player2, width);
 		else {
 			insertWinner("Player 2");
-			stop(generalData, AIData, ballData);
+			stop(generalData, AIData, ballData, PowerUpData);
 			return true ;
 		}
 	}
@@ -133,10 +154,12 @@ export function checkLost(generalData: GeneralData, ballData: BallData, AIData: 
 export function updateScore(paddle: HTMLElement, player1: Player, player2: Player): void {
 	if (paddle === player1.paddle && player1.counter < 10) {
 		player1.counter++;
-		document.getElementById('counter1')!.innerHTML = player1.counter.toString();
+		const counter1 = document.getElementById('counter1');
+		if (counter1) counter1.innerHTML = player1.counter.toString();
 	} else if (paddle === player2.paddle && player2.counter < 10){
 		player2.counter++;
-		document.getElementById('counter2')!.innerHTML = player2.counter.toString();
+		const counter2 = document.getElementById('counter2');
+		if (counter2) counter2.innerHTML = player2.counter.toString();
 	}
 }
 
@@ -276,7 +299,7 @@ export async function countDown(ballData: BallData, start: boolean): Promise<voi
 	return Promise.resolve();
 }
 
-export async function pauseGame(generalData: GeneralData, ballData: BallData): Promise<void> {
+export async function pauseGame(generalData: GeneralData, ballData: BallData, powerUpData: PowerUpType | null): Promise<void> {
 	const pauseEl = document.getElementById('pause');
 	if (!pauseEl){
 		console.error("pause element not found.");
@@ -311,12 +334,44 @@ export async function pauseGame(generalData: GeneralData, ballData: BallData): P
 	else{
 		pauseEl.style.display = 'none';
 		await countDown(ballData, false)
+		await delay(250);
 		generalData.isPaused = false;
+		if (powerUpData)
+			powerUpData.isPaused = false;
 	}
 	return Promise.resolve();
 }
 
-export async function returnToGames(generalData: GeneralData, ballData: BallData, AIData: AIData, player1: Player, player2: Player, mode: "classic" | "custom"): Promise<void> {
+function cleanupPowerUps(powerUpData: PowerUpType) {
+	if (powerUpData.timeout) {
+		clearTimeout(powerUpData.timeout);
+		powerUpData.timeout = 6000;
+	}
+	
+	if (powerUpData.controlPowerUp) {
+		clearInterval(powerUpData.controlPowerUp);
+		powerUpData.controlPowerUp = null;
+	}
+	
+	const trails = document.querySelectorAll('.ballTrailClone');
+	trails.forEach(trail => trail.remove());
+	
+	powerUpData.active = false;
+	powerUpData.power = null;
+	powerUpData.paddleAffected = null;
+	powerUpData.powerUpStartTime = null;
+	powerUpData.powerUpRemainingTime = 0;
+	powerUpData.spawnStartTime = null;
+	powerUpData.spawnRemainingTime = 0;
+	powerUpData.isPaused = false;
+	
+	if (powerUpData.powerUp) {
+		powerUpData.powerUp.style.display = "none";
+		powerUpData.powerUp.className = "";
+	}
+}
+
+export async function returnToGames(generalData: GeneralData, ballData: BallData, AIData: AIData, player1: Player, player2: Player, mode: "classic" | "custom", PowerUpData: PowerUpType | null): Promise<void> {
 	const exitBtn = document.getElementById('exitGame');
 	if (!exitBtn){
 		console.error("exitGame element not found.");
@@ -356,8 +411,10 @@ export async function returnToGames(generalData: GeneralData, ballData: BallData
 	})
 
 	document.getElementById('exit')?.addEventListener('click', () => {
-		stop(generalData, AIData, ballData);
+		stop(generalData, AIData, ballData, PowerUpData);
 		clearGameState(player1, player2, mode);
+		if (mode == "custom" && PowerUpData)
+			cleanupPowerUps(PowerUpData);
 		navigateTo("/games");
 	})
 
@@ -368,6 +425,7 @@ export async function returnToGames(generalData: GeneralData, ballData: BallData
 		document.getElementById('counter1')!.innerText = '0';
 		document.getElementById('counter2')!.innerText = '0';
 	}
+	
 }
 
 /*export async function createSocketPongConnection(): Promise<boolean> {
