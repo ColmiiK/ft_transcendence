@@ -7,6 +7,7 @@ import {
   check2fa,
   verify2fa,
   setJWT,
+  verifyGoogleUser,
 } from "../authUtils.js";
 import {
   resetUserPassword,
@@ -70,10 +71,9 @@ export default function createAuthRoutes(fastify) {
       }),
     },
     {
-      //TODO: Needs testing
       preHandler: [fastify.authenticate],
       method: "POST",
-      url: "/verify/google",
+      url: "/google/verify",
       handler: asyncHandler(async (req, res) => {
         if (!validateInput(req, res, ["credential"])) return;
         const result = await verifyGoogleUser(req.body.credential);

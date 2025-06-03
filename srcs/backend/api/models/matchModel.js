@@ -412,7 +412,7 @@ export function getMatchesGeneralStats(user_id, type) {
         SELECT COUNT(*) as standard_games
         FROM matches
         WHERE (first_player_id = ? OR second_player_id = ?)
-        AND custom_mode = 'Classic'
+        AND custom_mode = 'classic'
         AND status = 'finished'
         AND game_type = ?
       `;
@@ -421,7 +421,7 @@ export function getMatchesGeneralStats(user_id, type) {
         SELECT COUNT(*) as custom_games
         FROM matches
         WHERE (first_player_id = ? OR second_player_id = ?)
-        AND custom_mode != 'Classic'
+        AND custom_mode != 'classic'
         AND status = 'finished'
         AND game_type = ?
       `;

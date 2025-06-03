@@ -1,11 +1,13 @@
 import { getTranslation } from "../functionalities/transcript.js";
 import { navigateTo } from "../index.js";
 import { sendRequest } from "../login-page/login-fetch.js";
+import { googleSignIn } from "../login-page/login-page.js";
+import { chargeChat } from "../messages/load-info.js";
 import { showAlert } from "../toast-alert/toast-alert.js";
-import { GamePlayer } from "../types.js"
+import { GamePlayer, Scheduled } from "../types.js"
 let count = 1;
 
-export function initSelectPageEvent(){
+export async function initSelectPageEvent(){
   count = 1;
   const homeButton = document.getElementById('home-button') as HTMLButtonElement;
   if (homeButton)
@@ -20,6 +22,7 @@ export function initSelectPageEvent(){
   const createTournament = document.getElementById('create-tournament');
   const viewTournament = document.getElementById('view-tournament');
   if (!createTournament || !viewTournament) { return ; }
+  await checkExistingTournament();
   createTournament.onclick = () => { showTournamentForm() };
   viewTournament.onclick = () => { navigateTo('/tournament') };
 
@@ -28,6 +31,92 @@ export function initSelectPageEvent(){
   loginButton.onclick = (e: Event) => {
     e.preventDefault();
     loginForm?.classList.toggle('hidden');
+		googleSignIn();
+		setTimeout(() => {
+			const googleButton = document.getElementsByClassName("g_id_signin")[0];
+			const loadingIcon = document.getElementsByClassName("animate-spin")[0];
+			if (!googleButton || !loadingIcon) { return; }
+			googleButton.classList.remove("opacity-0");
+			loadingIcon.classList.add("hidden");
+			googleButton.classList.add("googleButton");
+		}, 500);
+  }
+
+  chargeReadyToPlay();
+}
+
+(window as any).handleGoogleVerify = async (response: object) => {
+	try {
+		const data = await sendRequest('POST', 'google/verify', response);
+		if (data["error"])
+		  throw new Error(data["error"]);
+    addPlayer(data.username, true);
+	}
+	catch (error) {
+		console.log(error);
+	}
+}
+
+async function chargeReadyToPlay() {
+  const readyGames = document.getElementById('ready-games');
+  if (!readyGames) { return ; }
+  try {
+    const response = await sendRequest('GET', '/matches/scheduled') as Scheduled[];
+    if (!response)
+      throw new Error('Error while fetching matches ready to play');
+    if (response.length === 0)
+      return ;
+    response.forEach((match: Scheduled) => {
+      const section = document.createElement("section");
+			section.setAttribute("id", `match-id-${match.match_id}`);
+			section.classList.add('ready-to-play-card');
+			section.innerHTML = `
+						<div class="flex items-center gap-4  lg:hidden xl:flex">
+							<img id="friend-avatar-${match.first_player_id}" class="friend-avatar-${match.first_player_id} card-avatar rounded-full m-1.5" src="${match.host_avatar}" alt="Avatar">
+						</div>
+						<div id="friend-status" class="flex flex-col justify-between items-end px-4 w-full">
+              <p><b>Host:</b> ${match.host}</p>
+							<h3>${match.first_player_alias} VS ${match.second_player_alias}</h3>
+							<p class='opacity-80 text-sm'>${match.game_type.capitalize()} - ${match.custom_mode.capitalize()}</p>
+						</div>
+					`;
+      section.onclick = () => { goToMatch(match); };
+			readyGames.appendChild(section);
+    });
+  }
+  catch (error) {
+    showAlert((error as Error).message, 'toast-error');
+  }
+}
+
+function goToMatch(match: Scheduled) {
+  console.log("Seleccionando partida", match.match_id, match.first_player_alias, match.second_player_alias, match.game_type, match.custom_mode);
+  if (localStorage.getItem("username") !== match.host) {
+    showAlert('You are not the host of this match', 'toast-error');
+    return;
+  }
+  if (match.game_type === 'pong')
+    navigateTo("/pong", { gameMode: 'local', isCustom: !match.custom_mode.includes('classic') });
+  else
+    navigateTo("/4inrow", { gameMode: 'local', isCustom: !match.custom_mode.includes('classic') });
+}
+
+async function checkExistingTournament() {
+  const createTournament = document.getElementById('create-tournament');
+  const viewTournament = document.getElementById('view-tournament');
+  if (!createTournament || !viewTournament) { return ; }
+  try {
+    const response = await sendRequest('GET', '/tournaments/current');
+    console.log('response:', response);
+    if (!response)
+      return ;
+    else {
+      createTournament.classList.add('hidden');
+      viewTournament.classList.remove('hidden');
+    }
+  }
+  catch (error) {
+    showAlert((error as Error).message, 'toast-error');
   }
 }
 
@@ -249,7 +338,10 @@ function showTournamentForm() {
   overlay.style.zIndex = '10';
   tournamentForm.classList.remove('hidden');
   closeButton.onclick = () => { closeForm(); };
-  addAlias.onclick = () => { if (addPlayer(playerAlias.value, false)) playerAlias.value = ''; }
+  addAlias.onclick = () => { 
+    if (addPlayer(playerAlias.value, false)) playerAlias.value = '';
+    playerAlias.focus();
+  }
   addUser.onclick = async () => { await isUser(); }
   createTournament.onclick = () => { startTournament(); }
 }
@@ -285,7 +377,8 @@ async function startTournament() {
     const response = await sendRequest('POST', '/tournaments', {name: tournamentTitle.value, game_type: gameMode, users: playersObject});
     if (!response)
       throw new Error('Error while creating tournament');
-    console.log(response);
+    else if (response['error'])
+      throw new Error(response['error']);
     navigateTo('/tournament');
   }
   catch (error) {

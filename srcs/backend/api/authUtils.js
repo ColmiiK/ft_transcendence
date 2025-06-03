@@ -94,7 +94,6 @@ export async function loginGoogleUser(credential) {
   return result;
 }
 
-//TODO: Needs testing
 export async function verifyGoogleUser(credential) {
   assert(credential !== undefined, "credential must exist");
   const client = new OAuth2Client(process.env.CLIENT_ID);
@@ -108,7 +107,7 @@ export async function verifyGoogleUser(credential) {
   if (!user) {
     return { error: "User not found" };
   }
-  return true;
+  return {id: user.id, username: user.username};
 }
 
 /**

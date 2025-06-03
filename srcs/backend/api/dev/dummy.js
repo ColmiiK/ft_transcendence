@@ -276,7 +276,7 @@ export async function createDebug() {
     for (let i = 0; i < 5; i++) {
       createMatchOffline({
         game_type: "pong",
-        custom_mode: "Classic",
+        custom_mode: "classic",
         userId: foo.id,
         first_player_score: 10,
         second_player_score: 5,
@@ -286,7 +286,7 @@ export async function createDebug() {
       });
       createMatchOffline({
         game_type: "pong",
-        custom_mode: "Classic",
+        custom_mode: "classic",
         userId: foo.id,
         first_player_score: 3,
         second_player_score: 10,
@@ -296,7 +296,7 @@ export async function createDebug() {
       });
       createMatchOffline({
         game_type: "pong",
-        custom_mode: "Classic",
+        custom_mode: "classic",
         userId: bar.id,
         first_player_score: 10,
         second_player_score: 5,
@@ -306,7 +306,7 @@ export async function createDebug() {
       });
       createMatchOffline({
         game_type: "pong",
-        custom_mode: "Classic",
+        custom_mode: "classic",
         userId: bar.id,
         first_player_score: 3,
         second_player_score: 10,
@@ -316,7 +316,7 @@ export async function createDebug() {
       });
       createMatchOffline({
         game_type: "pong",
-        custom_mode: "Classic",
+        custom_mode: "classic",
         userId: baz.id,
         first_player_score: 10,
         second_player_score: 5,
@@ -326,7 +326,7 @@ export async function createDebug() {
       });
       createMatchOffline({
         game_type: "pong",
-        custom_mode: "Classic",
+        custom_mode: "classic",
         userId: baz.id,
         first_player_score: 3,
         second_player_score: 10,
@@ -336,7 +336,7 @@ export async function createDebug() {
       });
       createMatchOffline({
         game_type: "pong",
-        custom_mode: "Classic",
+        custom_mode: "classic",
         userId: qux.id,
         first_player_score: 10,
         second_player_score: 5,
@@ -346,7 +346,7 @@ export async function createDebug() {
       });
       createMatchOffline({
         game_type: "pong",
-        custom_mode: "Classic",
+        custom_mode: "classic",
         userId: qux.id,
         first_player_score: 3,
         second_player_score: 10,
@@ -357,7 +357,7 @@ export async function createDebug() {
       //
       createMatchOffline({
         game_type: "connect_four",
-        custom_mode: "Classic",
+        custom_mode: "classic",
         userId: foo.id,
         first_player_score: 1,
         second_player_score: 0,
@@ -367,7 +367,7 @@ export async function createDebug() {
       });
       createMatchOffline({
         game_type: "connect_four",
-        custom_mode: "Classic",
+        custom_mode: "classic",
         userId: foo.id,
         first_player_score: 0,
         second_player_score: 1,
@@ -377,7 +377,7 @@ export async function createDebug() {
       });
       createMatchOffline({
         game_type: "connect_four",
-        custom_mode: "Classic",
+        custom_mode: "classic",
         userId: bar.id,
         first_player_score: 1,
         second_player_score: 0,
@@ -387,7 +387,7 @@ export async function createDebug() {
       });
       createMatchOffline({
         game_type: "connect_four",
-        custom_mode: "Classic",
+        custom_mode: "classic",
         userId: bar.id,
         first_player_score: 0,
         second_player_score: 1,
@@ -397,7 +397,7 @@ export async function createDebug() {
       });
       createMatchOffline({
         game_type: "connect_four",
-        custom_mode: "Classic",
+        custom_mode: "classic",
         userId: baz.id,
         first_player_score: 1,
         second_player_score: 0,
@@ -407,7 +407,7 @@ export async function createDebug() {
       });
       createMatchOffline({
         game_type: "connect_four",
-        custom_mode: "Classic",
+        custom_mode: "classic",
         userId: baz.id,
         first_player_score: 0,
         second_player_score: 1,
@@ -417,7 +417,7 @@ export async function createDebug() {
       });
       createMatchOffline({
         game_type: "connect_four",
-        custom_mode: "Classic",
+        custom_mode: "classic",
         userId: qux.id,
         first_player_score: 1,
         second_player_score: 0,
@@ -427,7 +427,7 @@ export async function createDebug() {
       });
       createMatchOffline({
         game_type: "connect_four",
-        custom_mode: "Classic",
+        custom_mode: "classic",
         userId: qux.id,
         first_player_score: 0,
         second_player_score: 1,
@@ -441,30 +441,38 @@ export async function createDebug() {
       let match;
       match = await createMatch({
         game_type: "pong",
-        custom_mode: "Chaos",
+        custom_mode: "custom",
         first_player_id: foo.id,
+        first_player_alias: foo.username,
         second_player_id: bar.id,
+        second_player_alias: bar.alias,
       });
       await finishMatch(match, 10, 5);
       match = await createMatch({
         game_type: "pong",
-        custom_mode: "Chaos",
+        custom_mode: "custom",
         first_player_id: foo.id,
+        first_player_alias: foo.username,
         second_player_id: bar.id,
+        second_player_alias: bar.alias,
       });
       await finishMatch(match, 6, 10);
       match = await createMatch({
         game_type: "pong",
-        custom_mode: "Chaos",
+        custom_mode: "custom",
         first_player_id: baz.id,
+        first_player_alias: baz.username,
         second_player_id: qux.id,
+        second_player_alias: qux.alias,
       });
       await finishMatch(match, 10, 5);
       match = await createMatch({
         game_type: "pong",
-        custom_mode: "Chaos",
+        custom_mode: "custom",
         first_player_id: baz.id,
+        first_player_alias: baz.username,
         second_player_id: qux.id,
+        second_player_alias: qux.alias,
       });
       await finishMatch(match, 6, 10);
     }
@@ -472,30 +480,38 @@ export async function createDebug() {
       let match;
       match = await createMatch({
         game_type: "connect_four",
-        custom_mode: "CrazyTokens",
+        custom_mode: "custom",
         first_player_id: foo.id,
+        first_player_alias: foo.username,
         second_player_id: bar.id,
+        second_player_alias: bar.alias,
       });
       await finishMatch(match, 1, 0);
       match = await createMatch({
         game_type: "connect_four",
-        custom_mode: "CrazyTokens",
+        custom_mode: "custom",
         first_player_id: foo.id,
+        first_player_alias: foo.username,
         second_player_id: bar.id,
+        second_player_alias: bar.alias,
       });
       await finishMatch(match, 0, 1);
       match = await createMatch({
         game_type: "connect_four",
-        custom_mode: "CrazyTokens",
+        custom_mode: "custom",
         first_player_id: baz.id,
+        first_player_alias: baz.username,
         second_player_id: qux.id,
+        second_player_alias: qux.alias,
       });
       await finishMatch(match, 0, 1);
       match = await createMatch({
         game_type: "connect_four",
-        custom_mode: "CrazyTokens",
+        custom_mode: "custom",
         first_player_id: baz.id,
+        first_player_alias: baz.username,
         second_player_id: qux.id,
+        second_player_alias: qux.alias,
       });
       await finishMatch(match, 1, 0);
     }

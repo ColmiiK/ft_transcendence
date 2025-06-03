@@ -86,15 +86,48 @@ export function resetBall(generalData: GeneralData, ballData: BallData, player1:
 	ballData.velY = width * generalData.speed * Math.sin(ballData.angle);
 }
 
-export function checkLost(generalData: GeneralData, ballData: BallData, AIData: AIData, player1: Player, player2: Player, width: number): void {
+export function insertWinner(winner: string){
+	const winnerDiv = document.getElementById("winnerPong");
+	if (!winnerDiv){
+		console.error("winnerPong element not found.");
+		return ;
+	}
+	const gameEl = document.getElementById('game');
+	if (!gameEl){
+		console.error("game element not found.")
+		return ;
+	}
+	const pauseBtn = document.getElementById('pauseGame')
+	if (!pauseBtn){
+		console.error("pauseGame element not found.")
+		return Promise.resolve();
+	}
+	pauseBtn.style.display = 'none';
+	winnerDiv.style.display = 'block';
+	winnerDiv.innerText = `${winner} wins !`
+	gameEl.style.animation = "mediumOpacity";
+}
+
+export function checkLost(generalData: GeneralData, ballData: BallData, AIData: AIData, player1: Player, player2: Player, width: number): boolean {
 	if (ballData.ball.offsetLeft >= width) {
 		updateScore(player1.paddle, player1, player2);
-		player1.counter < 10 ? init(generalData, ballData, player1, player2, width) : stop(generalData, AIData, ballData);
+		if (player1.counter < 10) init(generalData, ballData, player1, player2, width);
+		else {
+			insertWinner("Player 1");
+			stop(generalData, AIData, ballData);
+			return true;
+		}
 	}
 	if (ballData.ball.offsetLeft <= 0) {
 		updateScore(player2.paddle, player1, player2);
-		player2.counter < 10 ? init(generalData, ballData, player1, player2, width) : stop(generalData, AIData, ballData);
+		if (player2.counter < 10) init(generalData, ballData, player1, player2, width);
+		else {
+			insertWinner("Player 2");
+			stop(generalData, AIData, ballData);
+			return true ;
+		}
 	}
+	return false;
 }
 
 export function updateScore(paddle: HTMLElement, player1: Player, player2: Player): void {
@@ -283,7 +316,7 @@ export async function pauseGame(generalData: GeneralData, ballData: BallData): P
 	return Promise.resolve();
 }
 
-export async function returnToGames(generalData: GeneralData, ballData: BallData, AIData: AIData): Promise<void> {
+export async function returnToGames(generalData: GeneralData, ballData: BallData, AIData: AIData, player1: Player, player2: Player, mode: "classic" | "custom"): Promise<void> {
 	const exitBtn = document.getElementById('exitGame');
 	if (!exitBtn){
 		console.error("exitGame element not found.");
@@ -324,9 +357,17 @@ export async function returnToGames(generalData: GeneralData, ballData: BallData
 
 	document.getElementById('exit')?.addEventListener('click', () => {
 		stop(generalData, AIData, ballData);
-		localStorage.removeItem('gameState');
+		clearGameState(player1, player2, mode);
 		navigateTo("/games");
 	})
+
+	function clearGameState(player1: Player, player2: Player, mode: "classic" | "custom"){
+		localStorage.removeItem(`gameState${mode}`);
+		player1.counter = 0;
+		player2.counter = 0;
+		document.getElementById('counter1')!.innerText = '0';
+		document.getElementById('counter2')!.innerText = '0';
+	}
 }
 
 /*export async function createSocketPongConnection(): Promise<boolean> {

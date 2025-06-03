@@ -145,7 +145,7 @@ db.serialize(() => {
     is_offline BOOLEAN DEFAULT 0,
     rival_alias VARCHAR(255),
     game_type VARCHAR(255) NOT NULL,
-    custom_mode VARCHAR(255) DEFAULT 'Classic',
+    custom_mode VARCHAR(255) DEFAULT 'classic',
     status VARCHAR(255) NOT NULL DEFAULT 'scheduled',
     first_player_id INTEGER NOT NULL,
     first_player_alias VARCHAR(255),

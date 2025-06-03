@@ -20,35 +20,6 @@ import { getUser } from "../models/userModel.js";
 
 export default function createTournamentRoutes(fastify) {
   return [
-    // {
-    //   preHandler: [fastify.authenticate],
-    //   method: "POST",
-    //   url: "/tournaments",
-    //   handler: asyncHandler(async (req, res) => {
-    //     if (!validateInput(req, res, ["name", "player_limit", "game_type"]))
-    //       return;
-    //     const tournament = await createTournament(req.body, req.userId);
-    //     const t_id = tournament.tournament_id;
-    //     await addInvitationToTournament({
-    //       tournament_id: t_id,
-    //       user_id: req.userId,
-    //     });
-    //     await modifyInvitationToTournament(
-    //       {
-    //         status: "confirmed",
-    //         tournament_id: t_id,
-    //       },
-    //       req.userId,
-    //     );
-    //     await addParticipantToTournament(
-    //       {
-    //         tournament_id: t_id,
-    //       },
-    //       req.userId,
-    //     );
-    //     return res.code(201).send(tournament);
-    //   }),
-    // },
     {
       preHandler: [fastify.authenticate],
       method: "POST",
@@ -56,11 +27,16 @@ export default function createTournamentRoutes(fastify) {
       handler: asyncHandler(async (req, res) => {
         if (!validateInput(req, res, ["name", "game_type", "users"])) return;
         for (let i = 0; i < 4; i++) {
-          let user = await getUser(req.body.users[i].username);
+          const user = await getUser(req.body.users[i].username);
           if (user) {
             if (!req.body.users[i].isUser)
               return res.code(400).send({
                 error: `Username ${user.username} belongs to an existing user`,
+              });
+            const isInvited = await getCurrentTournament(user.id);
+            if (isInvited)
+              return res.code(400).send({
+                error: `User ${user.username} is already in a tournament`,
               });
           }
         }

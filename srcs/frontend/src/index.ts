@@ -123,11 +123,10 @@ const routes = [
 		accesible: false,
     	event: (data: object) => {
       		const mode = data as Games;
-			if (!mode.isCustom){
+			if (mode.isCustom || localStorage.getItem(`gameStatecustom`))
+				chaosPong(mode);
+			else if (!mode.isCustom || localStorage.getItem(`gameStateclassic`))
 				classicPong(mode);
-			}
-			else
-				chaosPong(mode)
     	}
 	},
  	{
@@ -268,3 +267,13 @@ export async function checkLogged() {
 		console.error("Error:", error);
 	}
 }
+
+declare global {
+	interface String {
+		capitalize(): string;
+	}
+}
+String.prototype.capitalize = function (): string {
+	return this.charAt(0).toUpperCase() + this.slice(1);
+};
+export {};

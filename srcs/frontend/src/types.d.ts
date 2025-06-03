@@ -167,3 +167,16 @@ export interface GamePlayer {
 	username: string,
 	isUser: boolean,
 }
+
+export interface Scheduled {
+	match_id: number,
+	first_player_id: number,
+	second_player_id: number,
+	status: string,
+	game_type: string,
+	custom_mode: string,
+	host: string,
+	host_avatar: string,
+	first_player_alias: string,
+	second_player_alias: string,
+}

@@ -122,7 +122,7 @@ function popUp() {
 	resetPassword.showModal();
 }
 
-function googleSignIn() {
+export function googleSignIn() {
 	const googleSignIn = document.getElementById("google-script");
 	if (googleSignIn)
 		googleSignIn.remove();
