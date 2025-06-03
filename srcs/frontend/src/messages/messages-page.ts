@@ -250,7 +250,7 @@ async function setupMessageForm() {
     if (!chatInfo)
       return;
     const friendID = chatInfo.friend_id;
-    if (message && socketChat) {
+    if (message && socketChat && actual_chat_id) {
       const date = new Date();
       date.setHours(date.getHours() + 2);
       let fullMessage: Message = {
