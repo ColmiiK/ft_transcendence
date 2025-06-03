@@ -5,6 +5,7 @@ import { navigateTo } from "../index.js";
 import { showAlert } from "../toast-alert/toast-alert.js";
 import { displayMessage, getClientID, socketChat } from "./messages-page.js"
 import { getTranslation } from "../functionalities/transcript.js";
+
 export let actual_chat_id: number;
 
 export function loadInfo(data: MessageObject) {
@@ -27,7 +28,7 @@ export function loadInfo(data: MessageObject) {
 
 	document.addEventListener("click", (event) => {
 		const target = event.target as Node;
-		// If click is outside the search form
+
 		if (!searchForm.contains(target)) {
 			friendInput.style.boxShadow = "";
 			friendInput.value = "";
@@ -45,11 +46,20 @@ export function loadInfo(data: MessageObject) {
 function dropDown() {
 	const dropdownButton = document.getElementById("party-invitation");
 	const dropdownOptions = document.getElementById("party-options");
+	let isOpen = false;
+
 	if (!dropdownButton || !dropdownOptions)
 		return;
-
-	dropdownButton.addEventListener("click", () => {
-		dropdownButton.focus();
+	dropdownButton.addEventListener("click", (e) => {
+		e.stopPropagation();
+		isOpen = !isOpen;
+		dropdownOptions.style.display = isOpen ? "block" : "none";
+	});
+	document.addEventListener("click", () => {
+		if (isOpen) {
+			isOpen = false;
+			dropdownOptions.style.display = "none";
+		}
 	});
 	dropdownButton.addEventListener("focus", () => {
 		dropdownOptions.style.display = "block";
@@ -105,7 +115,8 @@ async function navigatePartyInvitations(key: string) {
 	if (!socketChat)
 		return;
 	socketChat.send(JSON.stringify(invitation));
-	displayMessage(invitation);
+	if (invitation)
+		displayMessage(invitation);
 }
 
 async function showChats(input: string) {
@@ -192,6 +203,7 @@ async function displayFirstChat(data: MessageObject) {
 	// Opens the most recent chat when navigated to messages page
 	try {
 		const recentChats = await sendRequest('GET', 'chats/last');
+		//console.log(recentChats)
 		if (!recentChats)
 			throw new Error("Error displaying the first chat");
 
@@ -523,9 +535,7 @@ async function handleScroll() {
 
 export async function getChatInfo(chat_id: number): Promise<ChatInfo | null> {
 	try {
-		//console.log(chat_id)
-		const chat_info = await sendRequest('GET', `/chats/identify/${chat_id}`); // da un fallo raro cuando mando dos invitaciones seguidas
-		//console.log(chat_info);
+		const chat_info = await sendRequest('GET', `/chats/identify/${chat_id}`);
 		if (!chat_info)
 			throw new Error("Error fetching chat information");
 		return chat_info;
