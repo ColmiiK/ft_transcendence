@@ -1,7 +1,7 @@
 import { 
-    Player, GeneralData, PaddleCollision, BallData, AIData, OnresizeData, init, 
+    Player, GeneralData, PaddleCollision, BallData, AIData, OnresizeData, PowerUpType, init, 
     resetBall, updateScore, setAI, countDown, pauseGame, returnToGames, checkLost,
-	play as playEngine, stop as stopEngine, moveBall as moveBallEngine
+	play as playEngine, moveBall as moveBallEngine
 } from './gameEngine.js';
 
 import { Games } from "../../types.js";
@@ -14,20 +14,22 @@ export function chaosPong(data: Games): void {
 	let width = gameElement.clientWidth;
 	let height = gameElement.clientHeight;
 
-	type PowerUpType = {
-		powerUp: HTMLElement | null,
-        types: Array<string>,
-        active: boolean,
-        timeout: NodeJS.Timeout | number;
-        controlPowerUp: NodeJS.Timeout | null;
-	}
-
-	const powerUpData: PowerUpType = {
-		powerUp: document.getElementById('powerUp'),
-		types: ['paddleSize', 'ballSpeed', 'paddleSpeed', 'reverse'],
-		active: false,
-		timeout: 6000,
-		controlPowerUp: null
+    const powerUpData: PowerUpType = {
+        posX: 0,
+        posY: 0,
+        paddleAffected: null,
+        powerUp: document.getElementById('powerUp'),
+        types: ['paddleSize', 'ballSpeed', 'paddleSpeed', 'reverse'],
+        active: false,
+        power: null,
+        timeout: 6000,
+        controlPowerUp: null,
+        powerUpStartTime: null,
+        powerUpDuration: 5000,
+        powerUpRemainingTime: 0,
+        spawnStartTime: null,
+        spawnRemainingTime: 0,
+        isPaused: false
     }
 
 	const player1: Player = {
@@ -96,15 +98,15 @@ export function chaosPong(data: Games): void {
 		const savedState = localStorage.getItem("gameStatecustom");
 		if (savedState){
 			loadGameState();
-            if (!checkLost(generalData, ballData, AIData, player1, player2, width))
-                await pauseGame(generalData, ballData);
+            if (!checkLost(generalData, ballData, AIData, powerUpData, player1, player2, width))
+                await pauseGame(generalData, ballData, powerUpData);
 		}
 		if (!savedState){
 			await countDown(ballData, true);
 			init(generalData, ballData, player1, player2, width);
 		}
 		generalData.controlGame = setInterval(play, generalData.time);
-		powerUpData.controlPowerUp = setInterval(spawnPowerUp, 10000);
+		powerUpData.controlPowerUp = setInterval(spawnPowerUp, 5000);
 		if (AIData.activate) 
 			AIData.controlAI = setInterval(moveAI, AIData.timeToRefresh);
 	}
@@ -114,7 +116,7 @@ export function chaosPong(data: Games): void {
 
 		setOnresize();
 		moveBall();
-		playEngine(generalData, ballData, AIData, player1, player2, paddleCollisionData, width, height);
+		playEngine(generalData, ballData, AIData, player1, player2, width, height, powerUpData);
 		saveGameState();
 	}
 
@@ -193,46 +195,114 @@ export function chaosPong(data: Games): void {
 
 	/* PowerUp setup */
 
+    function animationPowerUp(): void {
+        const remainingTime = powerUpData.spawnRemainingTime;
+        
+        powerUpData.timeout = setTimeout(() => {
+            if (powerUpData.isPaused) return;
+            
+            powerUpData.powerUp?.classList.add('powerUpBlink');
+            setTimeout(() => {
+                if (!powerUpData.powerUp || powerUpData.isPaused) return ;
+                powerUpData.powerUp.classList.remove('powerUpBlink');
+                powerUpData.powerUp.classList.add('powerUpDisappear');
+                setTimeout(() => {
+                    if (!powerUpData.powerUp || powerUpData.isPaused) return ;
+                    powerUpData.powerUp.style.display = "none";
+                    powerUpData.powerUp.classList.remove('powerUpAppear', 'powerUpDisappear');
+                    powerUpData.active = false;
+                    powerUpData.spawnStartTime = null;
+                    powerUpData.spawnRemainingTime = 0;
+                    saveGameState();
+                }, 400);
+            }, 600);
+        }, remainingTime);
+}
+
     function spawnPowerUp(): void {
-        if (generalData.isPaused || generalData.exitPause) return ;
-        if (powerUpData.active) return;
+        if (generalData.isPaused || generalData.exitPause || powerUpData.isPaused) return;
+        if (powerUpData.active || powerUpData.power) return;
 
         powerUpData.active = true;
         const paddleLeft = player1.paddle.offsetLeft + player1.paddle.clientWidth;
         const paddleRight = player2.paddle.offsetLeft - 40;
 
-        const x = Math.random() * (paddleRight - paddleLeft) + paddleLeft;
-        const y = Math.random() * (height - 40);
+        powerUpData.posX = Math.random() * (paddleRight - paddleLeft) + paddleLeft;
+        powerUpData.posY = Math.random() * (height - 40);
 
-        if (x < paddleLeft || x > paddleRight - paddleLeft || y > height || y < 40) {
+        if (powerUpData.posX < paddleLeft || powerUpData.posX > paddleRight - paddleLeft || powerUpData.posY > height || powerUpData.posY < 40) {
             powerUpData.active = false;
             return;
         }
 
-		if (!powerUpData.powerUp) return ;
+        if (!powerUpData.powerUp) return;
 
-        powerUpData.powerUp.style.left = `${x}px`;
-        powerUpData.powerUp.style.top = `${y}px`;
+        powerUpData.spawnStartTime = Date.now();
+        powerUpData.spawnRemainingTime = 5000;
+
+        powerUpData.powerUp.style.left = `${powerUpData.posX}px`;
+        powerUpData.powerUp.style.top = `${powerUpData.posY}px`;
         powerUpData.powerUp.style.display = "block";
 
         powerUpData.powerUp.classList.remove('powerUpAppear', 'powerUpBlink');
         void powerUpData.powerUp.offsetWidth;
         powerUpData.powerUp.classList.add('powerUpAppear');
+        
+        saveGameState();
+        animationPowerUp();
+    }
 
-        powerUpData.timeout = setTimeout(() => {
-            powerUpData.powerUp?.classList.add('powerUpBlink');
-            setTimeout(() => {
-                if (! powerUpData.powerUp) return ;
-                powerUpData.powerUp.classList.remove('powerUpBlink');
-                powerUpData.powerUp.classList.add('powerUpDisappear');
-                setTimeout(() => {
-                    if (! powerUpData.powerUp) return ;
-                    powerUpData.powerUp.style.display = "none";
-                    powerUpData.powerUp.classList.remove('powerUpAppear', 'powerUpDisappear');
-                    powerUpData.active = false;
-                }, 400);
-            }, 600);
-        }, 5000);
+    function pausePowerUps(): void {
+        powerUpData.isPaused = true;
+        
+        if (powerUpData.controlPowerUp) {
+            clearInterval(powerUpData.controlPowerUp);
+            powerUpData.controlPowerUp = null;
+        }
+        
+        if (powerUpData.active && powerUpData.spawnStartTime) {
+            const elapsed = Date.now() - powerUpData.spawnStartTime;
+            powerUpData.spawnRemainingTime = Math.max(0, 5000 - elapsed);
+            clearTimeout(powerUpData.timeout);
+        }
+        
+        if (powerUpData.power && powerUpData.powerUpStartTime) {
+            const elapsed = Date.now() - powerUpData.powerUpStartTime;
+            powerUpData.powerUpRemainingTime = Math.max(0, powerUpData.powerUpDuration - elapsed);
+        }
+        
+        saveGameState();
+    }
+
+    function resumePowerUps(): void {
+        if (!powerUpData.active && !powerUpData.power)
+            powerUpData.controlPowerUp = setInterval(spawnPowerUp, 5000);
+        
+        if (powerUpData.active && powerUpData.spawnRemainingTime > 0) {
+            powerUpData.spawnStartTime = Date.now();
+            animationPowerUp();
+        }
+        
+        if (powerUpData.power && powerUpData.powerUpRemainingTime > 0) {
+            powerUpData.powerUpStartTime = Date.now();
+            
+            switch (powerUpData.power) {
+                case 'paddleSize':
+                    activePaddleSize();
+                    break;
+                case 'ballSpeed':
+                    activeBallSpeed();
+                    break;
+                case 'paddleSpeed':
+                    activePaddleSpeed();
+                    break;
+                case 'reverseControl':
+                    activeReverseControl();
+                    break;
+            }
+        }
+        
+        saveGameState();
     }
 
     function checkBallPowerUpCollision(): void {
@@ -248,9 +318,9 @@ export function chaosPong(data: Games): void {
 
     function activatePowerUp(): void {
         const power = powerUpData.types[Math.floor(Math.random() * powerUpData.types.length)];
+        powerUpData.active = false;
 
         clearInterval(powerUpData.controlPowerUp!);
-        powerUpData.active = true;
 
         switch (power) {
             case 'paddleSize':
@@ -275,12 +345,31 @@ export function chaosPong(data: Games): void {
         clearTimeout(powerUpData.timeout);
     }
 
-    function activePaddleSize(){
-        const paddle = ballData.velX < 0 ? player2.paddle : player1.paddle;
-        const paddleAffected = ballData.velX < 0 ? player1.paddle : player2.paddle;
-        paddle.classList.add('paddleGrowEffect');
-        paddleAffected.classList.add('paddleLittleEffect');
-        generalData.paddleMargin = height * 0.05;
+    function activePaddleSize() {
+        let paddle: HTMLElement;
+        let paddleAffected: HTMLElement;
+
+        if (!powerUpData.power) {
+            paddle = ballData.velX < 0 ? player2.paddle : player1.paddle;
+            paddleAffected = ballData.velX < 0 ? player1.paddle : player2.paddle;
+            powerUpData.paddleAffected = paddleAffected;
+            paddle.classList.add('paddleGrowEffect');
+            paddleAffected.classList.add('paddleLittleEffect');
+            generalData.paddleMargin = height * 0.05;
+            powerUpData.power = "paddleSize";
+
+            powerUpData.powerUpStartTime = Date.now();
+            powerUpData.powerUpRemainingTime = powerUpData.powerUpDuration;
+        }
+        else {
+            paddle = powerUpData.paddleAffected === player2.paddle ? player1.paddle : player2.paddle;
+            paddleAffected = powerUpData.paddleAffected === player2.paddle ? player2.paddle : player1.paddle;
+        
+            paddle.style.height = `26.5%`;
+            paddleAffected.style.height = '13.5%';
+            generalData.paddleMargin = height * 0.05;
+        }
+
         if (paddle.offsetTop < generalData.paddleMargin)
             paddle.style.top = `${generalData.paddleMargin}px`;
         else if (paddle.offsetTop + paddle.clientHeight > height - generalData.paddleMargin)
@@ -291,77 +380,132 @@ export function chaosPong(data: Games): void {
         else if (paddleAffected.offsetTop + paddleAffected.clientHeight > height - generalData.paddleMargin)
             paddleAffected.style.top = `${height - generalData.paddleMargin - paddleAffected.clientHeight}px`;
 
-        setTimeout(() => {
-            generalData.paddleMargin = height * 0.03;
+        saveGameState();
 
+        setTimeout(() => {
+            if (powerUpData.isPaused) return;
+            
+            generalData.paddleMargin = height * 0.03;
             paddle.classList.remove('paddleGrowEffect');
             paddle.classList.add('paddleGrowToNormalEffect');
-            if (paddle.offsetTop < generalData.paddleMargin)
-                paddle.style.top = `${generalData.paddleMargin}px`;
-            else if (paddle.offsetTop + paddle.clientHeight > height - generalData.paddleMargin)
-                paddle.style.top = `${height - generalData.paddleMargin - paddle.clientHeight}px`;
-
+            
             paddleAffected.style.height = "20%";
             paddleAffected.classList.remove('paddleLittleEffect');
             paddleAffected.classList.add('paddleLittleToNormalEffect');
-            if (paddleAffected.offsetTop < generalData.paddleMargin)
-                paddleAffected.style.top = `${generalData.paddleMargin}px`;
-            else if (paddleAffected.offsetTop + paddleAffected.clientHeight > height - generalData.paddleMargin)
-                paddleAffected.style.top = `${height - generalData.paddleMargin - paddleAffected.clientHeight}px`;
-             setTimeout(() => {
+            
+            setTimeout(() => {
                 paddle.classList.remove('paddleGrowToNormalEffect');
                 paddleAffected.classList.remove('paddleLittleToNormalEffect');
-                powerUpData.active = false;
+                powerUpData.power = null;
+                powerUpData.powerUpStartTime = null;
+                powerUpData.powerUpRemainingTime = 0;
                 powerUpData.controlPowerUp = setInterval(spawnPowerUp, 5000);
+                powerUpData.paddleAffected = null;
+                saveGameState();
             }, 5000);
-        }, 5000);
+        }, powerUpData.powerUpRemainingTime);
     }
 
-    function activeBallSpeed(){
-        ballData.velX *= 1.5;
-        ballData.velY *= 1.5;
+    function activeBallSpeed() {
+        if (!powerUpData.power) {
+            powerUpData.power = "ballSpeed";
+            ballData.velX *= 1.5;
+            ballData.velY *= 1.5;
+            powerUpData.powerUpStartTime = Date.now();
+            powerUpData.powerUpRemainingTime = powerUpData.powerUpDuration;
+        }
+
+        saveGameState();
 
         const trailInterval = setInterval(() => {
+            if (powerUpData.isPaused || !powerUpData.power) {
+                clearInterval(trailInterval);
+                return;
+            }
+            
             const trail = document.createElement("div");
             trail.className = "ballTrailClone";
             trail.style.left = `${ballData.ball.offsetLeft - ballData.velX}px`;
             trail.style.top = `${ballData.ball.offsetTop - ballData.velY}px`;
             document.getElementById("game")?.appendChild(trail);
+            
             setTimeout(() => trail.remove(), 400);
         }, 50);
 
+        saveGameState();
+
         setTimeout(() => {
+            if (powerUpData.isPaused) return;
+            
             ballData.velX /= 1.5;
             ballData.velY /= 1.5;
             clearInterval(trailInterval);
-
-            powerUpData.active = false;
+            powerUpData.power = null;
+            powerUpData.powerUpStartTime = null;
+            powerUpData.powerUpRemainingTime = 0;
             powerUpData.controlPowerUp = setInterval(spawnPowerUp, 5000);
-        }, 5000);
+            saveGameState();
+        }, powerUpData.powerUpRemainingTime);
     }
 
-    function activePaddleSpeed(){
-        const playerAffected = ballData.velX < 0 ? player1 : player2;
-        playerAffected.paddleSpeed = 0.08;
+    function activePaddleSpeed() {
+        let playerAffected: Player;
+        
+        if (!powerUpData.power) {
+            powerUpData.power = "paddleSpeed";
+            playerAffected = ballData.velX < 0 ? player1 : player2;
+            playerAffected.paddleSpeed = 0.08;
+            powerUpData.paddleAffected = playerAffected.paddle;
+            powerUpData.powerUpStartTime = Date.now();
+            powerUpData.powerUpRemainingTime = powerUpData.powerUpDuration;
+        } else {
+            playerAffected = powerUpData.paddleAffected === player1.paddle ? player1 : player2;
+            playerAffected.paddleSpeed = 0.08;
+        }
+
+        saveGameState();
 
         setTimeout(() => {
+            if (powerUpData.isPaused) return;
+            
             playerAffected.paddleSpeed = 0.04;
-
-            powerUpData.active = false;
+            powerUpData.power = null;
+            powerUpData.powerUpStartTime = null;
+            powerUpData.powerUpRemainingTime = 0;
+            powerUpData.paddleAffected = null;
             powerUpData.controlPowerUp = setInterval(spawnPowerUp, 5000);
-        }, 5000);
+            saveGameState();
+        }, powerUpData.powerUpRemainingTime);
     }
 
-    function activeReverseControl(){
-        const playerAffected = ballData.velX < 0 ? player1 : player2;
-        playerAffected.keysAffected = true;
+    function activeReverseControl() {
+        let playerAffected: Player;
+        
+        if (!powerUpData.power) {
+            powerUpData.power = "reverseControl";
+            playerAffected = ballData.velX < 0 ? player1 : player2;
+            playerAffected.keysAffected = true;
+            powerUpData.paddleAffected = playerAffected.paddle;
+            powerUpData.powerUpStartTime = Date.now();
+            powerUpData.powerUpRemainingTime = powerUpData.powerUpDuration;
+        } else {
+            playerAffected = powerUpData.paddleAffected === player1.paddle ? player1 : player2;
+            playerAffected.keysAffected = true;
+        }
+
+        saveGameState();
 
         setTimeout(() => {
+            if (powerUpData.isPaused) return;
+            
             playerAffected.keysAffected = false;
-
-            powerUpData.active = false;
+            powerUpData.power = null;
+            powerUpData.powerUpStartTime = null;
+            powerUpData.powerUpRemainingTime = 0;
+            powerUpData.paddleAffected = null;
             powerUpData.controlPowerUp = setInterval(spawnPowerUp, 5000);
-        }, 5000);
+            saveGameState();
+        }, powerUpData.powerUpRemainingTime);
     }
 
 	function setOnresize(): void {
@@ -369,6 +513,11 @@ export function chaosPong(data: Games): void {
 		onresizeData.ballRelativeTop = ballData.ball.offsetTop / height;
 		onresizeData.player1RelativeTop = player1.paddle.offsetTop / height;
 		onresizeData.player2RelativeTop = player2.paddle.offsetTop / height;
+
+        if (powerUpData.active && powerUpData.powerUp) {
+            onresizeData.powerUpRelativeLeft = powerUpData.posX / width;
+            onresizeData.powerUpRelativeTop = powerUpData.posY / height;
+        }
 
 		if (gameElement){
 			width = gameElement.clientWidth;
@@ -391,6 +540,21 @@ export function chaosPong(data: Games): void {
 		player1.paddle.style.top = `${onresizeData.player1RelativeTop * height}px`;
 		player2.paddle.style.top = `${onresizeData.player2RelativeTop * height}px`;
 
+        if (powerUpData.active && powerUpData.powerUp && powerUpData.powerUp.style.display !== "none") {
+            if (!onresizeData.powerUpRelativeLeft || !onresizeData.powerUpRelativeTop) return ;
+            const newPowerUpX = onresizeData.powerUpRelativeLeft * width;
+            const newPowerUpY = onresizeData.powerUpRelativeTop * height;
+            
+            const maxX = width - 40;
+            const maxY = height - 40;
+            
+            powerUpData.posX = Math.min(Math.max(newPowerUpX, 0), maxX);
+            powerUpData.posY = Math.min(Math.max(newPowerUpY, 0), maxY);
+            
+            powerUpData.powerUp.style.left = `${powerUpData.posX}px`;
+            powerUpData.powerUp.style.top = `${powerUpData.posY}px`;
+        }
+
 		if (ballData.ball.offsetLeft < 0) {
 			updateScore(player2.paddle, player1, player2);
 			resetBall(generalData, ballData, player1, player2, width);
@@ -408,19 +572,38 @@ export function chaosPong(data: Games): void {
 			ballData.ball.style.top = `${height - ballData.ball.clientHeight}px`;
 			ballData.velY = -Math.abs(ballData.velY);
 		}
+        saveGameState();
 	}
 
 	function saveGameState() {
-		const gameState = {
+        let currentPowerUpRemainingTime = powerUpData.powerUpRemainingTime;
+        if (powerUpData.power && powerUpData.powerUpStartTime && !powerUpData.isPaused) {
+            const elapsed = Date.now() - powerUpData.powerUpStartTime;
+            currentPowerUpRemainingTime = Math.max(0, powerUpData.powerUpDuration - elapsed);
+            powerUpData.powerUpRemainingTime = currentPowerUpRemainingTime;
+        }
+
+        let currentSpawnRemainingTime = powerUpData.spawnRemainingTime;
+        if (powerUpData.active && powerUpData.spawnStartTime && !powerUpData.isPaused) {
+            const elapsed = Date.now() - powerUpData.spawnStartTime;
+            currentSpawnRemainingTime = Math.max(0, 5000 - elapsed);
+            powerUpData.spawnRemainingTime = currentSpawnRemainingTime;
+        }
+
+        const gameState = {
             player1: {
                 counter: player1.counter,
                 paddleTop: player1.paddle.offsetTop,
-                paddleSpeed: player1.paddleSpeed
+                paddleHeight: player1.paddle.clientHeight,
+                paddleSpeed: player1.paddleSpeed,
+                keysAffected: player1.keysAffected
             },
             player2: {
                 counter: player2.counter,
                 paddleTop: player2.paddle.offsetTop,
-                paddleSpeed: player2.paddleSpeed
+                paddleHeight: player2.paddle.clientHeight,
+                paddleSpeed: player2.paddleSpeed,
+                keysAffected: player2.keysAffected
             },
             ball: {
                 posX: ballData.ball.offsetLeft,
@@ -429,22 +612,39 @@ export function chaosPong(data: Games): void {
                 velY: ballData.velY,
                 angle: ballData.angle
             },
+            powerUp: {
+                posX: powerUpData.posX,
+                posY: powerUpData.posY,
+                active: powerUpData.active,
+                power: powerUpData.power,
+                paddleAffected: powerUpData.paddleAffected === player1.paddle ? 'player1' : 
+                                powerUpData.paddleAffected === player2.paddle ? 'player2' : null,
+                powerUpStartTime: powerUpData.powerUpStartTime,
+                powerUpRemainingTime: currentPowerUpRemainingTime,
+                spawnStartTime: powerUpData.spawnStartTime,
+                spawnRemainingTime: currentSpawnRemainingTime,
+                isPaused: powerUpData.isPaused,
+                powerUpVisible: powerUpData.powerUp?.style.display !== "none",
+                powerUpClasses: powerUpData.powerUp?.className || ""
+            },
             generalData: {
                 time: generalData.time,
                 speed: generalData.speed,
+                isPaused: generalData.isPaused,
+                paddleMargin: generalData.paddleMargin
             },
             AIData: {
                 activate: AIData.activate,
                 targetY: AIData.targetY
             }
-		};
-		localStorage.setItem('gameStatecustom', JSON.stringify(gameState));
-	}
+        };
+        localStorage.setItem('gameStatecustom', JSON.stringify(gameState));
+    }
 
 	function loadGameState() {
-		const savedState = localStorage.getItem('gameStatecustom');
+        const savedState = localStorage.getItem('gameStatecustom');
 
-		if (savedState) {
+        if (savedState) {
             const gameState = JSON.parse(savedState);
 
             player1.counter = gameState.player1.counter;
@@ -456,6 +656,12 @@ export function chaosPong(data: Games): void {
             player1.paddleSpeed = gameState.player1.paddleSpeed;
             player2.paddleSpeed = gameState.player2.paddleSpeed;
 
+            player1.keysAffected = gameState.player1.keysAffected;
+            player2.keysAffected = gameState.player2.keysAffected;
+
+            player1.paddle.style.height = `${gameState.player1.paddleHeight}px`;
+            player2.paddle.style.height = `${gameState.player2.paddleHeight}px`;
+
             ballData.ball.style.left = `${gameState.ball.posX}px`;
             ballData.ball.style.top = `${gameState.ball.posY}px`;
             ballData.velX = gameState.ball.velX;
@@ -464,28 +670,87 @@ export function chaosPong(data: Games): void {
 
             generalData.time = gameState.generalData.time;
             generalData.speed = gameState.generalData.speed;
+            generalData.isPaused = gameState.generalData.isPaused || false;
+            if (gameState.generalData.paddleMargin)
+                generalData.paddleMargin = gameState.generalData.paddleMargin;
+
+            if (powerUpData.powerUp && gameState.powerUp) {
+                powerUpData.posX = gameState.powerUp.posX;
+                powerUpData.posY = gameState.powerUp.posY;
+                powerUpData.active = gameState.powerUp.active;
+                powerUpData.power = gameState.powerUp.power;
+                powerUpData.isPaused = gameState.powerUp.isPaused || false;
+                powerUpData.powerUpStartTime = gameState.powerUp.powerUpStartTime;
+                powerUpData.powerUpRemainingTime = gameState.powerUp.powerUpRemainingTime || 0;
+                powerUpData.spawnStartTime = gameState.powerUp.spawnStartTime;
+                powerUpData.spawnRemainingTime = gameState.powerUp.spawnRemainingTime || 0;
+
+                if (gameState.powerUp.paddleAffected === 'player1')
+                    powerUpData.paddleAffected = player1.paddle;
+                else if (gameState.powerUp.paddleAffected === 'player2')
+                    powerUpData.paddleAffected = player2.paddle;
+                
+                if (gameState.powerUp.active && gameState.powerUp.powerUpVisible) {
+                    powerUpData.powerUp.style.left = `${powerUpData.posX}px`;
+                    powerUpData.powerUp.style.top = `${powerUpData.posY}px`;
+                    powerUpData.powerUp.style.display = "block";
+                    powerUpData.powerUp.className = gameState.powerUp.powerUpClasses;
+
+                    if (!powerUpData.isPaused && powerUpData.spawnRemainingTime > 0) {
+                        powerUpData.spawnStartTime = Date.now();
+                        animationPowerUp();
+                    }
+                }
+
+                if (gameState.powerUp.power && powerUpData.powerUpRemainingTime > 0) {
+                    powerUpData.powerUpStartTime = Date.now();
+                    
+                    switch (gameState.powerUp.power) {
+                        case 'paddleSize':
+                            if (powerUpData.paddleAffected) {
+                                const paddle = powerUpData.paddleAffected === player1.paddle ? player2.paddle : player1.paddle;
+                                const paddleAffected = powerUpData.paddleAffected;   
+                                paddle.classList.add('paddleGrowEffect');
+                                paddleAffected.classList.add('paddleLittleEffect');
+                            }
+                            activePaddleSize();
+                            break;
+                        case 'ballSpeed':
+                            activeBallSpeed();
+                            break;
+                        case 'paddleSpeed':
+                            activePaddleSpeed();
+                            break;
+                        case 'reverseControl':
+                            activeReverseControl();
+                            break;
+                    }
+                }
+            }
 
             AIData.activate = gameState.AIData.activate;
             AIData.targetY = gameState.AIData.targetY;
 
             document.getElementById('counter1')!.innerText = player1.counter.toString();
             document.getElementById('counter2')!.innerText = player2.counter.toString();
-		}
+        }
     }
 
     document.getElementById('pauseGame')?.addEventListener('click', async () => {
-        await pauseGame(generalData, ballData);
-    })
+        if (generalData.isPaused) resumePowerUps();
+        else pausePowerUps();
+        await pauseGame(generalData, ballData, powerUpData);
+    });
 
 	document.getElementById('exitGame')?.addEventListener('click', async () => {
-		if (checkLost(generalData, ballData, AIData, player1, player2, width)){
+		if (checkLost(generalData, ballData, AIData, powerUpData, player1, player2, width)){
 			let cont = document.getElementById("continue");
 			let pauseDiv = document.getElementById("pauseGame")
 			if (cont) cont.style.display = "none";
 			if (pauseDiv) pauseDiv.style.display = "none";
 		}
         saveGameState();
-		await returnToGames(generalData, ballData, AIData, player1, player2, "custom");
+		await returnToGames(generalData, ballData, AIData, player1, player2, "custom", powerUpData);
 	})
 
 	setOnresize();

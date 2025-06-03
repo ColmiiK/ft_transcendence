@@ -210,8 +210,8 @@
 
 #powerUp {
 	position: absolute;
-	width: 30%;
-	height: 40%;
+	width: 2%;
+	height: 4%;
 	background-color: gold;
 	border-radius: 50%;
 	display: none;
@@ -227,7 +227,7 @@
 
 .powerUpDisappear {
 	animation: powerUpDisappear 0.4s ease forwards;
-  }
+}
 
 @keyframes powerUpAppear  {
 	0% {
