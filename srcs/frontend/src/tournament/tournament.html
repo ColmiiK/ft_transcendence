@@ -2,34 +2,34 @@
 	<div class="standard-purple-card min-h-[80vh] flex flex-col">
 		<header class="flex justify-between items-center md:items-end mx-4">
 		<h1 class="hidden lg:flex">Tournament</h1>
-		<svg id="home-button" class="home-icon m-4 h-10 w-10 cursor-pointer" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FEE0EF">
-			<path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/>
+		<svg id="home-button" class="home-icon m-4 h-10 w-5 cursor-pointer" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FEE0EF">
+        	<path d="M640-80 240-480l400-400 71 71-329 329 329 329-71 71Z" />
 		</svg>
 		</header>
 
 		<div id="pink-divider" class="flex justify-center"></div>
 
 		<div id="tournament-card" class="flex flex-col h-full min-w-[65vw] gap-4">
-			<h2 class="flex w-full lg:justify-start items-center justify-center text-2xl">✨<span>&nbsp;Tournament Title&nbsp;</span> ✨</h2>
+			<h2 class="flex w-full lg:justify-start items-center justify-center text-2xl">✨&nbsp;<span id="tournament-title">Tournament Title</span>&nbsp;✨</h2>
 			<div class="h-full w-full flex flex-col lg:flex-row gap-4">
 				<section id="body-section" class="flex flex-1 flex-col justify-evenly gap-4 h-full lg:w-2/3">
 					<section id="page-selector" class="p-2 grid grid-cols-3 gap-4 w-full bracket-contour">
 						<div class="flex flex-col items-center justify-center gap-2">
 							<p class="text-center">Semifinals</p>
 							<div>
-								<div class="bracket bracket-active">Unknown</div>
-								<div class="bracket bracket-active">Unknown</div>
+								<div class="bracket semifinals">Unknown</div>
+								<div class="bracket semifinals">Unknown</div>
 							</div>
 							<div>
-								<div class="bracket">Unknown</div>
-								<div class="bracket">Unknown</div>
+								<div class="bracket semifinals">Unknown</div>
+								<div class="bracket semifinals">Unknown</div>
 							</div>
 						</div>
 						<div class="flex flex-col items-center">
 							<p class="text-center">Final</p>
 							<div class="flex flex-col h-full justify-center">
-								<div class="bracket">Unknown</div>
-								<div class="bracket">Unknown</div>
+								<div class="bracket finals">Unknown</div>
+								<div class="bracket finals">Unknown</div>
 							</div>
 						</div>
 						<div class="flex flex-col items-center">
@@ -43,8 +43,8 @@
 						<div class="flex flex-col items-center">
 							<p class="text-center">Consolation Final</p>
 							<div class="flex flex-col h-full justify-center">
-								<div class="bracket">Unknown</div>
-								<div class="bracket">Unknown</div>
+								<div class="bracket tiebreaker">Unknown</div>
+								<div class="bracket tiebreaker">Unknown</div>
 							</div>
 						</div>
 						<div class="flex flex-col items-center">
@@ -57,7 +57,7 @@
 				</section>
 				<section id="results" class="gap-10 w-full lg:w-1/3 flex flex-col justify-center items-center">
 					<div class="w-2/3 flex flex-col gap-2 p-5 justify-center items-center results-contour">
-						<p class="text-xl">Final Standings</p>
+						<p class="text-xl text-center">Final Standings</p>
 						<div id="pink-divider" class="w-full"></div>
 						<p>1º: Unknown</p>
 						<p>2º: Unknown</p>

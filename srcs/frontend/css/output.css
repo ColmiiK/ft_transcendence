@@ -2265,6 +2265,10 @@ video {
   height: 100%;
 }
 
+.h-5 {
+  height: 1.25rem;
+}
+
 .max-h-\[60px\] {
   max-height: 60px;
 }
@@ -2308,6 +2312,10 @@ video {
 
 .w-full {
   width: 100%;
+}
+
+.w-5 {
+  width: 1.25rem;
 }
 
 .min-w-\[65vw\] {

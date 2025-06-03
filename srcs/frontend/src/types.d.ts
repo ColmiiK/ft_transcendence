@@ -97,21 +97,6 @@ export interface InvitationList {
 	invitation_type: string;
 }
 
-export interface Tournament {
-	tournament_id: number;
-	name: string;
-	player_limit: number;
-	status: string;
-	game_type: string;
-	creator_id: number;
-	created_at: string;
-	started_at: string | null;
-	finished_at: string | null;
-	tournament_invitations: { user_id: number; status: string; }[];
-	tournament_participants: { user_id: number; final_rank: number | null; }[];
-	tournament_matches: any[]; // Add specific type if needed
-}
-
 export interface Blocked {
 	username: string,
 	id: number,
@@ -179,4 +164,32 @@ export interface Scheduled {
 	host_avatar: string,
 	first_player_alias: string,
 	second_player_alias: string,
+}
+
+export interface Tournament {
+	tournament_id: number,
+	name: string,
+	player_limit: number,
+	status: string,
+	game_type: string,
+	creator_id: number,
+	started_at: string,
+	finished_at: string,
+	tournament_participants: Array,
+	tournament_matches: Match[],
+}
+
+export interface Match {
+	first_player_alias: string,
+	first_player_id: number,
+	first_player_score: number,
+	loser_id: number,
+	match_id: number,
+	match_phase: string,
+	match_status: string,
+	played_at: string,
+	second_player_alias: string,
+	second_player_id: number,
+	second_player_score: number,
+	winner_id: number,
 }

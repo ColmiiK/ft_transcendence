@@ -23,7 +23,7 @@ export async function initSelectPageEvent(){
   if (!createTournament || !viewTournament) { return ; }
   await checkExistingTournament();
   createTournament.onclick = () => { showTournamentForm() };
-  viewTournament.onclick = () => { navigateTo('/tournament') };
+  viewTournament.onclick = () => { navigateTo('/tournament'); };
 
   const loginButton = document.getElementById('login-button') as HTMLButtonElement;
   const loginForm = document.getElementById('login-form');

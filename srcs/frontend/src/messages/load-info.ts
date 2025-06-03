@@ -536,6 +536,8 @@ async function handleScroll() {
 }
 
 export async function getChatInfo(chat_id: number): Promise<ChatInfo | null> {
+	if (!chat_id)
+		return null;
 	try {
 		const chat_info = await sendRequest('GET', `/chats/identify/${chat_id}`);
 		if (!chat_info)
