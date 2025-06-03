@@ -114,7 +114,7 @@ const routes = [
 		url: "../src/tournament/tournament.html",
 		accesible: false,
 		event: () => {
-			// initTournamentEvents();
+			initTournamentEvents();
 		}
 	},
 	{
