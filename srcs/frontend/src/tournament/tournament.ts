@@ -5,8 +5,6 @@ import { socketToast, showAlert } from "../toast-alert/toast-alert.js";
 import { debounce } from "../friends/friends-fetch.js";
 import { navigateTo } from "../index.js";
 
-export let socketTournament: WebSocket | null = null;
-export let tournament: Tournament;
 
 export function initTournamentEvents(){
 	createTournament();
@@ -14,14 +12,11 @@ export function initTournamentEvents(){
   initTournamentSearch();
   initBackButton()
 }
-
+//Este archivo se puede modificar entero
 function initBackButton() {
   const backButton = document.getElementById('back-button');
   if (backButton) {
     backButton.addEventListener('click', () => {
-      if (socketTournament && socketTournament.readyState === WebSocket.OPEN) {
-        socketTournament.close();
-      }
       navigateTo('/games');
     });
   }
@@ -137,57 +132,6 @@ function displayTournamentResults(tournaments: Tournament[]){
   });
 }
 
-export function createSocketTournamentConnection(tournamentName: string, game_type: string): Promise<Tournament>{
-  return new Promise((resolve, reject) => {
-    if (socketTournament && socketTournament.readyState !== WebSocket.CLOSED)
-      socketTournament.close();
-    try{
-    	socketTournament = new WebSocket(`wss://${window.location.hostname}:8443/ws/tournament`)
-      if (!socketTournament)
-        return ;
-      socketTournament.onopen = () => {
-        // console.log("WebSocketTournament connection established, sending name");
-        if (!tournamentName)
-          console.error("Invalid name, cannot connect to back")
-        else{
-          if (!socketTournament){
-            reject(new Error("Socket connection lost"));
-            return;
-					}
-          socketTournament.send(JSON.stringify({
-            name: tournamentName,
-						game_type: game_type,
-            action: "identify",
-            creator_id: getClientID()
-          }));
-          // console.log("ID succesfully sent");
-        }
-      };
-      socketTournament.onmessage = (event) => {
-        try{
-        	const data = JSON.parse(event.data);
-        	tournament = data.tournament;
-        	resolve (tournament);
-         }
-         catch(err){
-         console.error("Error on message", err);
-				 reject(new Error("Socket connection lost"));
-        }
-      };
-      socketTournament.onerror = (error) => {
-        console.error("WebSocketTournament error:", error);
-      };
-      socketTournament.onclose = () => {
-        // console.log("WebSocketTournament connection closed");
-        socketTournament = null;
-      };
-    }
-    catch(error){
-      console.log("Error creating socketTournament: ", error);
-    }
-  });
-}
-
 function createTournament(){
   const container = document.querySelector(".tournament-creation");
   if (container){
@@ -209,13 +153,13 @@ function createTournament(){
           showAlert("Please select a game type", "toast-error");
           return;
         }
-        if (!tournament){
+        /*if (!tournament){
           handleTournamentCreation(tournamentName, game_type);
           inputElement.value = "";
           gameTypeSelect.value = "";
         }
         else if (tournament)
-          showAlert("You're already in a tournament. Finish or cancel it first.", "toast-error");
+          showAlert("You're already in a tournament. Finish or cancel it first.", "toast-error");*/
       });
     }
     // Handle Enter key
@@ -323,7 +267,7 @@ function displaySearchResults(players: UserMatches[], container: HTMLElement) {
     container.appendChild(option);
   });
 }
-
+/*
 async function sendTournamentInvitation(receiverId: number, username: string): Promise<boolean>{
   if (socketToast && socketToast.readyState === WebSocket.OPEN){
 
@@ -357,13 +301,13 @@ async function sendTournamentInvitation(receiverId: number, username: string): P
 	else
     console.error("Toast socket is not connected");
 	return (false);
-}
+}*/
 
 export function handleTournamentCreation(input: string, gameType: string){
   const tournamentName = input.trim();
   if (tournamentName){
     console.log(`Creating tournament with name: ${tournamentName}`);
-		createSocketTournamentConnection(tournamentName, gameType);
+		//createSocketTournamentConnection(tournamentName, gameType);
     showAlert("Tournament has been created", "toast-success")
   }
 }
