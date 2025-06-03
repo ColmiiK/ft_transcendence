@@ -1,224 +1,75 @@
 <div class="screen-set">
+	<div class="standard-purple-card min-h-[80vh] flex flex-col">
+		<header class="flex justify-between items-center md:items-end mx-4">
+		<h1 class="hidden lg:flex">Tournament</h1>
+		<svg id="home-button" class="home-icon m-4 h-10 w-10 cursor-pointer" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FEE0EF">
+			<path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/>
+		</svg>
+		</header>
 
-	<div class="tournament">
-		<div class="header-container">
-      <button id="back-button" class="back-button">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24">
-          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-        </svg>
-        Back
-      </button>
-		</div>
-		<h1>Tournaments</h1>
+		<div id="pink-divider" class="flex justify-center"></div>
 
-		<div class="btns">
-
-			<div>
-				<h2>Search tournaments</h2>
-				<label for="tournament-search-bar">
-					Tournament name
-					<input id="tournament-searcher" type="text">
-				</label>
-				<input type="submit" value="Find a tournament" id="tournament-search-button">
-			</div>
-
-			<div class="btn create-tournament">
-				<h2>Create tournament</h2>
-
-				<div class="tournament-creation">
-					<label for="name">
-						Name
-						<input type="text">
-					</label>
-					<div class="game-type-selector">
-						<label>
-							Game Type
-							<select id="game-type">
-								<option value="">Select game type</option>
-								<option value="pong">Pong</option>
-								<option value="4inrow">4 in Row</option>
-							</select>
-						</label>
+		<div id="tournament-card" class="flex flex-col h-full min-w-[65vw] gap-4">
+			<h2 class="flex w-full lg:justify-start items-center justify-center text-2xl">✨<span>&nbsp;Tournament Title&nbsp;</span> ✨</h2>
+			<div class="h-full w-full flex flex-col lg:flex-row gap-4">
+				<section id="body-section" class="flex flex-1 flex-col justify-evenly gap-4 h-full lg:w-2/3">
+					<section id="page-selector" class="p-2 grid grid-cols-3 gap-4 w-full bracket-contour">
+						<div class="flex flex-col items-center justify-center gap-2">
+							<p class="text-center">Semifinals</p>
+							<div>
+								<div class="bracket bracket-active">Unknown</div>
+								<div class="bracket bracket-active">Unknown</div>
+							</div>
+							<div>
+								<div class="bracket">Unknown</div>
+								<div class="bracket">Unknown</div>
+							</div>
+						</div>
+						<div class="flex flex-col items-center">
+							<p class="text-center">Final</p>
+							<div class="flex flex-col h-full justify-center">
+								<div class="bracket">Unknown</div>
+								<div class="bracket">Unknown</div>
+							</div>
+						</div>
+						<div class="flex flex-col items-center">
+							<p class="text-center">Winner</p>
+							<div class="flex flex-col h-full justify-center">
+								<div class="bracket">Unknown</div>
+							</div>
+						</div>
+					</section>
+					<section class="grid grid-cols-2 gap-4 lg:w-2/3 bracket-contour">
+						<div class="flex flex-col items-center">
+							<p class="text-center">Consolation Final</p>
+							<div class="flex flex-col h-full justify-center">
+								<div class="bracket">Unknown</div>
+								<div class="bracket">Unknown</div>
+							</div>
+						</div>
+						<div class="flex flex-col items-center">
+							<p class="text-center">Third</p>
+							<div class="flex flex-col h-full justify-center">
+								<div class="bracket">Unknown</div>
+							</div>
+						</div>
+					</section>
+				</section>
+				<section id="results" class="gap-10 w-full lg:w-1/3 flex flex-col justify-center items-center">
+					<div class="w-2/3 flex flex-col gap-2 p-5 justify-center items-center results-contour">
+						<p class="text-xl">Final Standings</p>
+						<div id="pink-divider" class="w-full"></div>
+						<p>1º: Unknown</p>
+						<p>2º: Unknown</p>
+						<p>3º: Unknown</p>
+						<p>4º: Unknown</p>
 					</div>
-					<input type="submit" value="Create tournament">
-				</div>
+					<div class="flex flex-col gap-2 justify-center items-center">
+						<button class="w-fit lg:w-full tour-option">Next Match</button>
+						<button class="w-fit lg:w-full tour-option">Cancel Tournament</button>
+					</div>
+				</section>
 			</div>
-			<div class="search-players">
-				<input type="text" id="player-search" placeholder="Search players...">
-				<div id="search-results" class="search-results"></div>
-			</div>
-			</div>
-			<style>
-				.header-container {
-					display: flex;
-					justify-content: center;
-					align-items: center;
-					margin-bottom: 2rem;
-					position: relative;  /* Añadido para referencia del botón absoluto */
-				}
-
-				.back-button {
-					position: absolute;  /* Posicionamiento absoluto */
-					left: 0;            /* Alineado a la izquierda */
-					display: flex;
-					align-items: center;
-					gap: 0.5rem;
-					padding: 0.5rem 1rem;
-					background-color: #6366f1;
-					color: white;
-					border: none;
-					border-radius: 0.375rem;
-					cursor: pointer;
-					transition: background-color 0.2s;
-				}
-
-				/* Asegurar que el título esté centrado independientemente del botón */
-				.header-container h1 {
-					margin: 0 auto;     /* Centrado horizontal */
-					text-align: center;
-				}
-				.screen-set {
-					padding: 2rem;
-					min-height: 100vh;
-				}
-			
-				.tournament {
-					max-width: 1200px;
-					margin: 0 auto;
-					background-color: white;
-					border-radius: 1rem;
-					padding: 2rem;
-					box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-				}
-			
-				.tournament h1 {
-					text-align: center;
-					margin-bottom: 2rem;
-					color: #1f2937;
-					font-size: 2.25rem;
-				}
-			
-				.tournament h2 {
-					color: #374151;
-					margin-bottom: 1rem;
-					font-size: 1.5rem;
-				}
-			
-				.btns {
-					display: grid;
-					gap: 2rem;
-				}
-			
-				.btn {
-					background-color: white;
-					border-radius: 0.5rem;
-					padding: 1.5rem;
-					box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-				}
-			
-				input[type="text"] {
-					width: 100%;
-					padding: 0.75rem;
-					border: 1px solid #e5e7eb;
-					border-radius: 0.375rem;
-					margin-bottom: 1rem;
-				}
-			
-				input[type="submit"] {
-					background-color: #6366f1;
-					color: white;
-					padding: 0.75rem 1.5rem;
-					border: none;
-					border-radius: 0.375rem;
-					cursor: pointer;
-					transition: background-color 0.2s;
-				}
-			
-				input[type="submit"]:hover {
-					background-color: #4f46e5;
-				}
-			
-				label {
-					display: block;
-					margin-bottom: 0.5rem;
-					color: #4b5563;
-				}
-			
-				.search-players {
-					margin-top: 1rem;
-				}
-			
-				.search-results {
-					margin-top: 0.5rem;
-					border: 1px solid #e5e7eb;
-					border-radius: 0.375rem;
-					max-height: 200px;
-					overflow-y: auto;
-				}
-			
-				.tournament-card {
-					background-color: white;
-					border: 1px solid #e5e7eb;
-					border-radius: 0.5rem;
-					padding: 1rem;
-					margin-bottom: 1rem;
-				}
-			
-				.tournament-card h3 {
-					color: #1f2937;
-					margin: 0;
-				}
-			
-				.game-type-selector {
-					margin-top: 1rem;
-				}
-			
-				.game-type-selector select {
-					width: 100%;
-					padding: 0.75rem;
-					border: 1px solid #e5e7eb;
-					border-radius: 0.375rem;
-					background-color: white;
-					color: #374151;
-				}
-			
-				.game-type-selector select:focus {
-					outline: 2px solid #6366f1;
-					outline-offset: 2px;
-				}
-				.joined {
-					width: 24px;
-					height: 24px;
-					fill: #10B981; /* Emerald-500 color for success/joined state */
-					background-color: #D1FAE5; /* Light emerald background */
-					padding: 4px;
-					border-radius: 50%;
-					transition: all 0.2s ease;
-				}
-
-				.joined:hover {
-					transform: scale(1.1);
-					background-color: #A7F3D0; /* Slightly darker on hover */
-				}
-
-				.rounded-full {
-					border-radius: 9999px;
-				}
-
-				/* Ensure the icon container is properly aligned */
-				.player-item {
-					display: flex;
-					align-items: center;
-					justify-content: space-between;
-					padding: 0.5rem 1rem;
-					border-bottom: 1px solid #E5E7EB;
-				}
-
-				.player-item:last-child {
-					border-bottom: none;
-				}
-			</style>
 		</div>
 	</div>
-	
 </div>

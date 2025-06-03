@@ -27,6 +27,9 @@
 /* --> Stats Page <-- */
 @import url("../src/statistics/statistics.styles.css");
 
+/* --> Tournament Page <-- */
+@import url("../src/tournament/tournament-styles.css");
+
 /* --> 404 Page <-- */
 @import url("../src/404/404-styles.css");
 
