@@ -1,0 +1,44 @@
+.bracket {
+	background-color: var(--dark-pink);
+	word-break: break-all;
+	/* color: var(--dark-purple); */
+	border-radius: 15px;
+	/* box-shadow: var(--accent-pink) 0px 0px 5px; */
+	padding: 10px;
+	margin: 10px;
+}
+
+.bracket-active {
+	background-color: var(--accent-pink);
+	color: var(--dark-purple);
+	box-shadow: var(--accent-pink) 0px 0px 5px;
+} 
+
+.bracket-contour {
+	border-radius: 15px;
+	box-shadow: var(--accent-pink) 0px 0px 5px;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
+.results-contour {
+	border-radius: 15px;
+	background-color: var(--dark-pink);
+  	box-shadow: var(--accent-pink) 0px 0px 5px;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
+.tour-option {
+	background-color: var(--accent-pink);
+	color: var(--dark-purple);
+	border-radius: 15px;
+	padding: 10px;
+	transition: all 250ms ease-in;
+}
+
+.tour-option:hover {
+	background-color: var(--dark-pink);
+	color: var(--accent-pink);
+	box-shadow: var(--accent-pink) 0px 0px 5px;
+}
