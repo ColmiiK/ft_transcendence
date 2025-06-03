@@ -1,12 +1,9 @@
 import { getClientID } from "../messages/messages-page.js"
 import { displayFriends, displayInvitations, showMatches, debounce } from "../friends/friends-fetch.js";
-import { Tournament } from "../types.js";
-//import { createSocketTournamentConnection } from "../tournament/tournament.js";
 import { sendRequest } from "../login-page/login-fetch.js";
 
 export let socketToast: WebSocket | null;
 let toastTimeout: NodeJS.Timeout;
-let tournament_id: number | null;
 
 const toastFeatures = [
 	{ type: "toast-error", icon: "error-icon" },
@@ -93,42 +90,6 @@ export function createsocketToastConnection() {
 					showAlert(data.body, "toast-success");
 				else if (data.type === "friendStatusUpdate")
 					updateFriendsList();
-				else if (data.type === "tournament") {
-					const tournament = data.tournament;
-					if (data.info === "request") {
-						tournament_id = tournament.tournament_id;
-						function handleAccept(tournament: Tournament | null) {
-							if (socketToast) {
-								socketToast.send(JSON.stringify({
-									type: "tournament",
-									info: "accept",
-									sender_id: getClientID(),
-									receiver_id: data.sender_id,
-									tournament: tournament
-								}));
-							}
-						}
-						function handleReject(tournament: Tournament | null) {
-							if (socketToast) {
-								socketToast.send(JSON.stringify({
-									type: "tournament",
-									info: "reject",
-									sender_id: getClientID(),
-									receiver_id: data.sender_id,
-									tournament: tournament,
-								}));
-							}
-						}
-						if (tournament_id)
-							showAlert(data.body, "toast-success", () => handleAccept(tournament), () => handleReject(tournament));
-					}
-					else if (data.info === "creator")
-						showAlert(data.body, "toast-success");
-					else if (data.info === "accept")
-						showAlert(data.body, "toast-success");
-					else if (data.info === "reject")
-						showAlert(data.body, "toast-error");
-				}
 				else if (data.type === "change_avatar" && data.avatar_url) {
 					if (window.location.pathname === "/friends") {
 						const avatar_container = document.getElementById(`friend-id-${data.sender_id}`) as HTMLElement;

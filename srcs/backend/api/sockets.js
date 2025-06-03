@@ -46,66 +46,6 @@ async function messageInChat(data, userId) {
 				else if (!socketsChat.has(receiver_id) && socketsToast.has(receiver_id))
 					toastReceiver.send(JSON.stringify({ type: "chatToast", body: `You have a message from ${username}` }))
 			}
-			/*else if (data.type === "tournament") {
-				const tournament_id = data.tournament.tournament_id;
-				await addInvitationToTournament({ tournament_id: tournament_id, user_id: receiver_id });
-				await modifyInvitationToTournament({ status: "pending", tournament_id: tournament_id }, receiver_id);
-				if (socketsToast.has(receiver_id) && !socketsChat.has(receiver_id)) {
-					if (data.info === "request") {
-						const tournament = data.tournament
-						toastSender.send(JSON.stringify({
-							body: `You invited ${receiver_username}`,
-							type: "tournament",
-							sender_id: data.sender_id,
-							receiver_id: data.receiver_id,
-							info: "creator",
-							tournament: tournament,
-						}))
-						toastReceiver.send(JSON.stringify({
-							type: "tournament",
-							body: `You have a tournament request from ${username} to play ${tournament.game_type}`,
-							sender_id: data.sender_id,
-							receiver_id: data.receiver_id,
-							info: "request",
-							tournament: tournament,
-						}))
-					}
-				}
-				else if (socketsToast.has(receiver_id) && socketsChat.has(receiver_id)) {
-					const tournament = data.tournament;
-					if (data.info === "request") {
-						const message = await createMessage({
-							body: `${username} send a request to play a tournament of ${tournament.game_type}`,
-							sender_id: data.sender_id,
-							receiver_id: data.receiver_id,
-							chat_id: chat_id,
-							sent_at: data.sent_at,
-							is_read: 0
-						})
-						const message_id = message.id;
-						const receiver = socketsChat.get(receiver_id);
-						receiver.send(JSON.stringify({
-							body: data.body,
-							message_id: message_id,
-							chat_id: chat_id,
-							receiver_id: receiver_id,
-							sender_id: userId,
-							sender_username: username,
-							sent_at: data.sent_at,
-							read: false,
-							type: data.type,
-							info: data.info,
-							tournament: tournament
-						}))
-					}
-					else if (data.info === "accept") {
-						await modifyInvitationToTournament({ status: "confirmed", tournament_id: tournament_id }, sender_id);
-						await addParticipantToTournament({ tournament_id: tournament_id }, sender_id);
-					}
-					else if (data.info === "reject") {
-						await modifyInvitationToTournament({ status: "denied", tournament_id: tournament_id }, sender_id);
-					}4
-				}*/
 			else if (data.type === "game") { //Auto rechazar la invitacion si se hacen multiples en el mismo chat
 				const receiver_id = parseInt(data.receiver_id);
 				if (data.info === "request") {
@@ -204,7 +144,7 @@ async function messageInChat(data, userId) {
 						game_type = "connect_four"
 					else
 						game_type = game[1];
-					await scheduleMatch({ game_type: game_type, custom_mode: is_custom, first_player_id: data.receiver_id, second_player_id: data.sender_id, tournament_id: null, phase: null });
+					console.log(await scheduleMatch({ game_type: game_type, custom_mode: is_custom, first_player_id: data.receiver_id, second_player_id: data.sender_id, tournament_id: null, phase: null }));
 				}
 				else if (socketsChat.has(sender_id) && socketsChat.has(receiver_id) && data.info === "reject") {
 					const invitation = await createMessage({
@@ -414,7 +354,7 @@ async function handleGameInvitation(data, sender_id) {
 				game_type = "connect_four"
 			else
 				game_type = game[1];
-			await scheduleMatch({ game_type: game_type, custom_mode: is_custom, first_player_id: data.receiver_id, second_player_id: data.sender_id, tournament_id: null, phase: null });
+			await scheduleMatch({ game_type: game_type, custom_mode: is_custom, first_player_id: data.sender_id, second_player_id: data.receiver_id, tournament_id: null, phase: null });
 		}
 		else if (socketsChat.has(sender_id) && data.info === "reject") {
 			const invitation = await createMessage({
@@ -560,49 +500,5 @@ export default function createWebSocketsRoutes(fastify) {
 				})
 			})
 		},
-		/*
-				{
-					url: "/tournament",
-					method: "GET",
-					websocket: true,
-					handler: asyncWebSocketHandler(async (socket) => {
-						let tournament_id = null;
-						socket.on("message", async tournament => {
-							const tournamentString = tournament.toString();
-							const data = JSON.parse(tournamentString);
-							if (tournament_id === null){
-								try{
-									const tournament = await createTournament({ name: data.name, player_limit: 4, game_type: data.game_type }, data.creator_id);
-									tournament_id = tournament.tournament_id;
-									await addInvitationToTournament({ tournament_id: tournament_id, user_id: data.creator_id });
-									await modifyInvitationToTournament({ status: "confirmed", tournament_id: tournament_id },	data.creator_id);
-									await addParticipantToTournament({ tournament_id: tournament_id}, data.creator_id,);
-									if (tournament_id){
-										socketsTournament.set(tournament.tournament_id, socket);
-										socket.send(JSON.stringify({
-											type: "connection",
-											status: "success",
-											message: "Connected",
-											tournament: tournament,
-										}));
-									}
-									}
-									catch (err){
-									console.error("Error can't get ID:", err);
-									socket.send(JSON.stringify({
-										type: "error",
-										message: "Invalid Id"
-									}));
-								}
-							}
-							else{
-							}
-						})
-						socket.on("close", () => {
-							console.log("Client disconnected from /tournament");
-							socketsTournament.delete(tournament_id);
-						})
-					})
-				}*/
 	]
 }
