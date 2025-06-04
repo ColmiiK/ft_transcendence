@@ -20,6 +20,7 @@ import {
 	placeToken as placeTokenEngine,
 	isColumnPlayable as isColumnPlayableEngine,
 	detectWinOpportunities as detectWinOpportunitiesEngine,
+	updateData,
 } from './gameEngine.js';
 
 
@@ -105,6 +106,7 @@ export function classicMode(data: GameInfo): void {
 		const cnt = document.getElementById("continue");
 		if (cnt) cnt.style.display = "none";
 
+		updateData(data, player1, player2);
 		return true;
 	}
 
@@ -322,8 +324,9 @@ export function classicMode(data: GameInfo): void {
 			return ;
 		})
 	
-		document.getElementById('exit')?.addEventListener('click', () => {
+		document.getElementById('exit')?.addEventListener('click', async () => {
 			clearGame();
+			await updateData(data, player1, player2);
 			navigateTo("/games");
 		})
 	})

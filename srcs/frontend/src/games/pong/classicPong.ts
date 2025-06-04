@@ -1,7 +1,7 @@
 import { 
     Player, GeneralData, PaddleCollision, BallData, AIData, OnresizeData, init, 
 	resetBall, updateScore, setAI, countDown, pauseGame, returnToGames, checkLost,
-	play as playEngine, stop as stopEngine, moveBall as moveBallEngine,
+	play as playEngine, moveBall as moveBallEngine,
 } from './gameEngine.js';
 
 import { GameInfo } from "../../types.js";
@@ -77,7 +77,7 @@ export function classicPong(data: GameInfo): void{
 		const savedState = localStorage.getItem("gameStateclassic");
 		if (savedState){
 			loadGameState();
-			if (!checkLost(generalData, ballData, AIData, null, player1, player2, width))
+			if (!checkLost(generalData, ballData, AIData, null, data, player1, player2, width))
 				await pauseGame(generalData, ballData, null);
 		}
 		if (!savedState){
@@ -94,7 +94,7 @@ export function classicPong(data: GameInfo): void{
 
 		setOnresize();
 		moveBall();
-		playEngine(generalData, ballData, AIData, player1, player2, width, height, null);
+		playEngine(generalData, ballData, AIData, player1, player2, width, height, null, data);
 		saveGameState();
 	}
 
@@ -265,14 +265,14 @@ export function classicPong(data: GameInfo): void{
 	})
 
 	document.getElementById('exitGame')?.addEventListener('click', async () => {
-		if (checkLost(generalData, ballData, AIData, null ,player1, player2, width)){
+		if (checkLost(generalData, ballData, AIData, null ,data, player1, player2, width)){
 			let cont = document.getElementById("continue");
 			let pauseDiv = document.getElementById("pauseGame")
 			if (cont) cont.style.display = "none";
 			if (pauseDiv) pauseDiv.style.display = "none";
 		}
 		saveGameState();
-		await returnToGames(generalData, ballData, AIData, player1, player2, "classic", null);
+		await returnToGames(generalData, ballData, AIData, player1, player2, "classic", null, data);
 	})
 
 	setOnresize();

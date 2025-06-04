@@ -76,12 +76,12 @@ export function init(generalData: GeneralData, ballData: BallData, player1: Play
 	resetBall(generalData, ballData, player1, player2, width);
 }
 
-export function play(generalData: GeneralData, ballData: BallData, AIData: AIData, player1: Player, player2: Player, width: number, height: number, PowerUpData: PowerUpType | null): void {
+export function play(generalData: GeneralData, ballData: BallData, AIData: AIData, player1: Player, player2: Player, width: number, height: number, PowerUpData: PowerUpType | null, data: GameInfo): void {
 	movePaddle(player1, player2, generalData, AIData, height);
-	checkLost(generalData, ballData, AIData, PowerUpData, player1, player2, width);
+	checkLost(generalData, ballData, AIData, PowerUpData, data, player1, player2, width);
 }
 
-export async function stop(generalData: GeneralData, AIData: AIData, ballData: BallData, PowerUpData: PowerUpType | null): Promise<void> {
+export async function stop(generalData: GeneralData, AIData: AIData, ballData: BallData, PowerUpData: PowerUpType | null, data: GameInfo, player1: Player, player2: Player): Promise<void> {
 	if (generalData.controlGame) 
 		clearInterval(generalData.controlGame);
 	if (AIData.activate && AIData.controlAI) 
@@ -89,6 +89,7 @@ export async function stop(generalData: GeneralData, AIData: AIData, ballData: B
 	if (PowerUpData && PowerUpData.controlPowerUp)
 		clearInterval(PowerUpData.controlPowerUp)
 	ballData.ball.style.display = "none";
+	updateData(data, player1, player2);
 }
 
 export function resetBall(generalData: GeneralData, ballData: BallData, player1: Player, player2: Player, width: number): void {
@@ -125,13 +126,13 @@ export function insertWinner(winner: string){
 	gameEl.style.animation = "mediumOpacity";
 }
 
-export function checkLost(generalData: GeneralData, ballData: BallData, AIData: AIData, PowerUpData: PowerUpType | null, player1: Player, player2: Player, width: number): boolean {
+export function checkLost(generalData: GeneralData, ballData: BallData, AIData: AIData, PowerUpData: PowerUpType | null, data: GameInfo, player1: Player, player2: Player, width: number): boolean {
 	if (ballData.ball.offsetLeft >= width) {
 		updateScore(player1.paddle, player1, player2);
 		if (player1.counter < 10) init(generalData, ballData, player1, player2, width);
 		else {
 			insertWinner("Player 1");
-			stop(generalData, AIData, ballData, PowerUpData);
+			stop(generalData, AIData, ballData, PowerUpData, data, player1, player2);
 			return true;
 		}
 	}
@@ -140,7 +141,7 @@ export function checkLost(generalData: GeneralData, ballData: BallData, AIData: 
 		if (player2.counter < 10) init(generalData, ballData, player1, player2, width);
 		else {
 			insertWinner("Player 2");
-			stop(generalData, AIData, ballData, PowerUpData);
+			stop(generalData, AIData, ballData, PowerUpData, data, player1, player2);
 			return true ;
 		}
 	}
@@ -367,7 +368,7 @@ function cleanupPowerUps(powerUpData: PowerUpType) {
 	}
 }
 
-export async function returnToGames(generalData: GeneralData, ballData: BallData, AIData: AIData, player1: Player, player2: Player, mode: "classic" | "custom", PowerUpData: PowerUpType | null): Promise<void> {
+export async function returnToGames(generalData: GeneralData, ballData: BallData, AIData: AIData, player1: Player, player2: Player, mode: "classic" | "custom", PowerUpData: PowerUpType | null, data: GameInfo): Promise<void> {
 	const exitBtn = document.getElementById('exitGame');
 	if (!exitBtn){
 		console.error("exitGame element not found.");
@@ -407,7 +408,7 @@ export async function returnToGames(generalData: GeneralData, ballData: BallData
 	})
 
 	document.getElementById('exit')?.addEventListener('click', () => {
-		stop(generalData, AIData, ballData, PowerUpData);
+		stop(generalData, AIData, ballData, PowerUpData, data, player1, player2);
 		clearGameState(player1, player2, mode);
 		if (mode == "custom" && PowerUpData)
 			cleanupPowerUps(PowerUpData);

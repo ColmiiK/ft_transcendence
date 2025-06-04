@@ -9,6 +9,7 @@ import {
     saveGameState,
     loadGameState,
     updateDice,
+    updateData,
     renderBoardFromState,
     init as initEngine,
     clearGame as clearGameEngine,
@@ -119,6 +120,7 @@ export function crazyTokensMode(data: GameInfo): void {
 		pauseBtn.style.display = 'none';
 		const cnt = document.getElementById("continue");
 		if (cnt) cnt.style.display = "none";
+        updateData(data, player1, player2)
 		return true;
 	}
 
@@ -876,8 +878,9 @@ export function crazyTokensMode(data: GameInfo): void {
             return ;
         })
     
-        document.getElementById('exit')?.addEventListener('click', () => {
+        document.getElementById('exit')?.addEventListener('click', async () => {
             clearGame();
+            await updateData(data, player1, player2);
             navigateTo("/games");
         })
 	})
