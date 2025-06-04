@@ -8,6 +8,7 @@ import {
   getMatchesGeneralStats,
   getMatchesType,
   getScheduledMatches,
+  getMatchInTournament,
 } from "../models/matchModel.js";
 
 import {
@@ -154,8 +155,7 @@ export default function createMatchRoutes(fastify) {
         if (!second_player) {
           second_player_id = first_player_id;
           req.body["is_offline"] = 1;
-        }
-        else  {
+        } else {
           second_player_id = second_player.id;
           req.body["is_offline"] = 0;
         }
@@ -176,6 +176,16 @@ export default function createMatchRoutes(fastify) {
           req.body["loser_id"] = req.body.first_player_id;
         }
         const result = await createMatch(req.body);
+        return res.code(200).send(result);
+      }),
+    },
+    {
+      preHandler: [fastify.authenticate],
+      method: "POST",
+      url: "/matches/istournamentmatch",
+      handler: asyncHandler(async (req, res) => {
+        if (!validateInput(req, res, ["match_id"])) return;
+        const result = await getMatchInTournament(req.body.match_id);
         return res.code(200).send(result);
       }),
     },
