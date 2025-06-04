@@ -6,13 +6,13 @@ import { Tournament, Match, GameInfo } from "../types.js";
 export async function initTournamentFetches() {
 	try {
 		const data = await sendRequest('GET', '/tournaments/current');
-		if (!data || !data.id)
+		if (!data || !data.id) {
 			navigateTo('/games');
+			return ;
+		}
 		const response = await sendRequest('GET', `/tournaments/${data.id}`) as Tournament;
 		if (!response)
 			throw new Error('Error while fetching current tournament');
-
-		console.log('Info Torneo:', response);
 
 		const tournamentTitle = document.getElementById('tournament-title') as HTMLSpanElement;
 		if (tournamentTitle) { tournamentTitle.innerText = response.name };
@@ -48,7 +48,7 @@ function nextMatch(gameType: string, matches: Match[]) {
 	if (!nextMatch) { return ; }
 	let gameInfo: GameInfo = {
 		game_mode: gameType,
-		is_custom: gameType.includes('custom'),
+		is_custom: !gameType.includes('classic'),
 		match_id: nextMatch.match_id,
 		first_player_alias: nextMatch.first_player_alias,
 		second_player_alias: nextMatch.second_player_alias,
@@ -66,7 +66,7 @@ async function cancelTournament(tournamentId: number) {
 		const response = await sendRequest('PATCH', '/tournaments/end', { tournament_id: tournamentId });
 		if (!response || response['error'])
 			throw new Error('Problem cancelling the tournament')
-		showAlert('Tournament cancelled successfully', 'toast-success');
+		navigateTo('/games');
 	}
 	catch (error) {
 		showAlert((error as Error).message, "toast-error");
