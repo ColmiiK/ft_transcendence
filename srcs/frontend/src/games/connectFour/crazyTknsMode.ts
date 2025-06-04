@@ -25,11 +25,11 @@ import {
     delay as delayEngine,
 } from './gameEngine.js';
 
-import { Games } from "../../types.js";
+import { GameInfo } from "../../types.js";
 import { navigateTo } from "../../index.js";
 import { updateDescription } from '../../modify-profile/modify-fetch.js';
 
-export function crazyTokensMode(data: Games): void {
+export function crazyTokensMode(data: GameInfo): void {
     class PlayerClass {
         color: string;
 		turn: boolean = false;
@@ -49,7 +49,7 @@ export function crazyTokensMode(data: Games): void {
         }
     }
 	let player1 = new PlayerClass(false, 1, "red");
-	let player2 = new PlayerClass(data.gameMode === "ai-custom" ? true : false, 2, "yellow");
+	let player2 = new PlayerClass(data.game_mode === "ai-custom" ? true : false, 2, "yellow");
 
     let gameActive: boolean = true;
 	let aiIsThinking: boolean = false;

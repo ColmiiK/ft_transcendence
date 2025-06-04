@@ -4,9 +4,9 @@ import {
 	play as playEngine, moveBall as moveBallEngine
 } from './gameEngine.js';
 
-import { Games } from "../../types.js";
+import { GameInfo } from "../../types.js";
 
-export function chaosPong(data: Games): void {
+export function chaosPong(data: GameInfo): void {
 	const gameElement = document.getElementById('game');
 	if (!gameElement){
 		throw new Error("HTML 'game' element not found.");
@@ -80,7 +80,7 @@ export function chaosPong(data: Games): void {
         targetY: 0,
         timeToReach: 0,
         errorRate: 0,
-        activate: data.gameMode === "ai-custom" ? true : false,
+        activate: data.game_mode === "ai-custom" ? true : false,
         controlAI: null
     };
 

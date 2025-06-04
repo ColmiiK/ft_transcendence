@@ -103,11 +103,6 @@ export interface Blocked {
 	avatar: string,
 }
 
-export interface Games {
-	isCustom: string,
-	gameMode: string,
-}
-
 export interface Profile {
 	id: number,
 	username: string,
@@ -192,4 +187,12 @@ export interface Match {
 	second_player_id: number,
 	second_player_score: number,
 	winner_id: number,
+}
+
+export interface GameInfo {
+	game_mode: string,
+	is_custom: boolean,
+	match_id: number | null,
+	first_player_alias: string,
+	second_player_alias: string,
 }

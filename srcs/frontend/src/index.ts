@@ -6,7 +6,7 @@ import { initResetPasswordEvents } from "./reset-password-page/reset-password.js
 import { initTwoFactorEvents } from "./two-factor-page/two-factor.js";
 import { initFriendsEvents } from "./friends/friends-page.js"
 import { initSettingsEvents } from "./settings-page/settings-page.js"
-import { LoginObject, MessageObject, Games, User } from "./types.js";
+import { LoginObject, MessageObject, User, GameInfo } from "./types.js";
 import { displayToast, createsocketToastConnection, socketToast } from "./toast-alert/toast-alert.js";
 import { classicPong } from "./games/pong/classicPong.js"
 import { chaosPong } from "./games/pong/chaosPong.js";
@@ -122,10 +122,10 @@ const routes = [
     	url: "../src/games/pong/pong.html",
 		accesible: false,
     	event: (data: object) => {
-      		const mode = data as Games;
-			if (mode.isCustom || localStorage.getItem(`gameStatecustom`))
+      		const mode = data as GameInfo;
+			if (mode.is_custom || localStorage.getItem(`gameStatecustom`))
 				chaosPong(mode);
-			else if (!mode.isCustom || localStorage.getItem(`gameStateclassic`))
+			else if (!mode.is_custom || localStorage.getItem(`gameStateclassic`))
 				classicPong(mode);
     	}
 	},
@@ -134,10 +134,10 @@ const routes = [
     	url: "../src/games/connectFour/connectFour.html",
 		accesible: false,
     	event: (data: object) => {
-			const mode = data as Games;
-			if (mode.isCustom || localStorage.getItem(`connect4GameStatecustom`))
+			const mode = data as GameInfo;
+			if (mode.is_custom || localStorage.getItem(`connect4GameStatecustom`))
 				crazyTokensMode(mode);
-			else if (!mode.isCustom || localStorage.getItem(`connect4GameStateclassic`))
+			else if (!mode.is_custom || localStorage.getItem(`connect4GameStateclassic`))
 				classicMode(mode);
     	}
 	},
