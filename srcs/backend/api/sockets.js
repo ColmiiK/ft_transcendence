@@ -10,6 +10,7 @@ const socketsToast = new Map();
 const socketsTournament = new Map();
 
 async function messageInChat(data, userId) {
+	console.log(data);
 	let username = await getUsername(data.sender_id);
 	let receiver_username = await getUsername(data.receiver_id);
 	if (await isBlocked(data.sender_id, data.receiver_id) === false && await isBlocked(data.receiver_id, data.sender_id) === false && receiver_username !== "anonymous") {
@@ -222,63 +223,19 @@ async function friendRequest(data, sender_id, receiver_id) {
 	}
 }
 
-async function tournamentCreation(data, sender_id, receiver_id) {
-	const sender = socketsToast.get(sender_id);
-	const tournament_id = parseInt(data.tournament.tournament_id);
-	const receiver = socketsToast.get(receiver_id);
-	const username = await getUsername(data.sender_id);
-	const receiver_username = await getUsername(data.receiver_id);
-	if (data.info === "request") {
-		if (sender) {
-			sender.send(JSON.stringify({
-				body: `You invited ${receiver_username}`,
-				type: "tournament",
-				sender_id: data.sender_id,
-				receiver_id: data.sender_id,
-				info: "creator",
-				tournament: data.tournament,
-			}));
-		}
-		if (receiver) {
-			await addInvitationToTournament({ tournament_id: tournament_id, user_id: receiver_id });
-			await modifyInvitationToTournament({ status: "pending", tournament_id: tournament_id }, receiver_id);
-			receiver.send(JSON.stringify({
-				type: "tournament",
-				body: `You have a tournament request from ${username}`,
-				sender_id: data.sender_id,
-				receiver_id: data.receiver_id,
-				info: "request",
-				tournament: data.tournament,
-			}));
-		}
-	}
-	else if (socketsTournament.has(tournament_id)) {
-		const player_id = parseInt(data.sender_id);
-		if (data.info === "accept") {
-			await modifyInvitationToTournament({ status: "confirmed", tournament_id: tournament_id }, player_id);
-			await addParticipantToTournament({ tournament_id: tournament_id }, player_id);
-			receiver.send(JSON.stringify({
-				type: "tournament",
-				body: `Tournament request has been accepted from ${username}`,
-				sender_id: player_id,
-				receiver_id: data.receiver_id,
-				tournament_id: tournament_id,
-				info: "accept",
-			}))
-		}
-		else if (data.info === "reject") {
+async function tournamentHandle(data,) {
+	socketsToast.forEach((clientSocket, clientId) => {
+		try{
+			if (clientId !== data.sender_id){
+				clientSocket.send(JSON.stringify({
 
-			await modifyInvitationToTournament({ status: "denied", tournament_id: tournament_id }, player_id);
-			receiver.send(JSON.stringify({
-				type: "tournament",
-				body: `Tournament request has been refused from ${username}`,
-				sender_id: data.receiver_id,
-				receiver_id: player_id,
-				tournament_id: data.tournament_id,
-				info: "reject",
-			}));
+				}));
+			}
 		}
-	}
+		catch(error){
+			console.error("Error updating tournament page:", error);
+		}
+	})
 }
 
 async function handleAvatarChange(data) {
@@ -306,7 +263,6 @@ async function handleGameInvitation(data, sender_id) {
 	let username = await getUsername(data.sender_id);
 	let receiver_username = await getUsername(data.receiver_id);
 	if (data.type === "game") {
-		const receiver_id = parseInt(data.receiver_id);
 		if (data.info === "request") {
 			await createMessage({
 				body: data.body,
@@ -475,7 +431,7 @@ export default function createWebSocketsRoutes(fastify) {
 						if (data.type === "friendRequest")
 							friendRequest(data, sender_id, receiver_id);
 						else if (data.type === "tournament")
-							tournamentCreation(data, sender_id, receiver_id);
+							tournamentHandle(data, sender_id, receiver_id);
 						else if (data.type === "change_avatar")
 							handleAvatarChange(data)
 						else if (data.type === "game")
