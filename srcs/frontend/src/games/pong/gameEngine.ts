@@ -104,10 +104,10 @@ export function resetBall(generalData: GeneralData, ballData: BallData, player1:
 	ballData.velY = width * generalData.speed * Math.sin(ballData.angle);
 }
 
-export function insertWinner(winner: string){
-	const winnerDiv = document.getElementById("winnerPong");
-	if (!winnerDiv){
-		console.error("winnerPong element not found.");
+export function insertWinner(win: string){
+	const endPong = document.getElementById("endPong");
+	if (!endPong){
+		console.error("endPong element not found.");
 		return ;
 	}
 	const gameEl = document.getElementById('game');
@@ -121,9 +121,27 @@ export function insertWinner(winner: string){
 		return Promise.resolve();
 	}
 	pauseBtn.style.display = 'none';
-	winnerDiv.style.display = 'block';
-	winnerDiv.innerText = `${winner} wins !`
+	endPong.style.display = 'flex';
 	gameEl.style.animation = "mediumOpacity";
+
+	const winner = document.getElementById("win");
+	if (!winner){
+		console.error("win element not found.");
+		return ;
+	}
+	const loser = document.getElementById("loser");
+	if (!loser){
+		console.error("loser element not found.");
+		return ;
+	}
+	if (win == "Player 1"){
+		winner.innerText = "Player 1 wins!"
+		loser.innerText = "Player 2 loses"
+	}
+	else{
+		winner.innerText = "Player 2 wins!"
+		loser.innerText = "Player 1 loses"
+	}
 }
 
 export function checkLost(generalData: GeneralData, ballData: BallData, AIData: AIData, PowerUpData: PowerUpType | null, data: GameInfo, player1: Player, player2: Player, width: number): boolean {
