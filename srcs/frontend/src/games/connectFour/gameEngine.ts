@@ -107,16 +107,33 @@ export	function clearGame(player1: Player, player2: Player, columnList: HTMLElem
 }
 
 export function insertDivWinner(player1: Player, player2: Player, columnList: HTMLElement[]): void {
-		const winner = document.getElementById("winner");
-		const playerWinner = player1.winner ? `${player1.color}` : `${player2.color}`;
-		const player = player1.winner ? "Player 1" : "Player 2";
-		if (winner){
-			winner.classList.add(playerWinner);
-			winner.style.display = "block";
-			winner.innerHTML = `¡Player <span>${player}</span> wins!`;
-		}
-        console.log("Player: ", player, " wins.");
-		disableClicks(columnList);
+    const endGame = document.getElementById("endGame");
+    if (!endGame){
+        console.error("endGame element not found.");
+        return ;
+    }
+    endGame.style.display = 'flex';
+
+    const winner = document.getElementById("win");
+	if (!winner){
+		console.error("win element not found.");
+		return ;
+	}
+	const loser = document.getElementById("loser");
+	if (!loser){
+		console.error("loser element not found.");
+		return ;
+	}
+    const win =  player1.winner ? "Player 1" : "Player 2";
+    if (win == "Player 1"){
+		winner.innerText = "Player 1 wins!"
+		loser.innerText = "Player 2 loses"
+	}
+	else{
+		winner.innerText = "Player 2 wins!"
+		loser.innerText = "Player 1 loses"
+	}
+    disableClicks(columnList);
 }
 
 export function insertDivDraw(columnList: HTMLElement[]): void {

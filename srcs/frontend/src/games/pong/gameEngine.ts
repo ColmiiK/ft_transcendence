@@ -105,9 +105,9 @@ export function resetBall(generalData: GeneralData, ballData: BallData, player1:
 }
 
 export function insertWinner(win: string){
-	const endPong = document.getElementById("endPong");
-	if (!endPong){
-		console.error("endPong element not found.");
+	const endGame = document.getElementById("endGame");
+	if (!endGame){
+		console.error("endGame element not found.");
 		return ;
 	}
 	const gameEl = document.getElementById('game');
@@ -121,7 +121,7 @@ export function insertWinner(win: string){
 		return Promise.resolve();
 	}
 	pauseBtn.style.display = 'none';
-	endPong.style.display = 'flex';
+	endGame.style.display = 'flex';
 	gameEl.style.animation = "mediumOpacity";
 
 	const winner = document.getElementById("win");

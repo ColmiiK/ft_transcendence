@@ -74,7 +74,7 @@
 	animation: blinkPause 1.5s infinite;
 }
 
-#endPong {
+#endGame {
 	background-color: #b06289;
 	border: white solid 2px;
 	display: none;
