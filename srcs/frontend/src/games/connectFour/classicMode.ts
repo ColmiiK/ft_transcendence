@@ -23,11 +23,11 @@ import {
 } from './gameEngine.js';
 
 
-import { Games } from "../../types.js";
+import { GameInfo } from "../../types.js";
 import { navigateTo } from "../../index.js";
 import { updateDescription } from '../../modify-profile/modify-fetch.js';
 
-export function classicMode(data: Games): void {
+export function classicMode(data: GameInfo): void {
 	class PlayerClass implements Player {
 		color: string;
 		turn: boolean = false;
@@ -43,7 +43,7 @@ export function classicMode(data: Games): void {
 	}
 
 	let player1 = new PlayerClass(false, 1, "red");
-	let player2 = new PlayerClass(data.gameMode === "ai" ? true : false, 2, "yellow");
+	let player2 = new PlayerClass(data.game_mode === "ai" ? true : false, 2, "yellow");
 
 	let gameActive: boolean = true;
 	let aiIsThinking: boolean = false;

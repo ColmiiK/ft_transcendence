@@ -4,10 +4,10 @@ import {
 	play as playEngine, stop as stopEngine, moveBall as moveBallEngine,
 } from './gameEngine.js';
 
-import { Games } from "../../types.js";
+import { GameInfo } from "../../types.js";
 import { checkLogged } from '../../index.js';
 
-export function classicPong(data: Games): void{
+export function classicPong(data: GameInfo): void{
 	const gameElement = document.getElementById('game');
 	if (!gameElement){
 		throw new Error("HTML 'game' element not found.");
@@ -61,7 +61,7 @@ export function classicPong(data: Games): void{
         targetY: 0,
         timeToReach: 0,
         errorRate: 0,
-        activate: data.gameMode === "ai" ? true : false,
+        activate: data.game_mode === "ai" ? true : false,
         controlAI: null
     };
 

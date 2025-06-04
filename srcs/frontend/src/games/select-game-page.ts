@@ -3,7 +3,7 @@ import { navigateTo } from "../index.js";
 import { sendRequest } from "../login-page/login-fetch.js";
 import { googleSignIn } from "../login-page/login-page.js";
 import { showAlert } from "../toast-alert/toast-alert.js";
-import { GamePlayer, Scheduled } from "../types.js"
+import { GamePlayer, Scheduled, GameInfo } from "../types.js"
 let count = 1;
 let lastClickedMode: string;
 
@@ -55,10 +55,22 @@ export async function initSelectPageEvent(){
         throw new Error(msg);
     const username = localStorage.getItem("username");
     if (!classicForm || !customForm || !username) { return ; }
+
+    // It validates automatically the game, navigating to the route
+    let gameInfo: GameInfo = {
+      game_mode: lastClickedMode,
+      is_custom: false,
+      first_player_alias: username,
+      second_player_alias: data.username,
+      match_id: null,
+    };
+
     if (!classicForm.classList.contains('hidden'))
-      navigateTo(`/${lastClickedMode}`, { gameMode: lastClickedMode, isCustom: false, first_user_alias: username, second_user_alias: data.username });
-    else if (!customForm.classList.contains('hidden'))
-      navigateTo(`/${lastClickedMode}`, { gameMode: lastClickedMode, isCustom: true, first_user_alias: username, second_user_alias: data.username });
+      navigateTo(`/${lastClickedMode}`, gameInfo);
+    else if (!customForm.classList.contains('hidden')) {
+      gameInfo.is_custom = true;
+      navigateTo(`/${lastClickedMode}`, gameInfo);
+    }
     else
       addPlayer(data.username, true);
 	}
@@ -105,10 +117,19 @@ function goToMatch(match: Scheduled) {
     showAlert('You are not the host of this match', 'toast-error');
     return;
   }
+
+  let gameInfo: GameInfo = {
+    game_mode: match.game_type,
+    is_custom: !match.custom_mode.includes('classic'),
+    first_player_alias: match.first_player_alias,
+    second_player_alias: match.second_player_alias,
+    match_id: match.match_id,
+  };
+
   if (match.game_type === 'pong')
-    navigateTo("/pong", { gameMode: 'local', isCustom: !match.custom_mode.includes('classic') });
+    navigateTo("/pong", gameInfo);
   else
-    navigateTo("/4inrow", { gameMode: 'local', isCustom: !match.custom_mode.includes('classic') });
+    navigateTo("/4inrow", gameInfo);
 }
 
 async function checkExistingTournament() {
@@ -265,10 +286,18 @@ function showGameOptions(game: string) {
       
       const mode = target.getAttribute('data-mode');
       if (mode && game) {
+        let gameInfo: GameInfo = {
+          game_mode: mode,
+          is_custom: mode.includes('custom'),
+          first_player_alias: username ? username : 'Default',
+          second_player_alias: 'bot-as',
+          match_id: null,
+        };
+
         if (game === "pong")
-          navigateTo("/pong", { gameMode: mode, isCustom: mode.includes('custom') });
+          navigateTo("/pong", gameInfo);
         else if (game === "connect")
-          navigateTo("/4inrow", { gameMode: mode, isCustom: mode.includes('custom') });
+          navigateTo("/4inrow", gameInfo);
       }
     });
   });
@@ -340,10 +369,19 @@ async function validateGame(gameType: string, mode: string) {
       if (msg !== '')
         throw new Error(msg);
 
+    const hostName = localStorage.getItem('username');
+    let gameInfo: GameInfo = {
+      game_mode: mode,
+      is_custom: mode.includes('custom'),
+      first_player_alias: hostName ? hostName : 'Default',
+      second_player_alias: playerName,
+      match_id: null,
+    };
+
     if (gameType === "pong")
-      navigateTo("/pong", { gameMode: mode, isCustom: mode.includes('custom') });
+      navigateTo("/pong", gameInfo);
     else if (gameType === "connect")
-      navigateTo("/4inrow", { gameMode: mode, isCustom: mode.includes('custom') });
+      navigateTo("/4inrow", gameInfo);
     
   }
   catch (error) {
@@ -399,10 +437,6 @@ async function startTournament() {
       }
     }
     if (!gameMode) { throw new Error('Select a Game Mode'); }
-    
-    console.log("Tournament title:", tournamentTitle.value);
-    console.log("Game Mode of the Tournament:", gameMode);
-    console.log("Starting tournament with players:", playersObject);
 
     const response = await sendRequest('POST', '/tournaments', {name: tournamentTitle.value, game_type: gameMode, users: playersObject});
     if (!response)

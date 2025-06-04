@@ -1,7 +1,7 @@
 import { navigateTo } from "../index.js";
 import { sendRequest } from "../login-page/login-fetch.js";
 import { showAlert } from "../toast-alert/toast-alert.js";
-import { Tournament, Match } from "../types.js";
+import { Tournament, Match, GameInfo } from "../types.js";
 
 export async function initTournamentFetches() {
 	try {
@@ -11,6 +11,8 @@ export async function initTournamentFetches() {
 		const response = await sendRequest('GET', `/tournaments/${data.id}`) as Tournament;
 		if (!response)
 			throw new Error('Error while fetching current tournament');
+
+		console.log('Info Torneo:', response);
 
 		const tournamentTitle = document.getElementById('tournament-title') as HTMLSpanElement;
 		if (tournamentTitle) { tournamentTitle.innerText = response.name };
@@ -43,18 +45,28 @@ export async function initTournamentFetches() {
 
 function nextMatch(gameType: string, matches: Match[]) {
 	const nextMatch = matches.find((match: Match) => !match.played_at);
-	// Send id of the game and players names
 	if (!nextMatch) { return ; }
+	let gameInfo: GameInfo = {
+		game_mode: gameType,
+		is_custom: gameType.includes('custom'),
+		match_id: nextMatch.match_id,
+		first_player_alias: nextMatch.first_player_alias,
+		second_player_alias: nextMatch.second_player_alias,
+	};
+
 	if (gameType.includes('pong'))
-      navigateTo("/pong", { gameMode: gameType, isCustom: gameType.includes('custom') });
+      navigateTo("/pong", gameInfo );
     else if (gameType.includes('connect'))
-      navigateTo("/4inrow", { gameMode: gameType, isCustom: gameType.includes('custom') });	
+      navigateTo("/4inrow", gameInfo );	
 }
 
 async function cancelTournament(tournamentId: number) {
 	if (!tournamentId) { return ; }
 	try {
-		
+		const response = await sendRequest('PATCH', '/tournaments/end', { tournament_id: tournamentId });
+		if (!response || response['error'])
+			throw new Error('Problem cancelling the tournament')
+		showAlert('Tournament cancelled successfully', 'toast-success');
 	}
 	catch (error) {
 		showAlert((error as Error).message, "toast-error");
