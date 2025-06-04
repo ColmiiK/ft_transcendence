@@ -223,6 +223,8 @@ db.serialize(() => {
       console.log("Message table ready.");
     },
   );
+  db.run(`CREATE INDEX IF NOT EXISTS idx_messages_chat_sent_id ON messages(chat_id, sent_at DESC, id DESC)`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_chats_users ON chats(first_user_id, second_user_id)`);
 });
 
 export default db;

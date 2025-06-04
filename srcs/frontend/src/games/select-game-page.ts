@@ -112,7 +112,6 @@ async function chargeReadyToPlay() {
 }
 
 function goToMatch(match: Scheduled) {
-  console.log("Seleccionando partida", match.match_id, match.first_player_alias, match.second_player_alias, match.game_type, match.custom_mode);
   if (localStorage.getItem("username") !== match.host) {
     showAlert('You are not the host of this match', 'toast-error');
     return;
@@ -138,7 +137,6 @@ async function checkExistingTournament() {
   if (!createTournament || !viewTournament) { return ; }
   try {
     const response = await sendRequest('GET', '/tournaments/current');
-    console.log('response:', response);
     if (!response)
       return ;
     else {

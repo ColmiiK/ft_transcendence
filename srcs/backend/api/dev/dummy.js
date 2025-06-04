@@ -194,69 +194,70 @@ export async function createDebug() {
       second_user_id: qux2.id,
     });
 
-    console.log(`Creating messages...`);
-    for (let i = 1; i < 50; i++) {
-      await createMessage({
-        sender_id: foo.id,
-        receiver_id: foo2.id,
-        chat_id: foo_foo2_chat.id,
-        body: `Test message from ${foo.username} to ${foo2.username} number ${i}`,
-      });
-      await createMessage({
-        sender_id: foo2.id,
-        receiver_id: foo.id,
-        chat_id: foo_foo2_chat.id,
-        body: `Test message from ${foo2.username} to ${foo.username} number ${i}`,
-      });
-      await createMessage({
-        sender_id: bar.id,
-        receiver_id: bar2.id,
-        chat_id: bar_bar2_chat.id,
-        body: `Test message from ${bar.username} to ${bar2.username} number ${i}`,
-      });
-      await createMessage({
-        sender_id: bar.id,
-        receiver_id: foo.id,
-        chat_id: bar_foo_chat.id,
-        body: `Test message from ${bar.username} to ${foo.username} number ${i}`,
-      });
-      await createMessage({
-        sender_id: bar.id,
-        receiver_id: baz.id,
-        chat_id: bar_baz_chat.id,
-        body: `Test message from ${bar.username} to ${baz.username} number ${i}`,
-      });
-      await createMessage({
-        sender_id: bar2.id,
-        receiver_id: bar.id,
-        chat_id: bar_bar2_chat.id,
-        body: `Test message from ${bar2.username} to ${bar.username} number ${i}`,
-      });
-      await createMessage({
-        sender_id: baz.id,
-        receiver_id: baz2.id,
-        chat_id: baz_baz2_chat.id,
-        body: `Test message from ${baz.username} to ${baz2.username} number ${i}`,
-      });
-      await createMessage({
-        sender_id: baz2.id,
-        receiver_id: baz.id,
-        chat_id: baz_baz2_chat.id,
-        body: `Test message from ${baz2.username} to ${baz.username} number ${i}`,
-      });
-      await createMessage({
-        sender_id: qux.id,
-        receiver_id: qux2.id,
-        chat_id: qux_qux2_chat.id,
-        body: `Test message from ${qux.username} to ${qux2.username} number ${i}`,
-      });
-      await createMessage({
-        sender_id: qux2.id,
-        receiver_id: qux.id,
-        chat_id: qux_qux2_chat.id,
-        body: `Test message from ${qux2.username} to ${qux.username} number ${i}`,
-      });
-    }
+    // console.log(`Creating messages...`);
+    // for (let i = 1; i < 3000; i++) {
+    //   console.log(i);
+    //   await createMessage({
+    //     sender_id: foo.id,
+    //     receiver_id: foo2.id,
+    //     chat_id: foo_foo2_chat.id,
+    //     body: `Test message from ${foo.username} to ${foo2.username} number ${i}`,
+    //   });
+      // await createMessage({
+      //   sender_id: foo2.id,
+      //   receiver_id: foo.id,
+      //   chat_id: foo_foo2_chat.id,
+      //   body: `Test message from ${foo2.username} to ${foo.username} number ${i}`,
+      // });
+      // await createMessage({
+      //   sender_id: bar.id,
+      //   receiver_id: bar2.id,
+      //   chat_id: bar_bar2_chat.id,
+      //   body: `Test message from ${bar.username} to ${bar2.username} number ${i}`,
+      // });
+      // await createMessage({
+      //   sender_id: bar.id,
+      //   receiver_id: foo.id,
+      //   chat_id: bar_foo_chat.id,
+      //   body: `Test message from ${bar.username} to ${foo.username} number ${i}`,
+      // });
+      // await createMessage({
+      //   sender_id: bar.id,
+      //   receiver_id: baz.id,
+      //   chat_id: bar_baz_chat.id,
+      //   body: `Test message from ${bar.username} to ${baz.username} number ${i}`,
+      // });
+      // await createMessage({
+      //   sender_id: bar2.id,
+      //   receiver_id: bar.id,
+      //   chat_id: bar_bar2_chat.id,
+      //   body: `Test message from ${bar2.username} to ${bar.username} number ${i}`,
+      // });
+      // await createMessage({
+      //   sender_id: baz.id,
+      //   receiver_id: baz2.id,
+      //   chat_id: baz_baz2_chat.id,
+      //   body: `Test message from ${baz.username} to ${baz2.username} number ${i}`,
+      // });
+      // await createMessage({
+      //   sender_id: baz2.id,
+      //   receiver_id: baz.id,
+      //   chat_id: baz_baz2_chat.id,
+      //   body: `Test message from ${baz2.username} to ${baz.username} number ${i}`,
+      // });
+      // await createMessage({
+      //   sender_id: qux.id,
+      //   receiver_id: qux2.id,
+      //   chat_id: qux_qux2_chat.id,
+      //   body: `Test message from ${qux.username} to ${qux2.username} number ${i}`,
+      // });
+      // await createMessage({
+      //   sender_id: qux2.id,
+      //   receiver_id: qux.id,
+      //   chat_id: qux_qux2_chat.id,
+      //   body: `Test message from ${qux2.username} to ${qux.username} number ${i}`,
+      // });
+    // }
     await createTestTournament(foo, "Test Tournament 1", "classic-pong", [
       foo.username,
       bar.username,
@@ -272,272 +273,272 @@ export async function createDebug() {
     // await createTestTournament("Test Tournament 2", bar, foo, qux, baz);
     // await createTestTournament("Test Tournament 3", qux, bar, foo, baz);
 
-    console.log("Creating offline matches...");
-    for (let i = 0; i < 5; i++) {
-      createMatchOffline({
-        game_type: "pong",
-        custom_mode: "classic",
-        userId: foo.id,
-        first_player_score: 10,
-        second_player_score: 5,
-        winner_id: foo.id,
-        loser_id: null,
-        rival_alias: "Invited_user",
-        host: foo.username,
-      });
-      createMatchOffline({
-        game_type: "pong",
-        custom_mode: "classic",
-        userId: foo.id,
-        first_player_score: 3,
-        second_player_score: 10,
-        winner_id: null,
-        loser_id: foo.id,
-        rival_alias: "Invited_user",
-        host: foo.username,
-      });
-      createMatchOffline({
-        game_type: "pong",
-        custom_mode: "classic",
-        userId: bar.id,
-        first_player_score: 10,
-        second_player_score: 5,
-        winner_id: bar.id,
-        loser_id: null,
-        rival_alias: "Invited_user",
-        host: bar.username,
-      });
-      createMatchOffline({
-        game_type: "pong",
-        custom_mode: "classic",
-        userId: bar.id,
-        first_player_score: 3,
-        second_player_score: 10,
-        winner_id: null,
-        loser_id: bar.id,
-        rival_alias: "Invited_user",
-        host: bar.username,
-      });
-      createMatchOffline({
-        game_type: "pong",
-        custom_mode: "classic",
-        userId: baz.id,
-        first_player_score: 10,
-        second_player_score: 5,
-        winner_id: baz.id,
-        loser_id: null,
-        rival_alias: "Invited_user",
-        host: baz.username,
-      });
-      createMatchOffline({
-        game_type: "pong",
-        custom_mode: "classic",
-        userId: baz.id,
-        first_player_score: 3,
-        second_player_score: 10,
-        winner_id: null,
-        loser_id: baz.id,
-        rival_alias: "Invited_user",
-        host: baz.username,
-      });
-      createMatchOffline({
-        game_type: "pong",
-        custom_mode: "classic",
-        userId: qux.id,
-        first_player_score: 10,
-        second_player_score: 5,
-        winner_id: qux.id,
-        loser_id: null,
-        rival_alias: "Invited_user",
-        host: qux.username,
-      });
-      createMatchOffline({
-        game_type: "pong",
-        custom_mode: "classic",
-        userId: qux.id,
-        first_player_score: 3,
-        second_player_score: 10,
-        winner_id: null,
-        loser_id: qux.id,
-        rival_alias: "Invited_user",
-        host: qux.username,
-      });
-      //
-      createMatchOffline({
-        game_type: "connect_four",
-        custom_mode: "classic",
-        userId: foo.id,
-        first_player_score: 1,
-        second_player_score: 0,
-        winner_id: foo.id,
-        loser_id: null,
-        rival_alias: "Invited_user",
-        host: foo.username,
-      });
-      createMatchOffline({
-        game_type: "connect_four",
-        custom_mode: "classic",
-        userId: foo.id,
-        first_player_score: 0,
-        second_player_score: 1,
-        winner_id: null,
-        loser_id: foo.id,
-        rival_alias: "Invited_user",
-        host: foo.username,
-      });
-      createMatchOffline({
-        game_type: "connect_four",
-        custom_mode: "classic",
-        userId: bar.id,
-        first_player_score: 1,
-        second_player_score: 0,
-        winner_id: bar.id,
-        loser_id: null,
-        rival_alias: "Invited_user",
-        host: bar.username,
-      });
-      createMatchOffline({
-        game_type: "connect_four",
-        custom_mode: "classic",
-        userId: bar.id,
-        first_player_score: 0,
-        second_player_score: 1,
-        winner_id: null,
-        loser_id: bar.id,
-        rival_alias: "Invited_user",
-        host: bar.username,
-      });
-      createMatchOffline({
-        game_type: "connect_four",
-        custom_mode: "classic",
-        userId: baz.id,
-        first_player_score: 1,
-        second_player_score: 0,
-        winner_id: baz.id,
-        loser_id: null,
-        rival_alias: "Invited_user",
-        host: baz.username,
-      });
-      createMatchOffline({
-        game_type: "connect_four",
-        custom_mode: "classic",
-        userId: baz.id,
-        first_player_score: 0,
-        second_player_score: 1,
-        winner_id: null,
-        loser_id: baz.id,
-        rival_alias: "Invited_user",
-        host: baz.username,
-      });
-      createMatchOffline({
-        game_type: "connect_four",
-        custom_mode: "classic",
-        userId: qux.id,
-        first_player_score: 1,
-        second_player_score: 0,
-        winner_id: qux.id,
-        loser_id: null,
-        rival_alias: "Invited_user",
-        host: qux.username,
-      });
-      createMatchOffline({
-        game_type: "connect_four",
-        custom_mode: "classic",
-        userId: qux.id,
-        first_player_score: 0,
-        second_player_score: 1,
-        winner_id: null,
-        loser_id: qux.id,
-        rival_alias: "Invited_user",
-        host: qux.username,
-      });
-    }
-    console.log("Creating online matches...");
-    for (let i = 0; i < 5; i++) {
-      let match;
-      match = await createMatch({
-        game_type: "pong",
-        custom_mode: "custom",
-        first_player_id: foo.id,
-        first_player_alias: foo.username,
-        second_player_id: bar.id,
-        second_player_alias: bar.alias,
-        host: foo.username,
-      });
-      await finishMatch(match, 10, 5);
-      match = await createMatch({
-        game_type: "pong",
-        custom_mode: "custom",
-        first_player_id: foo.id,
-        first_player_alias: foo.username,
-        second_player_id: bar.id,
-        second_player_alias: bar.alias,
-        host: foo.username,
-      });
-      await finishMatch(match, 6, 10);
-      match = await createMatch({
-        game_type: "pong",
-        custom_mode: "custom",
-        first_player_id: baz.id,
-        first_player_alias: baz.username,
-        second_player_id: qux.id,
-        second_player_alias: qux.alias,
-        host: baz.username,
-      });
-      await finishMatch(match, 10, 5);
-      match = await createMatch({
-        game_type: "pong",
-        custom_mode: "custom",
-        first_player_id: baz.id,
-        first_player_alias: baz.username,
-        second_player_id: qux.id,
-        second_player_alias: qux.alias,
-        host: baz.username,
-      });
-      await finishMatch(match, 6, 10);
-    }
-    for (let i = 0; i < 5; i++) {
-      let match;
-      match = await createMatch({
-        game_type: "connect_four",
-        custom_mode: "custom",
-        first_player_id: foo.id,
-        first_player_alias: foo.username,
-        second_player_id: bar.id,
-        second_player_alias: bar.alias,
-        host: foo.username,
-      });
-      await finishMatch(match, 1, 0);
-      match = await createMatch({
-        game_type: "connect_four",
-        custom_mode: "custom",
-        first_player_id: foo.id,
-        first_player_alias: foo.username,
-        second_player_id: bar.id,
-        second_player_alias: bar.alias,
-        host: foo.username,
-      });
-      await finishMatch(match, 0, 1);
-      match = await createMatch({
-        game_type: "connect_four",
-        custom_mode: "custom",
-        first_player_id: baz.id,
-        first_player_alias: baz.username,
-        second_player_id: qux.id,
-        second_player_alias: qux.alias,
-        host: baz.username,
-      });
-      await finishMatch(match, 0, 1);
-      match = await createMatch({
-        game_type: "connect_four",
-        custom_mode: "custom",
-        first_player_id: baz.id,
-        first_player_alias: baz.username,
-        second_player_id: qux.id,
-        second_player_alias: qux.alias,
-        host: baz.username,
-      });
-      await finishMatch(match, 1, 0);
-    }
+    // console.log("Creating offline matches...");
+    // for (let i = 0; i < 5; i++) {
+    //   createMatchOffline({
+    //     game_type: "pong",
+    //     custom_mode: "classic",
+    //     userId: foo.id,
+    //     first_player_score: 10,
+    //     second_player_score: 5,
+    //     winner_id: foo.id,
+    //     loser_id: null,
+    //     rival_alias: "Invited_user",
+    //     host: foo.username,
+    //   });
+    //   createMatchOffline({
+    //     game_type: "pong",
+    //     custom_mode: "classic",
+    //     userId: foo.id,
+    //     first_player_score: 3,
+    //     second_player_score: 10,
+    //     winner_id: null,
+    //     loser_id: foo.id,
+    //     rival_alias: "Invited_user",
+    //     host: foo.username,
+    //   });
+    //   createMatchOffline({
+    //     game_type: "pong",
+    //     custom_mode: "classic",
+    //     userId: bar.id,
+    //     first_player_score: 10,
+    //     second_player_score: 5,
+    //     winner_id: bar.id,
+    //     loser_id: null,
+    //     rival_alias: "Invited_user",
+    //     host: bar.username,
+    //   });
+    //   createMatchOffline({
+    //     game_type: "pong",
+    //     custom_mode: "classic",
+    //     userId: bar.id,
+    //     first_player_score: 3,
+    //     second_player_score: 10,
+    //     winner_id: null,
+    //     loser_id: bar.id,
+    //     rival_alias: "Invited_user",
+    //     host: bar.username,
+    //   });
+    //   createMatchOffline({
+    //     game_type: "pong",
+    //     custom_mode: "classic",
+    //     userId: baz.id,
+    //     first_player_score: 10,
+    //     second_player_score: 5,
+    //     winner_id: baz.id,
+    //     loser_id: null,
+    //     rival_alias: "Invited_user",
+    //     host: baz.username,
+    //   });
+    //   createMatchOffline({
+    //     game_type: "pong",
+    //     custom_mode: "classic",
+    //     userId: baz.id,
+    //     first_player_score: 3,
+    //     second_player_score: 10,
+    //     winner_id: null,
+    //     loser_id: baz.id,
+    //     rival_alias: "Invited_user",
+    //     host: baz.username,
+    //   });
+    //   createMatchOffline({
+    //     game_type: "pong",
+    //     custom_mode: "classic",
+    //     userId: qux.id,
+    //     first_player_score: 10,
+    //     second_player_score: 5,
+    //     winner_id: qux.id,
+    //     loser_id: null,
+    //     rival_alias: "Invited_user",
+    //     host: qux.username,
+    //   });
+    //   createMatchOffline({
+    //     game_type: "pong",
+    //     custom_mode: "classic",
+    //     userId: qux.id,
+    //     first_player_score: 3,
+    //     second_player_score: 10,
+    //     winner_id: null,
+    //     loser_id: qux.id,
+    //     rival_alias: "Invited_user",
+    //     host: qux.username,
+    //   });
+    //   //
+    //   createMatchOffline({
+    //     game_type: "connect_four",
+    //     custom_mode: "classic",
+    //     userId: foo.id,
+    //     first_player_score: 1,
+    //     second_player_score: 0,
+    //     winner_id: foo.id,
+    //     loser_id: null,
+    //     rival_alias: "Invited_user",
+    //     host: foo.username,
+    //   });
+    //   createMatchOffline({
+    //     game_type: "connect_four",
+    //     custom_mode: "classic",
+    //     userId: foo.id,
+    //     first_player_score: 0,
+    //     second_player_score: 1,
+    //     winner_id: null,
+    //     loser_id: foo.id,
+    //     rival_alias: "Invited_user",
+    //     host: foo.username,
+    //   });
+    //   createMatchOffline({
+    //     game_type: "connect_four",
+    //     custom_mode: "classic",
+    //     userId: bar.id,
+    //     first_player_score: 1,
+    //     second_player_score: 0,
+    //     winner_id: bar.id,
+    //     loser_id: null,
+    //     rival_alias: "Invited_user",
+    //     host: bar.username,
+    //   });
+    //   createMatchOffline({
+    //     game_type: "connect_four",
+    //     custom_mode: "classic",
+    //     userId: bar.id,
+    //     first_player_score: 0,
+    //     second_player_score: 1,
+    //     winner_id: null,
+    //     loser_id: bar.id,
+    //     rival_alias: "Invited_user",
+    //     host: bar.username,
+    //   });
+    //   createMatchOffline({
+    //     game_type: "connect_four",
+    //     custom_mode: "classic",
+    //     userId: baz.id,
+    //     first_player_score: 1,
+    //     second_player_score: 0,
+    //     winner_id: baz.id,
+    //     loser_id: null,
+    //     rival_alias: "Invited_user",
+    //     host: baz.username,
+    //   });
+    //   createMatchOffline({
+    //     game_type: "connect_four",
+    //     custom_mode: "classic",
+    //     userId: baz.id,
+    //     first_player_score: 0,
+    //     second_player_score: 1,
+    //     winner_id: null,
+    //     loser_id: baz.id,
+    //     rival_alias: "Invited_user",
+    //     host: baz.username,
+    //   });
+    //   createMatchOffline({
+    //     game_type: "connect_four",
+    //     custom_mode: "classic",
+    //     userId: qux.id,
+    //     first_player_score: 1,
+    //     second_player_score: 0,
+    //     winner_id: qux.id,
+    //     loser_id: null,
+    //     rival_alias: "Invited_user",
+    //     host: qux.username,
+    //   });
+    //   createMatchOffline({
+    //     game_type: "connect_four",
+    //     custom_mode: "classic",
+    //     userId: qux.id,
+    //     first_player_score: 0,
+    //     second_player_score: 1,
+    //     winner_id: null,
+    //     loser_id: qux.id,
+    //     rival_alias: "Invited_user",
+    //     host: qux.username,
+    //   });
+    // }
+    // console.log("Creating online matches...");
+    // for (let i = 0; i < 5; i++) {
+    //   let match;
+    //   match = await createMatch({
+    //     game_type: "pong",
+    //     custom_mode: "custom",
+    //     first_player_id: foo.id,
+    //     first_player_alias: foo.username,
+    //     second_player_id: bar.id,
+    //     second_player_alias: bar.alias,
+    //     host: foo.username,
+    //   });
+    //   await finishMatch(match, 10, 5);
+    //   match = await createMatch({
+    //     game_type: "pong",
+    //     custom_mode: "custom",
+    //     first_player_id: foo.id,
+    //     first_player_alias: foo.username,
+    //     second_player_id: bar.id,
+    //     second_player_alias: bar.alias,
+    //     host: foo.username,
+    //   });
+    //   await finishMatch(match, 6, 10);
+    //   match = await createMatch({
+    //     game_type: "pong",
+    //     custom_mode: "custom",
+    //     first_player_id: baz.id,
+    //     first_player_alias: baz.username,
+    //     second_player_id: qux.id,
+    //     second_player_alias: qux.alias,
+    //     host: baz.username,
+    //   });
+    //   await finishMatch(match, 10, 5);
+    //   match = await createMatch({
+    //     game_type: "pong",
+    //     custom_mode: "custom",
+    //     first_player_id: baz.id,
+    //     first_player_alias: baz.username,
+    //     second_player_id: qux.id,
+    //     second_player_alias: qux.alias,
+    //     host: baz.username,
+    //   });
+    //   await finishMatch(match, 6, 10);
+    // }
+    // for (let i = 0; i < 5; i++) {
+    //   let match;
+    //   match = await createMatch({
+    //     game_type: "connect_four",
+    //     custom_mode: "custom",
+    //     first_player_id: foo.id,
+    //     first_player_alias: foo.username,
+    //     second_player_id: bar.id,
+    //     second_player_alias: bar.alias,
+    //     host: foo.username,
+    //   });
+    //   await finishMatch(match, 1, 0);
+    //   match = await createMatch({
+    //     game_type: "connect_four",
+    //     custom_mode: "custom",
+    //     first_player_id: foo.id,
+    //     first_player_alias: foo.username,
+    //     second_player_id: bar.id,
+    //     second_player_alias: bar.alias,
+    //     host: foo.username,
+    //   });
+    //   await finishMatch(match, 0, 1);
+    //   match = await createMatch({
+    //     game_type: "connect_four",
+    //     custom_mode: "custom",
+    //     first_player_id: baz.id,
+    //     first_player_alias: baz.username,
+    //     second_player_id: qux.id,
+    //     second_player_alias: qux.alias,
+    //     host: baz.username,
+    //   });
+    //   await finishMatch(match, 0, 1);
+    //   match = await createMatch({
+    //     game_type: "connect_four",
+    //     custom_mode: "custom",
+    //     first_player_id: baz.id,
+    //     first_player_alias: baz.username,
+    //     second_player_id: qux.id,
+    //     second_player_alias: qux.alias,
+    //     host: baz.username,
+    //   });
+    //   await finishMatch(match, 1, 0);
+    // }
   }, 4000);
 }

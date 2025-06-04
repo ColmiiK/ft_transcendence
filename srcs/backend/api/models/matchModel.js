@@ -14,22 +14,37 @@ export function createMatch(data) {
       INSERT INTO matches (
         game_type,
         custom_mode,
+        status,
         first_player_id,
         first_player_alias,
+        first_player_score,
         second_player_id,
         second_player_alias,
-        host
+        second_player_score,
+        rival_alias,
+        winner_id,
+        loser_id,
+        host,
+        is_offline,
+        played_at
       )
-      VALUES (?,?,?,?,?,?,?)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?, datetime('now', '+2 hours', 'subsec'))
     `;
     const params = [
-      data.game_type,
+      data.game,
       data.custom_mode,
+      "finished",
       data.first_player_id,
       data.first_player_alias,
+      data.first_player_score,
       data.second_player_id,
       data.second_player_alias,
-      data.host,
+      data.second_player_score,
+      data.second_player_alias,
+      data.winner_id,
+      data.loser_id,
+      data.first_player_alias,
+      data.is_offline,
     ];
     db.run(sql, params, function (err) {
       if (err) {
@@ -38,12 +53,18 @@ export function createMatch(data) {
       }
       resolve({
         id: this.lastID,
-        game_type: data.game_type,
+        game: data.game,
+        custom_mode: data.custom_mode,
+        status: "finished",
         first_player_id: data.first_player_id,
         first_player_alias: data.first_player_alias,
+        first_player_score: data.first_player_score,
         second_player_id: data.second_player_id,
         second_player_alias: data.second_player_alias,
-        host: data.host,
+        second_player_score: data.second_player_score,
+        winner_id: data.winner_id,
+        loser_id: data.loser_id,
+        first_player_alias: data.first_player_alias,
       });
     });
   });
@@ -424,6 +445,7 @@ export function getMatchesGeneralStats(user_id, type) {
         AND custom_mode = 'classic'
         AND status = 'finished'
         AND game_type = ?
+        AND tournament_id = 0
       `;
 
     const customGamesQuery = `
@@ -433,6 +455,7 @@ export function getMatchesGeneralStats(user_id, type) {
         AND custom_mode != 'classic'
         AND status = 'finished'
         AND game_type = ?
+        AND tournament_id = 0
       `;
 
     const lastTenGamesQuery = `
@@ -449,6 +472,7 @@ export function getMatchesGeneralStats(user_id, type) {
           WHERE (first_player_id = ? OR second_player_id = ?)
           AND status = 'finished'
           AND game_type = ?
+          AND tournament_id = 0
           ORDER BY played_at DESC
           LIMIT 10
         ) AS recent_matches
@@ -593,5 +617,32 @@ export function cancelTournamentMatches(tournament) {
   tournament.tournament_matches.forEach((match) => {
     if (match.match_status === "scheduled")
       patchMatch(match.match_id, { status: "cancelled" });
+  });
+}
+
+/**
+ * Returns true or false if the match is in a tournament
+ * @param {Number} match_id - ID of the match
+ * @returns {Boolean} - True or false if it is in a tournament, null if there is no match
+ */
+export function getMatchInTournament(match_id) {
+  assert(match_id !== undefined, "match_id must exist");
+  return new Promise((resolve, reject) => {
+    const sql = `
+      SELECT
+        tournament_id
+      FROM
+        matches
+      WHERE
+        id = $match_id
+    `;
+    db.get(sql, { $match_id: match_id }, function (err, row) {
+      if (err) {
+        console.error("Error getting matches:", err.message);
+        return reject(err);
+      }
+      if (!row) return resolve(null);
+      resolve(row.tournament_id !== null);
+    });
   });
 }
