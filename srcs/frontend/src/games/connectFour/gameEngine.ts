@@ -143,11 +143,19 @@ export function insertDivWinner(player1: Player, player2: Player, columnList: HT
 }
 
 export function insertDivDraw(columnList: HTMLElement[]): void {
-	const draw = document.getElementById("draw");
-	if (!draw) return;
+	const draw = document.getElementById("endGameDraw");
+	if (!draw){
+        console.error("endGameDraw element not found.");
+        return ;
+    }
 
-	draw.innerText = `¡Draw!`;
-	draw.style.display = "block";
+    const gamesCard = document.getElementById("gamesCard");
+    if (!gamesCard){
+        console.error("gamesCard element not found.");
+        return ;
+    }
+    gamesCard.style.display = 'flex';
+	draw.style.display = "inline-flex";
 	disableClicks(columnList);
 }
 

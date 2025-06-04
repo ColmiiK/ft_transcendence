@@ -264,7 +264,7 @@ export function classicPong(data: GameInfo): void{
 		await pauseGame(generalData, ballData, null);
 	})
 
-	document.getElementById('end-button')?.addEventListener('click', async () => {
+	document.getElementById('exit-end')?.addEventListener('click', async () => {
 		await exitGame("classic", player1, player2, null)
 	});
 

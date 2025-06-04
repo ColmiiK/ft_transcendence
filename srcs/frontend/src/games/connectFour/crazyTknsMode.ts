@@ -113,13 +113,11 @@ export function crazyTokensMode(data: GameInfo): void {
 			disableClicks();
 		}
 		const pauseBtn = document.getElementById('pauseGame')
-		if (!pauseBtn){
-			console.error("pauseGame element not found.")
-			return false;
-		}
-		pauseBtn.style.display = 'none';
-		const cnt = document.getElementById("continue");
-		if (cnt) cnt.style.display = "none";
+		if (pauseBtn) pauseBtn.style.display = 'none';
+
+        const exitBtn = document.getElementById('exitGame')
+		if (exitBtn) exitBtn.style.display = 'none';
+
         updateData(data, player1, player2)
 		return true;
 	}
@@ -827,7 +825,12 @@ export function crazyTokensMode(data: GameInfo): void {
         await pauseGame();
     })
 
-    document.getElementById('end-button')?.addEventListener('click', async () => {
+	document.getElementById('exit-end')?.addEventListener('click', async () => {
+        clearGame();
+        navigateTo("/games");
+    });
+
+	document.getElementById('draw-end')?.addEventListener('click', async () => {
         clearGame();
         navigateTo("/games");
     });

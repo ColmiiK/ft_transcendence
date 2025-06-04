@@ -756,7 +756,7 @@ export function chaosPong(data: GameInfo): void {
         await pauseGame(generalData, ballData, powerUpData);
     });
 
-    document.getElementById('end-button')?.addEventListener('click', async () => {
+    document.getElementById('exit-end')?.addEventListener('click', async () => {
         await exitGame("custom", player1, player2, powerUpData)
     });
 

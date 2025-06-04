@@ -97,7 +97,7 @@
 	font-size: clamp(0.20rem, 2.5vw, 2rem);
 }
 
-#end-button {
+.end-button {
 	background-color: #54184D;
 	width: fit-content;
     height: fit-content;

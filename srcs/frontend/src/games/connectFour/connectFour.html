@@ -63,8 +63,6 @@
 					<div id="c71" class="cell"></div>
 				</div>
 			</div>
-			<div id="winner"></div>
-			<div id="draw"></div>
 			<div id="pauseConnect">PAUSE</div>
 			<div id="returnToGamesConnect">
 				<p>Are you sure? Pussy.</p>
@@ -92,6 +90,13 @@
 			<p id="loser" class="end-paragraph"></p>
 			<img class="end-img" src="../../../resources/img/loser_cat.png" />
 		</div>
-		<button id="end-button">Exit</button>
+		<button class="end-button" id="exit-end">Exit</button>
+	</div>
+	<div id="endGameDraw" class="flex flex-col p-4 rounded-[15px] gap-4">
+		<div id="endDraw" class="flex flex-col w-full lg:flex-row gap-4 items-center justify-center">
+			<img class="end-img" src="../../../resources/img/winner_cat.png" />
+			<p class="end-paragraph">Whoaah a tie!</p>
+		</div>
+		<button class="end-button" id="draw-end">Exit</button>
 	</div>
 </div>

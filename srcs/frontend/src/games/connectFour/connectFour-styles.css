@@ -18,6 +18,12 @@
     opacity: 80%;
 }
 
+#endGameDraw {
+    display: none;
+    background-color: #b06289;
+	border: white solid 2px;
+}
+
 #gamesCard {
     display: none;
 }

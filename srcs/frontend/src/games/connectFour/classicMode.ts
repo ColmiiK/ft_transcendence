@@ -106,9 +106,6 @@ export function classicMode(data: GameInfo): void {
 		const exitBtn = document.getElementById('exitGame')
 		if (exitBtn) exitBtn.style.display = 'none';
 
-		const cnt = document.getElementById("continue");
-		if (cnt) cnt.style.display = "none";
-
 		updateData(data, player1, player2);
 		return true;
 	}
@@ -276,7 +273,12 @@ export function classicMode(data: GameInfo): void {
 		await pauseGame();
 	})
 
-	document.getElementById('end-button')?.addEventListener('click', async () => {
+	document.getElementById('exit-end')?.addEventListener('click', async () => {
+        clearGame();
+        navigateTo("/games");
+    });
+
+	document.getElementById('draw-end')?.addEventListener('click', async () => {
         clearGame();
         navigateTo("/games");
     });
