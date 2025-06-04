@@ -103,6 +103,9 @@ export function classicMode(data: GameInfo): void {
 		const pauseBtn = document.getElementById('pauseGame')
 		if (pauseBtn) pauseBtn.style.display = 'none';
 
+		const exitBtn = document.getElementById('exitGame')
+		if (exitBtn) exitBtn.style.display = 'none';
+
 		const cnt = document.getElementById("continue");
 		if (cnt) cnt.style.display = "none";
 

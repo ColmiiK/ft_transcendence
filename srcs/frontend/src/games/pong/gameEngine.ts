@@ -110,6 +110,11 @@ export function insertWinner(win: string){
 		console.error("endGame element not found.");
 		return ;
 	}
+	const gamesCard = document.getElementById("gamesCard");
+    if (!gamesCard){
+        console.error("gamesCard element not found.");
+        return ;
+    }
 	const gameEl = document.getElementById('game');
 	if (!gameEl){
 		console.error("game element not found.")
@@ -120,8 +125,15 @@ export function insertWinner(win: string){
 		console.error("pauseGame element not found.")
 		return Promise.resolve();
 	}
+	const exitBtn = document.getElementById('exitGame')
+	if (!exitBtn){
+		console.error("exitGame element not found.")
+		return Promise.resolve();
+	}
+	exitBtn.style.display = 'none';
 	pauseBtn.style.display = 'none';
 	endGame.style.display = 'flex';
+	gamesCard.style.display = 'flex';
 	gameEl.style.animation = "mediumOpacity";
 
 	const winner = document.getElementById("win");

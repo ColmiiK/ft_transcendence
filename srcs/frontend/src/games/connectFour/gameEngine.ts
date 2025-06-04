@@ -112,6 +112,12 @@ export function insertDivWinner(player1: Player, player2: Player, columnList: HT
         console.error("endGame element not found.");
         return ;
     }
+    const gamesCard = document.getElementById("gamesCard");
+    if (!gamesCard){
+        console.error("gamesCard element not found.");
+        return ;
+    }
+    gamesCard.style.display = 'flex';
     endGame.style.display = 'flex';
 
     const winner = document.getElementById("win");

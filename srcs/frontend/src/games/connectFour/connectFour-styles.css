@@ -18,6 +18,10 @@
     opacity: 80%;
 }
 
+#gamesCard {
+    display: none;
+}
+
 #pauseConnect {
     position: absolute;
     transform: translate(-50%, -50%);
