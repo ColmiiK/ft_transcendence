@@ -203,7 +203,7 @@ async function displayFirstChat(data: MessageObject) {
 	// Opens the most recent chat when navigated to messages page
 	try {
 		const recentChats = await sendRequest('GET', 'chats/last');
-		//console.log(recentChats)
+    console.log('recentChats:', recentChats)
 		if (!recentChats)
 			throw new Error("Error displaying the first chat");
 
@@ -496,7 +496,7 @@ export async function chargeChat(chat_id: number, friend_username: string, frien
 				chatDiv.scrollTop = chatDiv.scrollHeight;
 			}
 			actual_chat_id = chat_id;
-			await setupInfiniteScroll();
+			setupInfiniteScroll();
 			return chatHistoryTyped.length === 20;
 		} catch (error) {
 			console.error(error);
