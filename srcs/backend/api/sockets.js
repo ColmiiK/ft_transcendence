@@ -1,16 +1,13 @@
 import { getChatBetweenUsers } from "./models/chatModel.js";
 import { scheduleMatch } from "./models/matchModel.js";
 import { createMessage } from "./models/messageModel.js";
-import { addParticipantToTournament, addInvitationToTournament, modifyInvitationToTournament, createTournament, isInvited, getTournamentByID } from "./models/tournamentModel.js";
 import { getUsername, isBlocked, patchUser } from "./models/userModel.js";
 import { asyncWebSocketHandler } from "./utils.js";
 
 const socketsChat = new Map();
 const socketsToast = new Map();
-const socketsTournament = new Map();
 
 async function messageInChat(data, userId) {
-	console.log(data);
 	let username = await getUsername(data.sender_id);
 	let receiver_username = await getUsername(data.receiver_id);
 	if (await isBlocked(data.sender_id, data.receiver_id) === false && await isBlocked(data.receiver_id, data.sender_id) === false && receiver_username !== "anonymous") {
@@ -47,7 +44,7 @@ async function messageInChat(data, userId) {
 				else if (!socketsChat.has(receiver_id) && socketsToast.has(receiver_id))
 					toastReceiver.send(JSON.stringify({ type: "chatToast", body: `You have a message from ${username}` }))
 			}
-			else if (data.type === "game") { //Auto rechazar la invitacion si se hacen multiples en el mismo chat
+			else if (data.type === "game") {
 				const receiver_id = parseInt(data.receiver_id);
 				if (data.info === "request") {
 					const invitation = await createMessage({
