@@ -1,7 +1,7 @@
 <div class="screen-set">
 	<div class="standard-purple-card min-h-[80vh] flex flex-col">
 		<header class="flex justify-between items-center md:items-end mx-4">
-		<h1 class="hidden lg:flex">Tournament</h1>
+		<h1 class="hidden lg:flex" translatekey="tournament_page">Tournament</h1>
 		<svg id="home-button" class="home-icon m-4 h-10 w-5 cursor-pointer" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FEE0EF">
         	<path d="M640-80 240-480l400-400 71 71-329 329 329 329-71 71Z" />
 		</svg>
@@ -15,58 +15,58 @@
 				<section id="body-section" class="flex flex-1 flex-col justify-evenly gap-4 h-full lg:w-2/3">
 					<section id="page-selector" class="p-2 grid grid-cols-3 gap-4 w-full bracket-contour">
 						<div class="flex flex-col items-center justify-center gap-2">
-							<p class="text-center">Semifinals</p>
+							<p translatekey="tournament_semifinals" class="text-center">Semifinals</p>
 							<div>
-								<div class="bracket semifinals">Unknown</div>
-								<div class="bracket semifinals">Unknown</div>
+								<div translatekey="tournament_unknown" class="bracket semifinals">Unknown</div>
+								<div translatekey="tournament_unknown" class="bracket semifinals">Unknown</div>
 							</div>
 							<div>
-								<div class="bracket semifinals">Unknown</div>
-								<div class="bracket semifinals">Unknown</div>
+								<div translatekey="tournament_unknown" class="bracket semifinals">Unknown</div>
+								<div translatekey="tournament_unknown" class="bracket semifinals">Unknown</div>
 							</div>
 						</div>
 						<div class="flex flex-col items-center">
-							<p class="text-center">Final</p>
+							<p translatekey="tournament_final" class="text-center">Final</p>
 							<div class="flex flex-col h-full justify-center">
-								<div class="bracket finals">Unknown</div>
-								<div class="bracket finals">Unknown</div>
+								<div translatekey="tournament_unknown" class="bracket finals">Unknown</div>
+								<div translatekey="tournament_unknown" class="bracket finals">Unknown</div>
 							</div>
 						</div>
 						<div class="flex flex-col items-center">
-							<p class="text-center">Winner</p>
+							<p translatekey="tournament_winner" class="text-center">Winner</p>
 							<div class="flex flex-col h-full justify-center">
-								<div id="first-position" class="bracket">Unknown</div>
+								<div id="first-position" translatekey="tournament_unknown" class="bracket">Unknown</div>
 							</div>
 						</div>
 					</section>
 					<section class="grid grid-cols-2 gap-4 lg:w-2/3 bracket-contour">
 						<div class="flex flex-col items-center">
-							<p class="text-center">Consolation Final</p>
+							<p translatekey="tournament_consolation_final" class="text-center">Consolation Final</p>
 							<div class="flex flex-col h-full justify-center">
-								<div class="bracket tiebreaker">Unknown</div>
-								<div class="bracket tiebreaker">Unknown</div>
+								<div translatekey="tournament_unknown" class="bracket tiebreaker">Unknown</div>
+								<div translatekey="tournament_unknown" class="bracket tiebreaker">Unknown</div>
 							</div>
 						</div>
 						<div class="flex flex-col items-center">
-							<p class="text-center">Third</p>
+							<p translatekey="tournament_third" class="text-center">Third</p>
 							<div class="flex flex-col h-full justify-center">
-								<div id='third-position' class="bracket">Unknown</div>
+								<div id='third-position' translatekey="tournament_unknown" class="bracket">Unknown</div>
 							</div>
 						</div>
 					</section>
 				</section>
 				<section id="results" class="gap-10 w-full lg:w-1/3 flex flex-col justify-center items-center">
-					<div class="w-2/3 flex flex-col gap-2 p-5 justify-center items-start results-contour">
-						<p class="text-xl text-center">Final Standings</p>
+					<div class="w-2/3 flex flex-col gap-2 p-5 justify-center items-center results-contour">
+						<p translatekey="tournament_standings" class="text-xl text-center">Final Standings</p>
 						<div id="pink-divider" class="w-full"></div>
-						<p>1º: <span class="standings">Unknown</span></p>
-						<p>2º: <span class="standings">Unknown</span></p>
-						<p>3º: <span class="standings">Unknown</span></p>
-						<p>4º: <span class="standings">Unknown</span></p>
+						<p class="text-start">1º: <span class="standings" translatekey="tournament_unknown">Unknown</span></p>
+						<p class="text-start">2º: <span class="standings" translatekey="tournament_unknown">Unknown</span></p>
+						<p class="text-start">3º: <span class="standings" translatekey="tournament_unknown">Unknown</span></p>
+						<p class="text-start">4º: <span class="standings" translatekey="tournament_unknown">Unknown</span></p>
 					</div>
 					<div class="flex flex-col gap-2 justify-center items-center">
-						<button id='next-match' class="w-fit lg:w-full tour-option">Next Match</button>
-						<button id='cancel-tournament' class="w-fit lg:w-full tour-option">Cancel Tournament</button>
+						<button translatekey="tournament_next_match" id='next-match' class="w-fit lg:w-full tour-option">Next Match</button>
+						<button translatekey="tournament_cancel" id='cancel-tournament' class="w-fit lg:w-full tour-option">Cancel Tournament</button>
 					</div>
 				</section>
 			</div>

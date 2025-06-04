@@ -18,6 +18,11 @@ import { initModifyPageEvents } from "./modify-profile/modify-page.js";
 import { initStatsEvents } from "./statistics/stats-page.js";
 import { applyTranslation } from "./functionalities/transcript.js";
 
+if (!localStorage.getItem('inGame'))
+	localStorage.setItem('inGame', 'false');
+if (!localStorage.getItem('whichGame'))
+	localStorage.setItem('whichGame', '');
+
 const routes = [
 	{
 		// Create an init page
@@ -157,6 +162,9 @@ export function navigateTo(path: string, data: object = {}) {
     }
         
     if (route) {
+		if (path === '/pong') { localStorage.setItem('inGame', 'true'); localStorage.setItem('whichGame', 'pong'); }
+		else if (path === '/4inrow') { localStorage.setItem('inGame', 'true'); localStorage.setItem('whichGame', '4inrow'); }
+		else { localStorage.setItem('inGame', 'false'); }
         const screen = document.getElementsByClassName("screen-set")[0];
         if (screen) {
           screen.classList.add("fade-out");
@@ -219,7 +227,20 @@ async function initBaseEvents() {
 window.onpopstate = async () => {
 	if (socketChat)
 		socketChat.close();
+
 	let currentPath = window.location.pathname;
+	if (localStorage.getItem('inGame') === 'true') {
+		if (localStorage.getItem('whichGame') === 'pong')
+			history.pushState({}, "", '/pong');
+		else if (localStorage.getItem('whichGame') === '4inrow')
+			history.pushState({}, "", '/4inrow');
+		return ;
+	}
+	else if (localStorage.getItem('inGame') === 'false' && (currentPath === '/pong' || currentPath === '/4inrow')) {
+		currentPath = '/games';
+		history.pushState({}, "", currentPath);
+	}
+	
 	const validRoute = routes.find(r => r.path === currentPath);
 	if ((!validRoute?.accesible && !(await checkLogged()))
 		|| (await checkLogged() && currentPath === "/login")) 
@@ -234,8 +255,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   const validRoute = routes.find(r => r.path === currentPath);
   
   if (!validRoute) {
-    history.pushState({}, "", "/404");
-    loadContent("/404");
+	if (localStorage.getItem('inGame') === 'true') {
+		let currentPath = '/' + localStorage.getItem('whichGame');
+		history.pushState({}, "", currentPath);
+		loadContent(currentPath);
+	}
+	else {
+		history.pushState({}, "", "/404");
+		loadContent("/404");
+	}
   } 
   else {
 	if (!validRoute.accesible && !(await checkLogged())) 
@@ -244,6 +272,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 		currentPath = "/home";
     if (currentPath !== "/login")
       createsocketToastConnection();
+	if (localStorage.getItem('inGame') === 'true')
+		currentPath = '/' + localStorage.getItem('whichGame');
+	else if (localStorage.getItem('inGame') === 'false' && (currentPath === '/pong' || currentPath === '/4inrow'))
+		currentPath = '/games';
+	
 	history.pushState({}, "", currentPath);
     loadContent(currentPath);
   }
