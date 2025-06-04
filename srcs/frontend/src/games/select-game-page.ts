@@ -354,6 +354,9 @@ async function validateGame(gameType: string, mode: string) {
     if (alias) {
       if (username || password)
         throw new Error('Choose one option to fill');
+      const response = await sendRequest('POST', 'verify/alias', { username: alias });
+      if (!response || response['error'])
+        throw new Error(response['error']);
       playerName = alias;
     }
     else {
