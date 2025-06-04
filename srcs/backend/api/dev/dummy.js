@@ -283,6 +283,7 @@ export async function createDebug() {
         winner_id: foo.id,
         loser_id: null,
         rival_alias: "Invited_user",
+        host: foo.username,
       });
       createMatchOffline({
         game_type: "pong",
@@ -293,6 +294,7 @@ export async function createDebug() {
         winner_id: null,
         loser_id: foo.id,
         rival_alias: "Invited_user",
+        host: foo.username,
       });
       createMatchOffline({
         game_type: "pong",
@@ -303,6 +305,7 @@ export async function createDebug() {
         winner_id: bar.id,
         loser_id: null,
         rival_alias: "Invited_user",
+        host: bar.username,
       });
       createMatchOffline({
         game_type: "pong",
@@ -313,6 +316,7 @@ export async function createDebug() {
         winner_id: null,
         loser_id: bar.id,
         rival_alias: "Invited_user",
+        host: bar.username,
       });
       createMatchOffline({
         game_type: "pong",
@@ -323,6 +327,7 @@ export async function createDebug() {
         winner_id: baz.id,
         loser_id: null,
         rival_alias: "Invited_user",
+        host: baz.username,
       });
       createMatchOffline({
         game_type: "pong",
@@ -333,6 +338,7 @@ export async function createDebug() {
         winner_id: null,
         loser_id: baz.id,
         rival_alias: "Invited_user",
+        host: baz.username,
       });
       createMatchOffline({
         game_type: "pong",
@@ -343,6 +349,7 @@ export async function createDebug() {
         winner_id: qux.id,
         loser_id: null,
         rival_alias: "Invited_user",
+        host: qux.username,
       });
       createMatchOffline({
         game_type: "pong",
@@ -353,6 +360,7 @@ export async function createDebug() {
         winner_id: null,
         loser_id: qux.id,
         rival_alias: "Invited_user",
+        host: qux.username,
       });
       //
       createMatchOffline({
@@ -364,6 +372,7 @@ export async function createDebug() {
         winner_id: foo.id,
         loser_id: null,
         rival_alias: "Invited_user",
+        host: foo.username,
       });
       createMatchOffline({
         game_type: "connect_four",
@@ -374,6 +383,7 @@ export async function createDebug() {
         winner_id: null,
         loser_id: foo.id,
         rival_alias: "Invited_user",
+        host: foo.username,
       });
       createMatchOffline({
         game_type: "connect_four",
@@ -384,6 +394,7 @@ export async function createDebug() {
         winner_id: bar.id,
         loser_id: null,
         rival_alias: "Invited_user",
+        host: bar.username,
       });
       createMatchOffline({
         game_type: "connect_four",
@@ -394,6 +405,7 @@ export async function createDebug() {
         winner_id: null,
         loser_id: bar.id,
         rival_alias: "Invited_user",
+        host: bar.username,
       });
       createMatchOffline({
         game_type: "connect_four",
@@ -404,6 +416,7 @@ export async function createDebug() {
         winner_id: baz.id,
         loser_id: null,
         rival_alias: "Invited_user",
+        host: baz.username,
       });
       createMatchOffline({
         game_type: "connect_four",
@@ -414,6 +427,7 @@ export async function createDebug() {
         winner_id: null,
         loser_id: baz.id,
         rival_alias: "Invited_user",
+        host: baz.username,
       });
       createMatchOffline({
         game_type: "connect_four",
@@ -424,6 +438,7 @@ export async function createDebug() {
         winner_id: qux.id,
         loser_id: null,
         rival_alias: "Invited_user",
+        host: qux.username,
       });
       createMatchOffline({
         game_type: "connect_four",
@@ -434,6 +449,7 @@ export async function createDebug() {
         winner_id: null,
         loser_id: qux.id,
         rival_alias: "Invited_user",
+        host: qux.username,
       });
     }
     console.log("Creating online matches...");
@@ -446,6 +462,7 @@ export async function createDebug() {
         first_player_alias: foo.username,
         second_player_id: bar.id,
         second_player_alias: bar.alias,
+        host: foo.username,
       });
       await finishMatch(match, 10, 5);
       match = await createMatch({
@@ -455,6 +472,7 @@ export async function createDebug() {
         first_player_alias: foo.username,
         second_player_id: bar.id,
         second_player_alias: bar.alias,
+        host: foo.username,
       });
       await finishMatch(match, 6, 10);
       match = await createMatch({
@@ -464,6 +482,7 @@ export async function createDebug() {
         first_player_alias: baz.username,
         second_player_id: qux.id,
         second_player_alias: qux.alias,
+        host: baz.username,
       });
       await finishMatch(match, 10, 5);
       match = await createMatch({
@@ -473,6 +492,7 @@ export async function createDebug() {
         first_player_alias: baz.username,
         second_player_id: qux.id,
         second_player_alias: qux.alias,
+        host: baz.username,
       });
       await finishMatch(match, 6, 10);
     }
@@ -485,6 +505,7 @@ export async function createDebug() {
         first_player_alias: foo.username,
         second_player_id: bar.id,
         second_player_alias: bar.alias,
+        host: foo.username,
       });
       await finishMatch(match, 1, 0);
       match = await createMatch({
@@ -494,6 +515,7 @@ export async function createDebug() {
         first_player_alias: foo.username,
         second_player_id: bar.id,
         second_player_alias: bar.alias,
+        host: foo.username,
       });
       await finishMatch(match, 0, 1);
       match = await createMatch({
@@ -503,6 +525,7 @@ export async function createDebug() {
         first_player_alias: baz.username,
         second_player_id: qux.id,
         second_player_alias: qux.alias,
+        host: baz.username,
       });
       await finishMatch(match, 0, 1);
       match = await createMatch({
@@ -512,6 +535,7 @@ export async function createDebug() {
         first_player_alias: baz.username,
         second_player_id: qux.id,
         second_player_alias: qux.alias,
+        host: baz.username,
       });
       await finishMatch(match, 1, 0);
     }

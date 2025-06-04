@@ -17,9 +17,10 @@ export function createMatch(data) {
         first_player_id,
         first_player_alias,
         second_player_id,
-        second_player_alias
+        second_player_alias,
+        host
       )
-      VALUES (?,?,?,?,?,?)
+      VALUES (?,?,?,?,?,?,?)
     `;
     const params = [
       data.game_type,
@@ -28,6 +29,7 @@ export function createMatch(data) {
       data.first_player_alias,
       data.second_player_id,
       data.second_player_alias,
+      data.host,
     ];
     db.run(sql, params, function (err) {
       if (err) {
@@ -41,6 +43,7 @@ export function createMatch(data) {
         first_player_alias: data.first_player_alias,
         second_player_id: data.second_player_id,
         second_player_alias: data.second_player_alias,
+        host: data.host,
       });
     });
   });
@@ -67,9 +70,10 @@ export function createMatchOffline(data) {
         rival_alias,
         is_offline,
         status,
+        host,
         played_at
       )
-      VALUES (?,?,?,?,?,?,?,?,?,?,?, datetime('now', '+2 hours', 'subsec'))
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?, datetime('now', '+2 hours', 'subsec'))
     `;
     const params = [
       data.game_type,
@@ -83,6 +87,7 @@ export function createMatchOffline(data) {
       data.rival_alias,
       1,
       "finished",
+      data.host,
     ];
     db.run(sql, params, function (err) {
       if (err) {
@@ -99,6 +104,7 @@ export function createMatchOffline(data) {
         first_player_score: data.first_player_score,
         second_player_score: data.second_player_score,
         rival_alias: data.rival_alias,
+        host: data.host,
       });
     });
   });
@@ -121,9 +127,10 @@ export function scheduleMatch(data) {
         second_player_id,
         second_player_alias,
         tournament_id,
-        phase
+        phase,
+        host
       )
-      VALUES (?,?,?,?,?,?,?,?)
+      VALUES (?,?,?,?,?,?,?,?,?)
     `;
     const params = [
       data.game_type,
@@ -134,6 +141,7 @@ export function scheduleMatch(data) {
       data.second_player_alias,
       data.tournament_id,
       data.phase,
+      data.host,
     ];
     db.run(sql, params, function (err) {
       if (err) {
@@ -149,6 +157,7 @@ export function scheduleMatch(data) {
         second_player_alias: data.second_player_alias,
         tournament_id: data.tournament_id,
         phase: data.phase,
+        host: data.host,
       });
     });
   });
@@ -170,7 +179,7 @@ export function getScheduledMatches(user_id) {
         m.status,
         m.game_type,
         m.custom_mode,
-        u1.username AS host,
+        m.host,
         m.first_player_alias,
         m.second_player_alias,
         u1.avatar AS host_avatar
@@ -551,5 +560,38 @@ export function finishMatch(match, first_player_score, second_player_score) {
       increaseLosses(loser_id);
       resolve({ success: "Match successfully finished" });
     });
+  });
+}
+
+export async function patchMatch(id, updates) {
+  assert(id !== undefined, "id must exist");
+  assert(updates !== undefined, "updates must exist");
+  return new Promise((resolve, reject) => {
+    const fields = Object.keys(updates)
+      .map((key) => `${key} = ?`)
+      .join(", ");
+    const params = Object.values(updates);
+    params.push(id);
+    const sql = `
+      UPDATE matches
+      SET ${fields}
+      WHERE id = ?
+    `;
+    db.run(sql, params, function (err) {
+      if (err) {
+        console.error("Error updating matches:", err.message);
+        return reject(err);
+      }
+      if (this.changes === 0) return resolve({ message: "No changes" });
+      resolve({ success: true, id, ...updates });
+    });
+  });
+}
+
+export function cancelTournamentMatches(tournament) {
+  assert(tournament !== undefined, "tournament must exist");
+  tournament.tournament_matches.forEach((match) => {
+    if (match.match_status === "scheduled")
+      patchMatch(match.match_id, { status: "cancelled" });
   });
 }

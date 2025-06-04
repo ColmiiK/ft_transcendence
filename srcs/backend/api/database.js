@@ -158,6 +158,7 @@ db.serialize(() => {
     loser_id INTEGER,
     tournament_id INTEGER DEFAULT 0,
     phase VARCHAR(255),
+    host VARCHAR(255) NOT NULL,
     created_at DATETIME DEFAULT(datetime('now', '+2 hours', 'subsec')),
     played_at DATETIME,
     FOREIGN KEY (first_player_id) REFERENCES users(id),
