@@ -473,8 +473,10 @@ function addPlayer(playerName: string, isUser: boolean) {
   let msg = '';
   if (!players || count > 3 || !playerName) { return (false); }
   for (let i = 0; i < 4; i++)
-    if (playerName === players[i].innerText) { msg = 'Cannot use the same name twice';}
-  msg = parsePlayer(playerName);
+    if (playerName === players[i].innerText) { msg = 'Cannot use the same name twice'; }
+
+  if (msg === '')
+    msg = parsePlayer(playerName);
   
   if (msg === '') {
     players[count].innerText = playerName;
