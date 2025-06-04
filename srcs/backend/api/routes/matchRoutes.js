@@ -1,7 +1,6 @@
 import { asyncHandler, validateInput } from "../utils.js";
 import {
   createMatch,
-  createMatchOffline,
   getMatch,
   finishMatch,
   getMatches,
@@ -102,57 +101,6 @@ export default function createMatchRoutes(fastify) {
     {
       preHandler: [fastify.authenticate],
       method: "POST",
-      url: "/matches/offline",
-      handler: asyncHandler(async (req, res) => {
-        if (
-          !validateInput(req, res, [
-            "game_type",
-            "custom_mode",
-            "rival_alias",
-            "first_player_score",
-            "second_player_score",
-          ])
-        )
-          return;
-        req.body.userId = req.userId;
-        if (req.body.first_player_score > req.body.second_player_score) {
-          req.body.winner_id = req.body.userId;
-          req.body.loser_id = null;
-        } else {
-          req.body.loser_id = req.body.userId;
-          req.body.winner_id = null;
-        }
-        const match = await createMatchOffline(req.body);
-        return res.code(201).send(match);
-      }),
-    },
-    {
-      preHandler: [fastify.authenticate],
-      method: "POST",
-      url: "/matches/online",
-      handler: asyncHandler(async (req, res) => {
-        if (
-          !validateInput(req, res, [
-            "game_type",
-            "custom_mode",
-            "first_player_id",
-            "second_player_id",
-          ])
-        )
-          return;
-        const first_user = await getUser(req.body.first_player_id);
-        const second_user = await getUser(req.body.second_player_id);
-        if (!first_user || !second_user)
-          return res.code(400).send({ error: "User not found" });
-        req.body["first_player_alias"] = first_user.username;
-        req.body["second_player_alias"] = second_user.username;
-        const match = await createMatch(req.body);
-        return res.code(201).send(match);
-      }),
-    },
-    {
-      preHandler: [fastify.authenticate],
-      method: "POST",
       url: "/matches/end",
       handler: asyncHandler(async (req, res) => {
         if (
@@ -180,6 +128,54 @@ export default function createMatchRoutes(fastify) {
           }
         }
         //TODO: figure out if splitting the endpoint is needed + what to return
+        return res.code(200).send(result);
+      }),
+    },
+    {
+      preHandler: [fastify.authenticate],
+      method: "POST",
+      url: "/matches",
+      handler: asyncHandler(async (req, res) => {
+        if (
+          !validateInput(req, res, [
+            "first_player_score",
+            "first_player_alias",
+            "second_player_score",
+            "second_player_alias",
+            "is_custom",
+            "game",
+          ])
+        )
+          return;
+        const first_player = await getUser(req.body.first_player_alias);
+        const second_player = await getUser(req.body.second_player_alias);
+        let first_player_id = first_player.id;
+        let second_player_id;
+        if (!second_player) {
+          second_player_id = first_player_id;
+          req.body["is_offline"] = 1;
+        }
+        else  {
+          second_player_id = second_player.id;
+          req.body["is_offline"] = 0;
+        }
+        req.body["first_player_id"] = first_player_id;
+        req.body["second_player_id"] = second_player_id;
+        req.body.is_custom
+          ? (req.body["custom_mode"] = "custom")
+          : (req.body["custom_mode"] = "classic");
+        if (req.body.first_player_score > req.body.second_player_score) {
+          req.body["winner_id"] = req.body.first_player_id;
+          if (req.body.first_player_id !== req.body.second_player_id)
+            req.body["loser_id"] = req.body.second_player_id;
+          else req.body["loser_id"] = null;
+        } else {
+          if (req.body.first_player_id !== req.body.second_player_id)
+            req.body["winner_id"] = req.body.second_player_id;
+          else req.body["winner_id"] = null;
+          req.body["loser_id"] = req.body.first_player_id;
+        }
+        const result = await createMatch(req.body);
         return res.code(200).send(result);
       }),
     },

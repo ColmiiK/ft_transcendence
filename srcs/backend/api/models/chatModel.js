@@ -227,54 +227,42 @@ export function getLastChatsOfUser(id) {
   assert(id !== undefined, "id must exist");
   return new Promise((resolve, reject) => {
     const sql = `
-      WITH RankedMessages AS (
-        SELECT
-          c.id AS chat_id,
-          CASE 
-            WHEN c.first_user_id = ?
-              THEN second_user.username
-              ELSE first_user.username
-            END AS friend_username,
-          CASE 
-            WHEN c.first_user_id = ?
-              THEN second_user.id
-              ELSE first_user.id
-            END AS friend_id,
-          CASE 
-            WHEN c.first_user_id = ?
-              THEN second_user.avatar
-              ELSE first_user.avatar
-            END AS friend_avatar,
-          sender.username AS sender_username,
-          sender.is_deleted AS sender_deleted,
-          receiver.is_deleted AS receiver_deleted,
-          m.body,
-          m.sent_at,
-          m.is_read,
-          ROW_NUMBER() OVER (PARTITION BY c.id ORDER BY m.sent_at DESC) AS message_rank
-        FROM chats c
-        JOIN users first_user ON c.first_user_id = first_user.id
-        JOIN users second_user ON c.second_user_id = second_user.id
-        JOIN messages m ON c.id = m.chat_id
-        JOIN users sender ON m.sender_id = sender.id
-        JOIN users receiver ON m.receiver_id = receiver.id
-        WHERE c.first_user_id = ? OR c.second_user_id = ?
+    SELECT 
+      c.id AS chat_id,
+      CASE 
+        WHEN c.first_user_id = ? THEN second_user.username 
+        ELSE first_user.username 
+      END AS friend_username,
+      CASE 
+        WHEN c.first_user_id = ? THEN second_user.avatar 
+        ELSE first_user.avatar 
+      END AS friend_avatar,
+      CASE 
+        WHEN c.first_user_id = ? THEN second_user.id 
+        ELSE first_user.id 
+      END AS friend_id,
+      sender.username AS sender_username,
+      sender.is_deleted AS sender_deleted,
+      receiver.is_deleted AS receiver_deleted,
+      m.body,
+      m.sent_at,
+      m.is_read
+    FROM chats c
+    JOIN users first_user ON c.first_user_id = first_user.id
+    JOIN users second_user ON c.second_user_id = second_user.id
+    JOIN messages m ON c.id = m.chat_id
+    JOIN users sender ON m.sender_id = sender.id
+    JOIN users receiver ON m.receiver_id = receiver.id
+    WHERE (c.first_user_id = ? OR c.second_user_id = ?)
+      AND m.id = (
+        SELECT m2.id 
+        FROM messages m2 
+        WHERE m2.chat_id = c.id 
+        ORDER BY m2.sent_at DESC, m2.id DESC
+        LIMIT 1
       )
-      SELECT 
-        chat_id,
-        sender_deleted,
-        receiver_deleted,
-        friend_username,
-        friend_avatar,
-        friend_id,
-        sender_username, 
-        body, 
-        sent_at,
-        is_read
-      FROM RankedMessages
-      WHERE message_rank = 1
-      ORDER BY sent_at DESC
-`;
+    ORDER BY m.sent_at DESC;
+    `;
     db.all(sql, [id, id, id, id, id], (err, rows) => {
       if (err) {
         console.error("Error getting chats:", err.message);
@@ -293,7 +281,6 @@ export function getLastChatsOfUser(id) {
     });
   });
 }
-
 /**
  * Returns the ID of the chat between two users, if it exists
  * @param {Number} user_id - ID of the user

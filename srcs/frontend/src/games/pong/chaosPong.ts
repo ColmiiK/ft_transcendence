@@ -106,7 +106,10 @@ export function chaosPong(data: GameInfo): void {
 			init(generalData, ballData, player1, player2, width);
 		}
 		generalData.controlGame = setInterval(play, generalData.time);
-		powerUpData.controlPowerUp = setInterval(spawnPowerUp, 5000);
+
+		if (!powerUpData.active && !powerUpData.power)
+			powerUpData.controlPowerUp = setInterval(spawnPowerUp, 5000);
+
 		if (AIData.activate) 
 			AIData.controlAI = setInterval(moveAI, AIData.timeToRefresh);
 	}
@@ -176,7 +179,7 @@ export function chaosPong(data: GameInfo): void {
                 player2.keyCode = "down";
             player2.keyPress = true;
         }
-        if (key === "arrowdown" && !AIData.activate && !player2.keysAffected) {
+        if (key === "arrowdown" && !AIData.activate) {
             if (!player2.keysAffected)
                 player2.keyCode = "down";
             else
@@ -230,12 +233,15 @@ export function chaosPong(data: GameInfo): void {
         powerUpData.posX = Math.random() * (paddleRight - paddleLeft) + paddleLeft;
         powerUpData.posY = Math.random() * (height - 40);
 
-        if (powerUpData.posX < paddleLeft || powerUpData.posX > paddleRight - paddleLeft || powerUpData.posY > height || powerUpData.posY < 40) {
+        if (powerUpData.posX < paddleLeft || powerUpData.posX > paddleRight || powerUpData.posY > height - 40 || powerUpData.posY < 40) {
             powerUpData.active = false;
             return;
         }
 
-        if (!powerUpData.powerUp) return;
+        if (!powerUpData.powerUp) {
+            powerUpData.active = false;
+            return;
+        }
 
         powerUpData.spawnStartTime = Date.now();
         powerUpData.spawnRemainingTime = 5000;
@@ -275,6 +281,8 @@ export function chaosPong(data: GameInfo): void {
     }
 
     function resumePowerUps(): void {
+        powerUpData.isPaused = false;
+
         if (!powerUpData.active && !powerUpData.power)
             powerUpData.controlPowerUp = setInterval(spawnPowerUp, 5000);
         
@@ -306,6 +314,8 @@ export function chaosPong(data: GameInfo): void {
     }
 
     function checkBallPowerUpCollision(): void {
+        if (!powerUpData.active || !powerUpData.powerUp) return;
+
         const ballRect = ballData.ball.getBoundingClientRect();
         const powerRect = powerUpData.powerUp?.getBoundingClientRect();
 
@@ -326,7 +336,7 @@ export function chaosPong(data: GameInfo): void {
             case 'paddleSize':
                 activePaddleSize();
                 break;
-            case 'ballSpeed':
+           case 'ballSpeed':
                 activeBallSpeed();
                 break;
             case 'paddleSpeed':
@@ -394,15 +404,19 @@ export function chaosPong(data: GameInfo): void {
             paddleAffected.classList.add('paddleLittleToNormalEffect');
             
             setTimeout(() => {
+                if (powerUpData.isPaused) return;
+
                 paddle.classList.remove('paddleGrowToNormalEffect');
                 paddleAffected.classList.remove('paddleLittleToNormalEffect');
                 powerUpData.power = null;
+                powerUpData.paddleAffected = null;
                 powerUpData.powerUpStartTime = null;
                 powerUpData.powerUpRemainingTime = 0;
-                powerUpData.controlPowerUp = setInterval(spawnPowerUp, 5000);
-                powerUpData.paddleAffected = null;
+
+                if (!powerUpData.active)
+                    powerUpData.controlPowerUp = setInterval(spawnPowerUp, 5000);
                 saveGameState();
-            }, 5000);
+            }, 500);
         }, powerUpData.powerUpRemainingTime);
     }
 
