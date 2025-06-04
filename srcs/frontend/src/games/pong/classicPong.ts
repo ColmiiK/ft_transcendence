@@ -1,7 +1,7 @@
 import { 
     Player, GeneralData, PaddleCollision, BallData, AIData, OnresizeData, init, 
 	resetBall, updateScore, setAI, countDown, pauseGame, returnToGames, checkLost,
-	play as playEngine, moveBall as moveBallEngine,
+	exitGame, play as playEngine, moveBall as moveBallEngine,
 } from './gameEngine.js';
 
 import { GameInfo } from "../../types.js";
@@ -264,6 +264,10 @@ export function classicPong(data: GameInfo): void{
 		await pauseGame(generalData, ballData, null);
 	})
 
+	document.getElementById('end-button')?.addEventListener('click', async () => {
+		await exitGame("classic", player1, player2, null)
+	});
+
 	document.getElementById('exitGame')?.addEventListener('click', async () => {
 		if (checkLost(generalData, ballData, AIData, null ,data, player1, player2, width)){
 			let cont = document.getElementById("continue");
@@ -273,7 +277,7 @@ export function classicPong(data: GameInfo): void{
 		}
 		saveGameState();
 		await returnToGames(generalData, ballData, AIData, player1, player2, "classic", null, data);
-	})
+	});
 
 	setOnresize();
 	start();

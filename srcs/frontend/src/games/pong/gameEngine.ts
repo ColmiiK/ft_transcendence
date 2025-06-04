@@ -414,15 +414,21 @@ export async function returnToGames(generalData: GeneralData, ballData: BallData
 			cleanupPowerUps(PowerUpData);
 		navigateTo("/games");
 	})
+}
 
-	function clearGameState(player1: Player, player2: Player, mode: "classic" | "custom"){
-		localStorage.removeItem(`gameState${mode}`);
-		player1.counter = 0;
-		player2.counter = 0;
-		document.getElementById('counter1')!.innerText = '0';
-		document.getElementById('counter2')!.innerText = '0';
-	}
-	
+export async function exitGame(mode: "classic" | "custom", player1: Player, player2: Player, powerUpData: PowerUpType | null){
+	clearGameState(player1, player2, mode);
+	if (mode == "custom" && powerUpData)
+		cleanupPowerUps(powerUpData);
+	navigateTo("/games");
+}
+
+function clearGameState(player1: Player, player2: Player, mode: "classic" | "custom"){
+	localStorage.removeItem(`gameState${mode}`);
+	player1.counter = 0;
+	player2.counter = 0;
+	document.getElementById('counter1')!.innerText = '0';
+	document.getElementById('counter2')!.innerText = '0';
 }
 
 async function updateData(data: GameInfo, player1: Player, player2: Player){

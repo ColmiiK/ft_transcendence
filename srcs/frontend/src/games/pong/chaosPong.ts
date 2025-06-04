@@ -1,7 +1,7 @@
 import { 
     Player, GeneralData, PaddleCollision, BallData, AIData, OnresizeData, PowerUpType, init, 
     resetBall, updateScore, setAI, countDown, pauseGame, returnToGames, checkLost,
-	play as playEngine, moveBall as moveBallEngine
+	exitGame, play as playEngine, moveBall as moveBallEngine
 } from './gameEngine.js';
 
 import { GameInfo } from "../../types.js";
@@ -756,6 +756,10 @@ export function chaosPong(data: GameInfo): void {
         await pauseGame(generalData, ballData, powerUpData);
     });
 
+    document.getElementById('end-button')?.addEventListener('click', async () => {
+        await exitGame("custom", player1, player2, powerUpData)
+    });
+
 	document.getElementById('exitGame')?.addEventListener('click', async () => {
 		if (checkLost(generalData, ballData, AIData, powerUpData, data, player1, player2, width)){
 			let cont = document.getElementById("continue");
@@ -765,7 +769,7 @@ export function chaosPong(data: GameInfo): void {
 		}
         saveGameState();
 		await returnToGames(generalData, ballData, AIData, player1, player2, "custom", powerUpData, data);
-	})
+	});
 
 	setOnresize();
 	start();

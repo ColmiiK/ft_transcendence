@@ -827,6 +827,11 @@ export function crazyTokensMode(data: GameInfo): void {
         await pauseGame();
     })
 
+    document.getElementById('end-button')?.addEventListener('click', async () => {
+        clearGame();
+        navigateTo("/games");
+    });
+
 	document.getElementById('exitGame')?.addEventListener('click', async () => {
         const exitBtn = document.getElementById('exitGame');
         if (!exitBtn){
@@ -884,6 +889,8 @@ export function crazyTokensMode(data: GameInfo): void {
             navigateTo("/games");
         })
 	})
+
+    
     
     start();
 }
