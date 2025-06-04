@@ -1,5 +1,5 @@
 all:
-		@docker compose -f ./srcs/docker-compose.yml up --build -d
+		@HOSTNAME_FQDN=$$(hostname -f) docker compose -f ./srcs/docker-compose.yml up --build -d
 
 attach:
 		@docker compose -f ./srcs/docker-compose.yml up --build
