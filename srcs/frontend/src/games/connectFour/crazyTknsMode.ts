@@ -6,6 +6,7 @@ import {
     columnClickHandlers,
     crazyTokens,
     pauseGame,
+    implementAlias,
     saveGameState,
     loadGameState,
     updateDice,
@@ -126,15 +127,16 @@ export function crazyTokensMode(data: GameInfo): void {
         const savedState = loadGameState("custom");
 		init();
 		if (savedState){
-			renderBoardFromState(savedState, player1, player2)
+			renderBoardFromState(savedState, data, player1, player2)
 			if (player2.AI)
 				initAI();
 			gameActive = false;
             if (!checkState()) await pauseGame();
 		}
 		else await enableClicks();
+        implementAlias(data);
 		handlerEvents();
-        saveGameState("custom", player1, player2)
+        saveGameState("custom", player1, player2, data)
     }
 
     function handlerEvents(){
@@ -233,7 +235,7 @@ export function crazyTokensMode(data: GameInfo): void {
         else 
             await placeToken(column);
 
-        await saveGameState("custom", player1, player2);
+        await saveGameState("custom", player1, player2, data);
 
         if (checkState()) gameActive = false
 
@@ -497,7 +499,7 @@ export function crazyTokensMode(data: GameInfo): void {
         currentPlayer.diceUses--;
 
         diceContainer.classList.remove("rolling");
-        saveGameState("custom", player1, player2);
+        saveGameState("custom", player1, player2, data);
     }
 
     /* Disable Effects */

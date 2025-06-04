@@ -1,7 +1,7 @@
 import { 
     Player, GeneralData, PaddleCollision, BallData, AIData, OnresizeData, init, 
 	resetBall, updateScore, setAI, countDown, pauseGame, returnToGames, checkLost,
-	exitGame, play as playEngine, moveBall as moveBallEngine,
+	implementAlias, exitGame, play as playEngine, moveBall as moveBallEngine,
 } from './gameEngine.js';
 
 import { GameInfo } from "../../types.js";
@@ -80,6 +80,8 @@ export function classicPong(data: GameInfo): void{
 			if (!checkLost(generalData, ballData, AIData, null, data, player1, player2, width))
 				await pauseGame(generalData, ballData, null);
 		}
+		implementAlias(data);
+		saveGameState();
 		if (!savedState){
 			await countDown(ballData, true);
 			init(generalData, ballData, player1, player2, width);
@@ -222,7 +224,14 @@ export function classicPong(data: GameInfo): void{
 			AIData: {
 				activate: AIData.activate,
 				targetY: AIData.targetY
-			}
+			},
+			Data: {
+                alias1: data.first_player_alias,
+                alias2: data.second_player_alias,
+                game_mode: data.game_mode,
+                is_custom: data.is_custom,
+                match_id: data.match_id
+            }
 		};
 		localStorage.setItem('gameStateclassic', JSON.stringify(gameState));
 	}
@@ -248,12 +257,17 @@ export function classicPong(data: GameInfo): void{
 			ballData.velY = gameState.ball.velY;
 			ballData.angle = gameState.ball.angle;
 
-
 			generalData.time = gameState.generalData.time;
 			generalData.speed = gameState.generalData.speed;
 
 			AIData.activate = gameState.AIData.activate;
 			AIData.targetY = gameState.AIData.targetY;
+
+			data.first_player_alias = gameState.Data.alias1;
+            data.second_player_alias = gameState.Data.alias2;
+            data.game_mode = gameState.Data.game_mode;
+            data.is_custom = gameState.Data.is_custom;
+            data.match_id = gameState.Data.match_id;
 
 			document.getElementById('counter1')!.innerText = player1.counter.toString();
 			document.getElementById('counter2')!.innerText = player2.counter.toString();

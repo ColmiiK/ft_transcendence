@@ -72,6 +72,17 @@ export interface PowerUpType {
 	isPaused: boolean;
 }
 
+export function implementAlias(data: GameInfo){
+	const alias1 = document.getElementById("alias1");
+	const alias2 = document.getElementById("alias2");
+	if (!alias1 || !alias2){
+		console.error("alias element not fount.")
+		return ;
+	}
+	alias1.innerText = data.first_player_alias;
+	alias2.innerText = data.second_player_alias;
+}
+
 export function init(generalData: GeneralData, ballData: BallData, player1: Player, player2: Player, width: number): void {
 	resetBall(generalData, ballData, player1, player2, width);
 }

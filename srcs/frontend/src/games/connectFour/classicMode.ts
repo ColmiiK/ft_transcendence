@@ -6,6 +6,7 @@ import {
 	columnClickHandlers,
 	pauseGame,
 	delay,
+	implementAlias,
 	saveGameState,
     loadGameState,
     renderBoardFromState,
@@ -114,15 +115,16 @@ export function classicMode(data: GameInfo): void {
 		const savedState = loadGameState("classic");
 		init();
 		if (savedState){
-			renderBoardFromState(savedState, player1, player2)
+			renderBoardFromState(savedState, data, player1, player2)
 			if (player2.AI)
 				initAI();
 			gameActive = false;
             if (!checkState()) await pauseGame();
 		}
 		else await enableClicks();
+		implementAlias(data);
 		handlerEvents();
-		saveGameState("classic", player1, player2)
+		saveGameState("classic", player1, player2, data)
 	}
 
 	function handlerEvents(){
@@ -170,7 +172,7 @@ export function classicMode(data: GameInfo): void {
 		if (player2.turn && player2.AI && !aiColumn) return ;
 
 		await placeToken(column);
-		await saveGameState("classic", player1, player2);
+		await saveGameState("classic", player1, player2, data);
 
 		if (checkState()) gameActive = false
 	}

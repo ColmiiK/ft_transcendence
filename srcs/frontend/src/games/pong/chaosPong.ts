@@ -1,7 +1,7 @@
 import { 
     Player, GeneralData, PaddleCollision, BallData, AIData, OnresizeData, PowerUpType, init, 
     resetBall, updateScore, setAI, countDown, pauseGame, returnToGames, checkLost,
-	exitGame, play as playEngine, moveBall as moveBallEngine
+	implementAlias, exitGame, play as playEngine, moveBall as moveBallEngine
 } from './gameEngine.js';
 
 import { GameInfo } from "../../types.js";
@@ -101,6 +101,8 @@ export function chaosPong(data: GameInfo): void {
             if (!checkLost(generalData, ballData, AIData, powerUpData, data, player1, player2, width))
                 await pauseGame(generalData, ballData, powerUpData);
 		}
+        implementAlias(data);
+        saveGameState();
 		if (!savedState){
 			await countDown(ballData, true);
 			init(generalData, ballData, player1, player2, width);
@@ -650,6 +652,13 @@ export function chaosPong(data: GameInfo): void {
             AIData: {
                 activate: AIData.activate,
                 targetY: AIData.targetY
+            },
+            Data: {
+                alias1: data.first_player_alias,
+                alias2: data.second_player_alias,
+                game_mode: data.game_mode,
+                is_custom: data.is_custom,
+                match_id: data.match_id
             }
         };
         localStorage.setItem('gameStatecustom', JSON.stringify(gameState));
@@ -685,6 +694,13 @@ export function chaosPong(data: GameInfo): void {
             generalData.time = gameState.generalData.time;
             generalData.speed = gameState.generalData.speed;
             generalData.isPaused = gameState.generalData.isPaused || false;
+
+            data.first_player_alias = gameState.Data.alias1;
+            data.second_player_alias = gameState.Data.alias2;
+            data.game_mode = gameState.Data.game_mode;
+            data.is_custom = gameState.Data.is_custom;
+            data.match_id = gameState.Data.match_id;
+
             if (gameState.generalData.paddleMargin)
                 generalData.paddleMargin = gameState.generalData.paddleMargin;
 
