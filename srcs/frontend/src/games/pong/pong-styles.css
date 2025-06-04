@@ -74,26 +74,10 @@
 	animation: blinkPause 1.5s infinite;
 }
 
-/* #endPong {
-	height: fit-content;
-	width: 60%;
-	padding: 2% 3%;
-	background-color: #b06289;
-	justify-content: space-between;
-	border: white solid 2px;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	color: white;
-	font-size: clamp(0.20rem, 2.5vw, 2rem);
-	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.976);
-	display: inline-block;
-} */
-
-#endPong {
+#endGame {
 	background-color: #b06289;
 	border: white solid 2px;
+	display: none;
 }
 
 .end-img {
@@ -113,53 +97,15 @@
 	font-size: clamp(0.20rem, 2.5vw, 2rem);
 }
 
-/* #endPlayer1{
-	justify-self: flex-start;
-	justify-content: start;
-	text-justify: right;
-	white-space: nowrap;
-	height: 50%;
-	width: 100%;
-	display: inline-flex;
+.end-button {
+	background-color: #54184D;
+	width: fit-content;
+    height: fit-content;
+	place-self: center;
+	border-radius: 8px;
+	font-size: clamp(0.7rem, 2vw, 1rem);
+	padding: clamp(4px, 0.8vw, 8px) clamp(8px, 1.8vw, 18px);
 }
-
-#endPlayer1 > img {
-	float: left;
-	height: 20%;
-	width: 24%;
-	margin: 5%;
-}
-
-#endPlayer1 > p {
-	float: left;
-	height: 20%;
-	width: 24%;
-	margin: 5%;
-}
-
-#endPlayer2 {
-	justify-self: flex-end;
-	justify-content: end;
-	text-justify: left;
-	white-space: nowrap;
-	height: 50%;
-	width: 100%;
-	display: inline-flex;
-}
-
-#endPlayer2 > img {
-	float: right;
-	height: 20%;
-	width: 24%;
-	margin: 2.5%;
-}
-
-#endPlayer2 > p {
-	float: right;
-	height: 20%;
-	width: 24%;
-	margin: 2.5%;
-} */
 
 @keyframes blinkPause {
 	0%, 100% { opacity: 1; }
