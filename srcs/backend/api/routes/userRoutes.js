@@ -169,5 +169,20 @@ export default function createUserRoutes(fastify) {
         return res.code(200).send(data);
       }),
     },
+    {
+      preHandler: [fastify.authenticate],
+      method: "POST",
+      url: "/verify/alias",
+      handler: asyncHandler(async (req, res) => {
+        if (!validateInput(req, res, ["username"])) return;
+        const user = await getUser(req.body.username);
+        if (user) {
+          return res.code(400).send({
+            error: `Username ${req.body.username} belongs to an existing user`,
+          });
+        }
+        return res.code(200).send({ success: "Username is free to use" });
+      }),
+    },
   ];
 }
