@@ -1,6 +1,7 @@
 import db from "../database.js";
 import assert from "node:assert/strict";
 import { scheduleMatch } from "./matchModel.js";
+import { getUser } from "./userModel.js";
 
 /**
  * Creates a tournament
@@ -125,6 +126,7 @@ function getMatchesOfTournament(tournament_id) {
             second_player_score,
             winner_id,
             loser_id,
+            host,
             played_at
           FROM
             matches
@@ -148,6 +150,7 @@ function getMatchesOfTournament(tournament_id) {
         second_player_score: m.second_player_score,
         winner_id: m.winner_id,
         loser_id: m.loser_id,
+        host: m.host,
         played_at: m.played_at,
       }));
       resolve(tournament_matches);
@@ -566,6 +569,7 @@ export function setTournamentAsFinished(id) {
  */
 export async function determineFirstBracket(tournament) {
   assert(tournament !== undefined, "tournament must exist");
+  const creator_user = await getUser(tournament.creator_id);
   const participants = tournament.tournament_participants.map(
     ({ user_id, alias }) => ({
       user_id,
@@ -587,6 +591,7 @@ export async function determineFirstBracket(tournament) {
       second_player_alias: participants[1].alias,
       tournament_id: tournament.tournament_id,
       phase: "semifinals",
+      host: creator_user.username,
     }),
     scheduleMatch({
       game_type: game_type,
@@ -597,6 +602,7 @@ export async function determineFirstBracket(tournament) {
       second_player_alias: participants[3].alias,
       tournament_id: tournament.tournament_id,
       phase: "semifinals",
+      host: creator_user.username,
     }),
   ]);
   return matches;
@@ -609,6 +615,7 @@ export async function determineFirstBracket(tournament) {
  */
 export async function determineSecondBracket(tournament) {
   assert(tournament !== undefined, "tournament must exist");
+  const creator_user = await getUser(tournament.creator_id);
   const winners = [];
   const losers = [];
   for (let i = 0; i < 2; i++) {
@@ -640,6 +647,7 @@ export async function determineSecondBracket(tournament) {
       second_player_alias: winners[1].alias,
       tournament_id: tournament.tournament_id,
       phase: "finals",
+      host: creator_user.username,
     }),
     scheduleMatch({
       game_type: game_type,
@@ -650,6 +658,7 @@ export async function determineSecondBracket(tournament) {
       second_player_alias: losers[1].alias,
       tournament_id: tournament.tournament_id,
       phase: "tiebreaker",
+      host: creator_user.username,
     }),
   ]);
   return matches;
@@ -832,6 +841,8 @@ export function getCurrentTournament(user_id) {
       WHERE
         t.status != 'finished'
       AND
+        t.status != 'cancelled'
+      AND
         tp.user_id = $user_id
     `;
     db.get(sql, { $user_id: user_id }, function (err, row) {
@@ -842,5 +853,40 @@ export function getCurrentTournament(user_id) {
       if (!row) resolve(null);
       resolve(row);
     });
+  });
+}
+
+/**
+ * Cancels the given tournament, only by the creator
+ * @param {Number} tournament_id - ID of the tournament
+ * @param {Number} creator_id - ID of the creator
+ * @returns {Object} - Success or failure message
+ */
+export function cancelTournament(tournament_id, creator_id) {
+  assert(tournament_id !== undefined, "tournament_id must exist");
+  assert(creator_id !== undefined, "creator_id must exist");
+  return new Promise((resolve, reject) => {
+    const sql = `
+      UPDATE
+        tournaments
+      SET
+        status = 'cancelled'
+      WHERE
+        id = $tournament_id
+      AND
+        creator_id = $creator_id
+    `;
+    db.run(
+      sql,
+      { $tournament_id: tournament_id, $creator_id: creator_id },
+      function (err) {
+        if (err) {
+          console.error("Error getting tournament", err.message);
+          return reject(err);
+        }
+        if (this.changes === 0) return resolve({ message: "No changes" });
+        resolve({ success: `Tournament ${tournament_id} was cancelled` });
+      },
+    );
   });
 }

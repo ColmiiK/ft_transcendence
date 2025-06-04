@@ -1,18 +1,22 @@
 .bracket {
 	background-color: var(--dark-pink);
 	word-break: break-all;
-	/* color: var(--dark-purple); */
 	border-radius: 15px;
-	/* box-shadow: var(--accent-pink) 0px 0px 5px; */
+	box-shadow: var(--accent-pink) 0px 0px 2px;
 	padding: 10px;
 	margin: 10px;
 }
 
 .bracket-active {
-	background-color: var(--accent-pink);
+	background-color: #fee0efe5;
 	color: var(--dark-purple);
 	box-shadow: var(--accent-pink) 0px 0px 5px;
-} 
+}
+
+.bracket-loss {
+	background-color: #54184db7;
+	box-shadow: var(--dark-pink) 0px 0px 2px;
+}
 
 .bracket-contour {
 	border-radius: 15px;

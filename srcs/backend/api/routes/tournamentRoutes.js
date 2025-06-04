@@ -15,7 +15,9 @@ import {
   determineFirstBracket,
   setTournamentAsStarted,
   getCurrentTournament,
+  cancelTournament,
 } from "../models/tournamentModel.js";
+import { cancelTournamentMatches } from "../models/matchModel.js";
 import { getUser } from "../models/userModel.js";
 
 export default function createTournamentRoutes(fastify) {
@@ -213,6 +215,27 @@ export default function createTournamentRoutes(fastify) {
           return res.code(400).send({ error: "Tournament is not yet ready" });
         const result = await determineFirstBracket(tournament);
         await setTournamentAsStarted(tournament_id);
+        return res.code(200).send(result);
+      }),
+    },
+    {
+      preHandler: [fastify.authenticate],
+      method: "PATCH",
+      url: "/tournaments/end",
+      handler: asyncHandler(async (req, res) => {
+        if (!validateInput(req, res, ["tournament_id"])) return;
+        const tournament = await getTournamentByID(req.body.tournament_id);
+        if (!tournament)
+          return res.code(400).send({ error: "Tournament not found" });
+        if (tournament.creator_id !== req.userId)
+          return res.code(403).send({
+            error: "Only the creator of the tournament can cancel it",
+          });
+        const result = await cancelTournament(
+          req.body.tournament_id,
+          req.userId,
+        );
+        await cancelTournamentMatches(tournament);
         return res.code(200).send(result);
       }),
     },

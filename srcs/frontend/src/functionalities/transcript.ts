@@ -163,6 +163,20 @@ const locales = [
 			select_invite_custom: 'Invite to Custom Game',
 			select_invite_normal: 'Invite to Game',
 			select_invitation_sent: 'Invitation sent to',
+			select_ready: 'Ready to Play',
+			select_player_one: 'Player 1: <span class="host">Default</span>',
+			select_player_two: 'Player 2: <span></span>',
+			select_start: 'Start game',
+			select_view_tournament: 'View Current Tournament',
+			select_add_account: 'Add Account',
+			select_participants: 'Participants',
+			select_tournament_player_one: 'Player 1: <span class="player">Default</span>',
+			select_tournament_player_two: 'Player 2: <span class="player">Default</span>',
+			select_tournament_player_three: 'Player 3: <span class="player">Default</span>',
+			select_tournament_player_four: 'Player 4: <span class="player">Default</span>',
+			select_start_tournament: 'Start Tournament',
+			select_tournament_name: 'Tournament name',
+
 			// 404
 			page_404: '404 Page Not Found',
 			// Recover password
@@ -337,6 +351,19 @@ const locales = [
 			select_invite_custom: 'Invitar a juego personalizado',
 			select_invite_normal: 'Invitar a jugar',
 			select_invitation_sent: 'Invitación enviada a',
+			select_ready: 'Listas para Jugar',
+			select_player_one: 'Jugador 1: <span class="host">Por defecto</span>',
+			select_player_two: 'Jugador 2: <span></span>',
+			select_start: 'Iniciar partida',
+			select_view_tournament: 'Ver torneo actual',
+			select_add_account: 'Añadir cuenta',
+			select_participants: 'Participantes',
+			select_tournament_player_one: 'Jugador 1: <span class="player">Por defecto</span>',
+			select_tournament_player_two: 'Jugador 2: <span class="player">Por defecto</span>',
+			select_tournament_player_three: 'Jugador 3: <span class="player">Por defecto</span>',
+			select_tournament_player_four: 'Jugador 4: <span class="player">Por defecto</span>',
+			select_start_tournament: 'Comenzar Torneo',
+			select_tournament_name: 'Nombre del torneo',
 			// 404
 			page_404: '404 Página No Encontrada',
 			// Recover password
@@ -506,6 +533,19 @@ const locales = [
 			select_invite_custom: 'Inviter à un jeu personnalisé',
 			select_invite_normal: 'Inviter à une partie',
 			select_invitation_sent: 'Invitation envoyée à',
+			select_ready: 'Prêt à jouer',
+			select_player_one: 'Joueur 1 : <span class="host">Par défaut</span>',
+			select_player_two: 'Joueur 2 : <span></span>',
+			select_start: 'Démarrer le jeu',
+			select_view_tournament: 'Voir le tournoi en cours',
+			select_add_account: 'Ajouter un compte',
+			select_participants: 'Participants',
+			select_tournament_player_one: 'Joueur 1 : <span class="player">Par défaut</span>',
+			select_tournament_player_two: 'Joueur 2 : <span class="player">Par défaut</span>',
+			select_tournament_player_three: 'Joueur 3 : <span class="player">Par défaut</span>',
+			select_tournament_player_four: 'Joueur 4 : <span class="player">Par défaut</span>',
+			select_start_tournament: 'Lancer le tournoi',
+			select_tournament_name: 'Nom du tournoi',
 			page_404: '404 Page non trouvée',
 			reset_password: 'Entrez votre nouveau mot de passe',
 			reset_password_again: 'Entrez à nouveau votre nouveau mot de passe',
@@ -520,8 +560,8 @@ const locales = [
 
 const navigatorLanguage = localStorage.getItem('language') ? localStorage.getItem('language') : window.navigator.language.substring(0, 2);
 export let lang = locales.find(lang => lang.code === navigatorLanguage)
-						? navigatorLanguage
-						: 'en';
+	? navigatorLanguage
+	: 'en';
 
 export function applyTranslation() {
 	const currentLocale = locales.find(e => e.code === lang);
@@ -538,7 +578,7 @@ export function applyTranslation() {
 			node.innerHTML = translation;
 		}
 	});
-	
+
 	formNodes?.forEach((node) => {
 		const key = node.getAttribute('data-placeholder');
 		if (key) {
@@ -546,7 +586,7 @@ export function applyTranslation() {
 			node.setAttribute('placeholder', translation);
 		}
 	});
-	
+
 	buttonNodes?.forEach((node) => {
 		const key = node.getAttribute('data-value');
 		if (key) {
@@ -559,17 +599,17 @@ export function applyTranslation() {
 export function getTranslation(key: string): string {
 	const currentLocale = locales.find(e => e.code === lang);
 	if (!currentLocale) return key;
-	
+
 	return currentLocale.translations[key as keyof typeof currentLocale.translations] || key;
 }
 
 export async function setLang(newLang: string) {
-	if (lang === newLang) { return ; }
+	if (lang === newLang) { return; }
 	lang = newLang;
 	try {
 		const isLogged = await sendRequest('GET', '/islogged');
 		if (isLogged && isLogged['logged'] === true) {
-			const response = await sendRequest('PATCH', '/users', {language: lang});
+			const response = await sendRequest('PATCH', '/users', { language: lang });
 			if (!response || response['error'])
 				throw new Error('Error while saving new language');
 		}

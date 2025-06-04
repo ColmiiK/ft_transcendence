@@ -35,7 +35,7 @@
 						<div class="flex flex-col items-center">
 							<p class="text-center">Winner</p>
 							<div class="flex flex-col h-full justify-center">
-								<div class="bracket">Unknown</div>
+								<div id="first-position" class="bracket">Unknown</div>
 							</div>
 						</div>
 					</section>
@@ -50,23 +50,23 @@
 						<div class="flex flex-col items-center">
 							<p class="text-center">Third</p>
 							<div class="flex flex-col h-full justify-center">
-								<div class="bracket">Unknown</div>
+								<div id='third-position' class="bracket">Unknown</div>
 							</div>
 						</div>
 					</section>
 				</section>
 				<section id="results" class="gap-10 w-full lg:w-1/3 flex flex-col justify-center items-center">
-					<div class="w-2/3 flex flex-col gap-2 p-5 justify-center items-center results-contour">
+					<div class="w-2/3 flex flex-col gap-2 p-5 justify-center items-start results-contour">
 						<p class="text-xl text-center">Final Standings</p>
 						<div id="pink-divider" class="w-full"></div>
-						<p>1º: Unknown</p>
-						<p>2º: Unknown</p>
-						<p>3º: Unknown</p>
-						<p>4º: Unknown</p>
+						<p>1º: <span class="standings">Unknown</span></p>
+						<p>2º: <span class="standings">Unknown</span></p>
+						<p>3º: <span class="standings">Unknown</span></p>
+						<p>4º: <span class="standings">Unknown</span></p>
 					</div>
 					<div class="flex flex-col gap-2 justify-center items-center">
-						<button class="w-fit lg:w-full tour-option">Next Match</button>
-						<button class="w-fit lg:w-full tour-option">Cancel Tournament</button>
+						<button id='next-match' class="w-fit lg:w-full tour-option">Next Match</button>
+						<button id='cancel-tournament' class="w-fit lg:w-full tour-option">Cancel Tournament</button>
 					</div>
 				</section>
 			</div>
