@@ -98,7 +98,7 @@ export function chaosPong(data: GameInfo): void {
 		const savedState = localStorage.getItem("gameStatecustom");
 		if (savedState){
 			loadGameState();
-            if (!checkLost(generalData, ballData, AIData, powerUpData, player1, player2, width))
+            if (!checkLost(generalData, ballData, AIData, powerUpData, data, player1, player2, width))
                 await pauseGame(generalData, ballData, powerUpData);
 		}
 		if (!savedState){
@@ -119,7 +119,7 @@ export function chaosPong(data: GameInfo): void {
 
 		setOnresize();
 		moveBall();
-		playEngine(generalData, ballData, AIData, player1, player2, width, height, powerUpData);
+		playEngine(generalData, ballData, AIData, player1, player2, width, height, powerUpData, data);
 		saveGameState();
 	}
 
@@ -757,14 +757,14 @@ export function chaosPong(data: GameInfo): void {
     });
 
 	document.getElementById('exitGame')?.addEventListener('click', async () => {
-		if (checkLost(generalData, ballData, AIData, powerUpData, player1, player2, width)){
+		if (checkLost(generalData, ballData, AIData, powerUpData, data, player1, player2, width)){
 			let cont = document.getElementById("continue");
 			let pauseDiv = document.getElementById("pauseGame")
 			if (cont) cont.style.display = "none";
 			if (pauseDiv) pauseDiv.style.display = "none";
 		}
         saveGameState();
-		await returnToGames(generalData, ballData, AIData, player1, player2, "custom", powerUpData);
+		await returnToGames(generalData, ballData, AIData, player1, player2, "custom", powerUpData, data);
 	})
 
 	setOnresize();

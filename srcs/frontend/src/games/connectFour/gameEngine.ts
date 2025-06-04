@@ -511,7 +511,7 @@ export function renderBoardFromState(gameState: GameState, player1: Player, play
     if (gameState.mode === "custom") updateDice(player1, player2);
 }
 
-async function updateData(data: GameInfo, player1: Player, player2: Player){
+export async function updateData(data: GameInfo, player1: Player, player2: Player){
     const score1 = player1.winner ? 1 : 0;
     const score2 = player2.winner ? 1 : 0;
     if (data.match_id){
