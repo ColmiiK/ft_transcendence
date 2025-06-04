@@ -210,8 +210,8 @@
 
 #powerUp {
 	position: absolute;
-	width: 3%;
-	height: 6%;
+	width: 50%;
+	height: 50%;
 	background-color: gold;
 	border-radius: 50%;
 	display: none;
