@@ -116,7 +116,7 @@ export function resetBall(generalData: GeneralData, ballData: BallData, player1:
 	ballData.velY = width * generalData.speed * Math.sin(ballData.angle);
 }
 
-export function insertWinner(win: string){
+export function insertWinner(win: string, data: GameInfo){
 	const endGame = document.getElementById("endGame");
 	if (!endGame){
 		console.error(getTranslation('game_no_endGame'));
@@ -159,12 +159,12 @@ export function insertWinner(win: string){
 		return ;
 	}
 	if (win == "Player 1"){
-		winner.innerText = getTranslation('game_player1_wins');
-		loser.innerText = getTranslation('game_player2_loses');
+		winner.innerText = data.first_player_alias + getTranslation('game_player_wins');
+		loser.innerText = data.second_player_alias + getTranslation('game_player_loses');
 	}
 	else{
-		winner.innerText = getTranslation('game_player2_wins');
-		loser.innerText = getTranslation('game_player1_loses');
+		winner.innerText = data.second_player_alias + getTranslation('game_player_wins');
+		loser.innerText = data.first_player_alias + getTranslation('game_player_loses');
 	}
 }
 
@@ -173,7 +173,7 @@ export function checkLost(generalData: GeneralData, ballData: BallData, AIData: 
 		updateScore(player1.paddle, player1, player2);
 		if (player1.counter < 10) init(generalData, ballData, player1, player2, width);
 		else {
-			insertWinner("Player 1");
+			insertWinner("Player 1", data);
 			stop(generalData, AIData, ballData, PowerUpData, data, player1, player2);
 			return true;
 		}
@@ -182,7 +182,7 @@ export function checkLost(generalData: GeneralData, ballData: BallData, AIData: 
 		updateScore(player2.paddle, player1, player2);
 		if (player2.counter < 10) init(generalData, ballData, player1, player2, width);
 		else {
-			insertWinner("Player 2");
+			insertWinner("Player 2", data);
 			stop(generalData, AIData, ballData, PowerUpData, data, player1, player2);
 			return true ;
 		}
@@ -456,30 +456,59 @@ export async function returnToGames(generalData: GeneralData, ballData: BallData
 		return ;
 	})
 
-	document.getElementById('surrenderPl1')?.addEventListener('click', () => {
+	document.getElementById('surrenderPl1')?.addEventListener('click', async () => {
 		player2.counter = 10;
 		stop(generalData, AIData, ballData, PowerUpData, data, player1, player2);
 		clearGameState(player1, player2, mode);
 		if (mode == "custom" && PowerUpData)
 			cleanupPowerUps(PowerUpData);
-		navigateTo("/games");
+		try {
+			const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
+			if (response)
+				navigateTo("/tournament");
+			else
+				navigateTo("/games");
+		}
+		catch (error) {
+			console.error(error);
+	}
 	})
 
-	document.getElementById('surrenderPl2')?.addEventListener('click', () => {
+	document.getElementById('surrenderPl2')?.addEventListener('click', async () => {
 		player1.counter = 10;
 		stop(generalData, AIData, ballData, PowerUpData, data, player1, player2);
 		clearGameState(player1, player2, mode);
 		if (mode == "custom" && PowerUpData)
 			cleanupPowerUps(PowerUpData);
-		navigateTo("/games");
+		
+		try {
+			const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
+			if (response)
+				navigateTo("/tournament");
+			else
+				navigateTo("/games");
+		}
+		catch (error) {
+			console.error(error);
+		}
 	})
 }
 
-export async function exitGame(mode: "classic" | "custom", player1: Player, player2: Player, powerUpData: PowerUpType | null){
+export async function exitGame(mode: "classic" | "custom", player1: Player, player2: Player, powerUpData: PowerUpType | null, data: GameInfo){
 	clearGameState(player1, player2, mode);
 	if (mode == "custom" && powerUpData)
 		cleanupPowerUps(powerUpData);
-	navigateTo("/games");
+
+	try {
+		const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
+		if (response)
+			navigateTo("/tournament");
+		else
+			navigateTo("/games");
+	}
+	catch (error) {
+		console.error(error);
+	}
 }
 
 function clearGameState(player1: Player, player2: Player, mode: "classic" | "custom"){

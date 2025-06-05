@@ -123,11 +123,12 @@ async function showChats(input: string) {
 	const datalist = document.getElementById("search-chat");
 
 	if (datalist) {
-		emptyMatches(datalist);
 		if (!input || input.length === 0)
 			return;
 
 		const matchesTyped = await sendRequest('POST', '/users/search', { username: input }) as UserMatches[];
+		emptyMatches(datalist);
+		const count = matchesTyped.filter(item => item.is_friend === 1).length;
 		for (let i = 0; i < matchesTyped.length; i++) {
 			if (matchesTyped[i].is_friend === 1) {
 				let option = document.createElement('div');
@@ -135,6 +136,12 @@ async function showChats(input: string) {
 				option.setAttribute("id", `friend-chat-${matchesTyped[i].user_id}`);
 				option.classList.add("chat-option", "match-option");
 				datalist.appendChild(option);
+				if (i + 1 < count) {
+					const divider = document.createElement('div');
+					divider.setAttribute("id", "pink-divider");
+					divider.setAttribute("class", "opacity-20 match-option");
+					datalist.appendChild(divider);
+				}
 			}
 			if (matchesTyped[i]) {
 				const messageButton = document.getElementById(`friend-chat-${matchesTyped[i].user_id}`);
@@ -154,7 +161,6 @@ async function showChats(input: string) {
 				}
 			}
 		}
-
 	}
 }
 
@@ -207,7 +213,6 @@ async function displayFirstChat(data: MessageObject) {
       return;
     }
 		const recentChats = await sendRequest('GET', 'chats/last');
-    console.log('recentChats:', recentChats)
 		if (!recentChats)
 			throw new Error("Error displaying the first chat");
 
@@ -249,7 +254,7 @@ export async function recentChats() {
 				subDiv.innerHTML = `
 				<div id="chat-${chat.chat_id} "class="flex items-center gap-2 recent-chat-card">
 					<div id="chat-avatar">
-						<img id="friend-avatar-${chat.friend_id}" class="rounded-full aspect-square" src="${chat.friend_avatar}" alt="Avatar">
+						<img id="friend-avatar-${chat.friend_id}" class="card-avatar rounded-full" src="${chat.friend_avatar}" alt="Avatar">
 					</div>
 					<div class="chat-info overflow-hidden">
 						<h3>${chat.friend_username}</h3>

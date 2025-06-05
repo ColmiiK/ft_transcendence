@@ -36,6 +36,7 @@
 }
 
 #friend-profile-photo {
+	min-width: 200px;
 	width: 200px;
 	aspect-ratio: 1/1;
 	box-shadow: var(--dark-pink) 0px 0px 10px;

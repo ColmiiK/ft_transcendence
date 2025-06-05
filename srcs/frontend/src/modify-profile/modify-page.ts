@@ -76,6 +76,10 @@ function toggleNickForm() {
 		nickSpan.classList.remove('hidden');
 		updateNick(nickInput.value);
 		nickInput.value = "";
+		socketToast?.send(JSON.stringify({
+			type: "profile_update",
+			sender_id: getClientID(),
+		}));
 	}
 	nickInput.onblur = () => { nickForm.requestSubmit() };
 }
@@ -99,6 +103,10 @@ function toggleDescriptionForm() {
 		descriptionSpan.classList.remove('hidden');
 		updateDescription(descriptionInput.value);
 		descriptionInput.value = "";
+		socketToast?.send(JSON.stringify({
+			type: "profile_update",
+			sender_id: getClientID(),
+		}));
 	}
 	descriptionInput.onblur = () => { descriptionForm.requestSubmit() };
 }

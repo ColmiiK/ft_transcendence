@@ -282,7 +282,7 @@ export function classicPong(data: GameInfo): void{
 	})
 
 	document.getElementById('exit-end')?.addEventListener('click', async () => {
-		await exitGame("classic", player1, player2, null)
+		await exitGame("classic", player1, player2, null, data)
 	});
 
 	document.getElementById('exitGame')?.addEventListener('click', async () => {

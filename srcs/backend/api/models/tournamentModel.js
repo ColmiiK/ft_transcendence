@@ -856,7 +856,7 @@ export function getCurrentTournament(user_id) {
         console.error("Error getting tournament", err.message);
         return reject(err);
       }
-      if (!rows) return resolve(null);
+      if (!rows || !rows[0]) return resolve(null);
       if (rows[0].status === "in_progress") rows[0]["is_current"] = true;
       else rows[0]["is_current"] = false;
       resolve(rows[0]);
