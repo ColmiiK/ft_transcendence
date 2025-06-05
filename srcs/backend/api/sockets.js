@@ -260,7 +260,6 @@ async function handleProfileUpdate(data){
 }
 
 async function handleGameInvitation(data, sender_id) {
-
 	let username = await getUsername(data.sender_id);
 	let receiver_username = await getUsername(data.receiver_id);
 	if (data.type === "game") {
