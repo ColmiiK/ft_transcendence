@@ -2,7 +2,7 @@
 	<div class="flexy gap-x-10 justify-center">
 		<div id="settings-div" class="standard-purple-card flex settings-size animate__animated">
 			<header class="flex justify-between items-center mx-4">
-				<h1 translatekey="settings_title">Settings</h1>
+				<h1 translatekey="settings_title" class="title-font">Settings</h1>
 				<svg id="home-button" class="home-icon m-4 h-10 w-10" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FEE0EF">
 					<path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/>
 				</svg>
@@ -60,7 +60,7 @@
 		<!-- Change Password -->
 		<div id="change-password" class="standard-purple-card flex hide settings-size animate__animated">
 			<header class="flex w-full justify-center items-center">
-				<h1 id="settings-display-title" translatekey="settings_change_password">Change Password</h1>
+				<h1 id="settings-display-title" translatekey="settings_change_password" class="title-font">Change Password</h1>
 				<svg id="go-back" class="back-button home-icon m-4 xl:hidden" xmlns="http://www.w3.org/2000/svg" height="24px"
                     viewBox="0 -960 960 960" width="24px" fill="#FEE0EF">
                     <path d="M640-80 240-480l400-400 71 71-329 329 329 329-71 71Z" />
@@ -90,7 +90,7 @@
 		<div id="two-factor" class="standard-purple-card flex settings-size hide h-full animate__animated">
 			<header class="flex flex-col w-full justify-center items-center">
 				<div class="flex items-center">
-					<h1 id="settings-display-title" translatekey="settings_auth">Two-Factor Auth</h1>
+					<h1 id="settings-display-title" translatekey="settings_auth" class="title-font">Two-Factor Auth</h1>
 					<svg id="go-back" class="back-button home-icon xl:hidden" xmlns="http://www.w3.org/2000/svg" height="24px"
 					viewBox="0 -960 960 960" width="24px" fill="#FEE0EF">
 					<path d="M640-80 240-480l400-400 71 71-329 329 329 329-71 71Z" />
@@ -121,7 +121,7 @@
 		<!-- Blocked Accounts -->
 		 <div id="blocked-accounts" class="standard-purple-card flex settings-size hide animate__animated">
 			<header class="flex w-full justify-center items-center">
-				<h1 id="settings-display-title" translatekey="settings_blocked_accounts">Blocked Accounts</h1>
+				<h1 id="settings-display-title" translatekey="settings_blocked_accounts" class="title-font">Blocked Accounts</h1>
 				<svg id="go-back" class="back-button home-icon m-4 xl:hidden" xmlns="http://www.w3.org/2000/svg" height="24px"
                     viewBox="0 -960 960 960" width="24px" fill="#FEE0EF">
                     <path d="M640-80 240-480l400-400 71 71-329 329 329 329-71 71Z" />
@@ -129,10 +129,6 @@
 			</header>
 			<div id="divider"></div>
 			<main id="blocked-card" class="flex flex-col items-center gap-4 w-full overflow-x-clip overflow-y-auto">
-				<!-- <p class="opacity-80">It seems you haven't blocked any friend c:</p> -->
-				<!-- <div class="flex justify-between gap-4 friend-card">
-					
-				</div> -->
 			</main>
 		 </div>
 		</div>
@@ -159,17 +155,17 @@
 		  	</div>
 		  	<div id="pink-divider"></div>
 		  	<form id="delete-account-form" class="flex flex-col justify-center items-center">
-			  <input id="delete-email" type="email" class="text-[var(--dark-purple)] w-full p-1 m-2 rounded-md outline-none indent-2"
+			  <input id="delete-email" type="email" class="text-[var(--dark-purple)] w-full p-1 m-2 rounded-[15px] outline-none indent-2"
 			  placeholder="Introduce your email" data-placeholder="settings_email" maxlength="50">
-			  <input id="delete-password" type="password" class="text-[var(--dark-purple)] w-full p-1 m-2 rounded-md outline-none indent-2"
+			  <input id="delete-password" type="password" class="text-[var(--dark-purple)] w-full p-1 m-2 rounded-[15px] outline-none indent-2"
 			  placeholder="Introduce your password" data-placeholder="settings_password" maxlength="25">
-			  <input id="delete-confirm" type="text" class="text-[var(--dark-purple)] w-full p-1 m-2 rounded-md outline-none indent-2"
+			  <input id="delete-confirm" type="text" class="text-[var(--dark-purple)] w-full p-1 m-2 rounded-[15px] outline-none indent-2"
 			  placeholder="Type 'Delete'" data-placeholder="settings_type_delete" maxlength="25">
-			  <button type="submit" class="signin-user p-1 m-2 rounded-md modal-button" translatekey="login_submit">Submit</button>
+			  <button type="submit" class="signin-user p-1 px-2 m-2 rounded-[15px] modal-button" translatekey="login_submit">Submit</button>
 			</form>
 			<div class="flex flex-col justify-center items-center">
 				<p id="delete-account-message" class="m-2.5 flex justify-center w-full" translatekey="settings_fill_form">Fill the form to delete your account</p>
-				<button id="log-out" class="signin-user p-1 m-2 rounded-md modal-button hidden" translatekey="home_logout">Log out</button>
+				<button id="log-out" class="signin-user p-1 px-2 m-2 rounded-[15px] modal-button hidden" translatekey="home_logout">Log out</button>
 			</div>
 		</div>
 		</dialog>

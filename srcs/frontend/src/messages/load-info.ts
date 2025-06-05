@@ -254,7 +254,7 @@ export async function recentChats() {
 				subDiv.innerHTML = `
 				<div id="chat-${chat.chat_id} "class="flex items-center gap-2 recent-chat-card">
 					<div id="chat-avatar">
-						<img id="friend-avatar-${chat.friend_id}" class="rounded-full aspect-square" src="${chat.friend_avatar}" alt="Avatar">
+						<img id="friend-avatar-${chat.friend_id}" class="card-avatar rounded-full" src="${chat.friend_avatar}" alt="Avatar">
 					</div>
 					<div class="chat-info overflow-hidden">
 						<h3>${chat.friend_username}</h3>
