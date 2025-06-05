@@ -123,11 +123,12 @@ async function showChats(input: string) {
 	const datalist = document.getElementById("search-chat");
 
 	if (datalist) {
-		emptyMatches(datalist);
 		if (!input || input.length === 0)
 			return;
 
 		const matchesTyped = await sendRequest('POST', '/users/search', { username: input }) as UserMatches[];
+		emptyMatches(datalist);
+		const count = matchesTyped.filter(item => item.is_friend === 1).length;
 		for (let i = 0; i < matchesTyped.length; i++) {
 			if (matchesTyped[i].is_friend === 1) {
 				let option = document.createElement('div');
@@ -135,6 +136,12 @@ async function showChats(input: string) {
 				option.setAttribute("id", `friend-chat-${matchesTyped[i].user_id}`);
 				option.classList.add("chat-option", "match-option");
 				datalist.appendChild(option);
+				if (i + 1 < count) {
+					const divider = document.createElement('div');
+					divider.setAttribute("id", "pink-divider");
+					divider.setAttribute("class", "opacity-20 match-option");
+					datalist.appendChild(divider);
+				}
 			}
 			if (matchesTyped[i]) {
 				const messageButton = document.getElementById(`friend-chat-${matchesTyped[i].user_id}`);
@@ -154,7 +161,6 @@ async function showChats(input: string) {
 				}
 			}
 		}
-
 	}
 }
 
