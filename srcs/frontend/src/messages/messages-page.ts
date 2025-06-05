@@ -2,7 +2,7 @@ import { getChatInfo, actual_chat_id, recentChats, loadInfo } from "./load-info.
 import { navigateTo } from "../index.js";
 import { Message, MessageObject } from "../types.js";
 import { sendRequest } from "../login-page/login-fetch.js";
-import { showAlert } from "../toast-alert/toast-alert.js";
+import { showAlert, socketToast } from "../toast-alert/toast-alert.js";
 
 export let socketChat: WebSocket | null = null;
 
@@ -103,7 +103,7 @@ export function displayMessage(data: Message) {
     el.scrollIntoView({ behavior: 'smooth' });
     recentChats();
   }
-  else if (data.type === "game" && actual_chat_id == data.chat_id) {
+  else if (data.type === "game" && actual_chat_id === data.chat_id) {
     let messageContainer = document.getElementById("message-history");
     if (!messageContainer) return;
     let el = document.createElement("div");
@@ -229,6 +229,41 @@ export function displayMessage(data: Message) {
       }
     }
     el.scrollIntoView({ behavior: 'smooth' });
+  }
+  else if (data.type === "game" && actual_chat_id !== data.chat_id) {
+    if (data.info === "request") {
+      async function handleAccept(data: any) {
+        if (socketToast) {
+          socketToast.send(JSON.stringify({
+            type: "game",
+            info: "accept",
+            sender_id: data.sender_id,
+            receiver_id: data.receiver_id,
+            game_type: data.game_type,
+            is_custom: data.is_custom,
+            chat_id: data.chat_id,
+            sent_at: data.sent_at,
+          }));
+          sendRequest(`PATCH`, `messages/${data.message_id}`, { invitation_status: "accept" });
+        }
+      }
+      function handleReject(data: any) {
+        if (socketToast) {
+          socketToast.send(JSON.stringify({
+            type: "game",
+            info: "reject",
+            sender_id: data.sender_id,
+            receiver_id: data.receiver_id,
+            game_type: data.game_type,
+            is_custom: data.is_custom,
+            chat_id: data.chat_id,
+            sent_at: data.sent_at
+          }));
+          sendRequest(`PATCH`, `messages/${data.message_id}`, { invitation_status: "reject" });
+        }
+      }
+      showAlert(data.body, "toast-info", () => handleAccept(data), () => handleReject(data));
+    }
   }
 }
 
