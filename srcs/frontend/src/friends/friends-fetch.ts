@@ -328,7 +328,7 @@ export async function displayInvitations() {
 						<img id="invitation-avatar-${invitation.receiver_id}" class="card-avatar rounded-full m-1.5" src="${invitation.receiver_avatar}" alt="Avatar">
 						<div class="flex flex-col">
 							<h3>${invitation.receiver_username}</h3>
-							<p class="opacity-50 text-sm">${invitation.receiver_status}</p>
+							<p class="opacity-50 text-sm break-all">${invitation.receiver_status}</p>
 						</div>
 					</div>
 					<div id="invitation-options" class="flex gap-2 px-4">
@@ -345,7 +345,7 @@ export async function displayInvitations() {
 						<img id="invitation-avatar-${invitation.sender_id}" class="card-avatar rounded-full m-1.5" src="${invitation.sender_avatar}" alt="Avatar">
 						<div class="flex flex-col">
 							<h3>${invitation.sender_username}</h3>
-							<p class="opacity-50 text-sm">${invitation.sender_status}</p>
+							<p class="opacity-50 text-sm break-all">${invitation.sender_status}</p>
 						</div>
 					</div>
 					<div id="invitation-options" class="flex flex-col md:flex-row gap-2 px-4">

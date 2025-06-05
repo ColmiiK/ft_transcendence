@@ -79,6 +79,16 @@ export default function createUserRoutes(fastify) {
     },
     {
       preHandler: [fastify.authenticate],
+      method: "PATCH",
+      url: "/users",
+      handler: asyncHandler(async (req, res) => {
+        if (!validateInput(req, res, [])) return;
+        const user = await patchUser(req.userId, req.body);
+        return res.code(200).send(user);
+      }),
+    },
+    {
+      preHandler: [fastify.authenticate],
       method: "DELETE",
       url: "/users",
       handler: asyncHandler(async (req, res) => {

@@ -32,14 +32,6 @@ const routes = [
 			initLoginEvents()
 		}
 	},
-	// {
-	// 	path: "/login",
-	// 	url: "../src/login-page/login-page.html",
-	// 	accesible: true,
-	// 	event: () => {
-	// 		initLoginEvents()
-	// 	}
-	// },
 	{
 		path: "/home",
 		url: "../src/home-page/home-page.html",
@@ -269,7 +261,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		currentPath = "/";
 	if (await checkLogged() && currentPath === "/")
 		currentPath = "/home";
-    if (currentPath !== "/")
+    if (currentPath !== "/" && currentPath !== "/reset-password" && currentPath !== "/two-factor" && currentPath !== "/404")
       createsocketToastConnection();
 	if (localStorage.getItem('inGame') === 'true')
 		currentPath = '/' + localStorage.getItem('whichGame');

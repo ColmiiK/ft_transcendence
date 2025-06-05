@@ -284,8 +284,8 @@
 /* --> Settings page <-- */
 
 .settings-size {
-  min-height: 65vh;
-  max-height: 65vh;
+  min-height: 70vh;
+  max-height: 70vh;
 }
 
 /* Add a container for both divs */
@@ -364,6 +364,14 @@
 
 .delete-option:hover .icon {
   fill: var(--alert);
+}
+
+@media (width <= 1280px) {
+  .title-font {
+    font-size: 3rem;
+    /* 48px */
+    line-height: 1;
+  }
 }
 
 /* --> Modify profile <-- */
@@ -1402,6 +1410,7 @@
 }
 
 #friend-profile-photo {
+  min-width: 200px;
   width: 200px;
   aspect-ratio: 1/1;
   box-shadow: var(--dark-pink) 0px 0px 10px;
@@ -3000,7 +3009,10 @@ h1 {
 }
 
 .standard-pink-card {
-  background-color: var(--dark-pink);
+  background: #db7cacaf;
+  -webkit-backdrop-filter: blur(3px) saturate(50%);
+          backdrop-filter: blur(3px) saturate(50%);
+  border: 1px solid rgba(255, 255, 255, 0.125);
   box-shadow: var(--accent-pink) 0px 0px 20px;
   border-radius: 15px;
   color: white;
@@ -3406,6 +3418,10 @@ h1 {
 
   .xl\:hidden {
     display: none;
+  }
+
+  .xl\:max-w-\[65vw\] {
+    max-width: 65vw;
   }
 }
 
