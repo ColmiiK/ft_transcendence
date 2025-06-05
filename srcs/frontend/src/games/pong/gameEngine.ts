@@ -2,6 +2,7 @@ import { navigateTo } from "../../index.js";
 import { GameInfo } from "../../types.js";
 import { sendRequest } from "../../login-page/login-fetch.js";
 import { getTranslation } from "../../functionalities/transcript.js";
+import { getClientID } from "../../messages/messages-page.js";
 
 export interface Player {
 	keyPress: boolean;
@@ -459,9 +460,10 @@ export async function returnToGames(generalData: GeneralData, ballData: BallData
 	document.getElementById('surrenderPl1')?.addEventListener('click', async () => {
 		player2.counter = 10;
 		stop(generalData, AIData, ballData, PowerUpData, data, player1, player2);
-		clearGameState(player1, player2, mode);
+		clearGameState(player1, player2, mode, data);
 		if (mode == "custom" && PowerUpData)
 			cleanupPowerUps(PowerUpData);
+		localStorage.removeItem(`gameState${mode}`);
 		try {
 			const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
 			if (response)
@@ -477,10 +479,10 @@ export async function returnToGames(generalData: GeneralData, ballData: BallData
 	document.getElementById('surrenderPl2')?.addEventListener('click', async () => {
 		player1.counter = 10;
 		stop(generalData, AIData, ballData, PowerUpData, data, player1, player2);
-		clearGameState(player1, player2, mode);
+		clearGameState(player1, player2, mode, data);
 		if (mode == "custom" && PowerUpData)
 			cleanupPowerUps(PowerUpData);
-		
+		localStorage.removeItem(`gameState${mode}`);
 		try {
 			const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
 			if (response)
@@ -495,10 +497,10 @@ export async function returnToGames(generalData: GeneralData, ballData: BallData
 }
 
 export async function exitGame(mode: "classic" | "custom", player1: Player, player2: Player, powerUpData: PowerUpType | null, data: GameInfo){
-	clearGameState(player1, player2, mode);
+	clearGameState(player1, player2, mode, data);
 	if (mode == "custom" && powerUpData)
 		cleanupPowerUps(powerUpData);
-
+	localStorage.removeItem(`gameState${mode}`);
 	try {
 		const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
 		if (response)
@@ -511,10 +513,17 @@ export async function exitGame(mode: "classic" | "custom", player1: Player, play
 	}
 }
 
-function clearGameState(player1: Player, player2: Player, mode: "classic" | "custom"){
+function clearGameState(player1: Player, player2: Player, mode: "classic" | "custom", data: GameInfo){
 	localStorage.removeItem(`gameState${mode}`);
 	player1.counter = 0;
 	player2.counter = 0;
+	player1.keyCode = null;
+	player2.keyCode = null;
+	player1.keyPress = false;
+	player2.keyPress = false;
+	player1.keysAffected = false;
+	player2.keysAffected = false;
+	data.match_id = null;
 	document.getElementById('counter1')!.innerText = '0';
 	document.getElementById('counter2')!.innerText = '0';
 }
