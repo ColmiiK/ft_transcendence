@@ -75,7 +75,6 @@ export default function createAuthRoutes(fastify) {
       method: "GET",
       url: "/logout",
       handler: asyncHandler(async (req, res) => {
-        console.log("Logging out user", req.userId);
         res.clearCookie("token", { path: "/" });
         return res.code(200).send({ success: "User successfully logged out" });
       }),
@@ -125,7 +124,8 @@ export default function createAuthRoutes(fastify) {
         const user_email = await getUser(req.body.email);
         if (user_email) return res.code(400).send({ error: "email in use" });
         const user_username = await getUser(req.body.username);
-        if (user_username) return res.code(400).send({ error: "username in use" });
+        if (user_username)
+          return res.code(400).send({ error: "username in use" });
         const result = await registerUser(req.body);
         setJWT(res, result);
         return res.code(201).send(result);
