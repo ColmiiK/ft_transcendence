@@ -47,6 +47,11 @@ export async function initTournamentFetches() {
 function nextMatch(gameType: string, matches: Match[]) {
 	const nextMatch = matches.find((match: Match) => !match.played_at);
 	if (!nextMatch) { return ; }
+	if (localStorage.getItem("username") !== nextMatch.host) {
+		showAlert(getTranslation('select_not_host'), 'toast-error');
+		return;
+  	}
+  
 	let gameInfo: GameInfo = {
 		game_mode: gameType,
 		is_custom: !gameType.includes('classic'),

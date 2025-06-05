@@ -187,6 +187,7 @@ export interface Match {
 	second_player_id: number,
 	second_player_score: number,
 	winner_id: number,
+	host: string,
 }
 
 export interface GameInfo {
