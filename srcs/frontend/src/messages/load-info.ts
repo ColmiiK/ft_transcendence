@@ -207,7 +207,6 @@ async function displayFirstChat(data: MessageObject) {
       return;
     }
 		const recentChats = await sendRequest('GET', 'chats/last');
-    console.log('recentChats:', recentChats)
 		if (!recentChats)
 			throw new Error("Error displaying the first chat");
 
