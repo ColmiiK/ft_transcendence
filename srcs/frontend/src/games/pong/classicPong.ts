@@ -79,12 +79,14 @@ export function classicPong(data: GameInfo): void{
 		if (savedState){
 			loadGameState();
 			implementAlias(data);
+			manageTouchPad();
 			saveGameState();
 			if (!checkLost(generalData, ballData, AIData, null, data, player1, player2, width))
 				await pauseGame(generalData, ballData, null);
 		}
 		if (!savedState){
 			implementAlias(data);
+			manageTouchPad();
 			await countDown(ballData, true);
 			init(generalData, ballData, player1, player2, width);
 			saveGameState();
@@ -155,6 +157,46 @@ export function classicPong(data: GameInfo): void{
 			player2.keyPress = false;
 	}
 
+	function setupButtonControls() {
+		const btnPl1Up = document.getElementById("btnPl1Up");
+		const btnPl1Down = document.getElementById("btnPl1Down");
+
+		btnPl1Up?.addEventListener("touchstart", () => {
+			player1.keyCode = "up";
+			player1.keyPress = true;
+		});
+
+		btnPl1Down?.addEventListener("touchstart", () => {
+			player1.keyCode = "down";
+			player1.keyPress = true;
+		});
+
+		const stopPl1 = () => { player1.keyPress = false; };
+
+		btnPl1Up?.addEventListener("touchend", stopPl1);
+		btnPl1Down?.addEventListener("touchend", stopPl1);
+
+		if (!AIData.activate) {
+			const btnPl2Up = document.getElementById("btnPl2Up");
+			const btnPl2Down = document.getElementById("btnPl2Down");
+
+			btnPl2Up?.addEventListener("touchstart", () => {
+				player2.keyCode = "up";
+				player2.keyPress = true;
+			});
+
+			btnPl2Down?.addEventListener("touchstart", () => {
+				player2.keyCode = "down";
+				player2.keyPress = true;
+			});
+
+			const stopPl2 = () => { player2.keyPress = false; };
+
+			btnPl2Up?.addEventListener("touchend", stopPl2);
+			btnPl2Down?.addEventListener("touchend", stopPl2);
+		}
+	}
+
 	function setOnresize(): void {
 		onresizeData.ballRelativeLeft = ballData.ball.offsetLeft / width;
 		onresizeData.ballRelativeTop = ballData.ball.offsetTop / height;
@@ -199,6 +241,8 @@ export function classicPong(data: GameInfo): void{
 			ballData.ball.style.top = `${height - ballData.ball.clientHeight}px`;
 			ballData.velY = -Math.abs(ballData.velY);
 		}
+		
+		manageTouchPad();
 	}
 
 	function saveGameState() {
@@ -295,6 +339,26 @@ export function classicPong(data: GameInfo): void{
 		saveGameState();
 		await returnToGames(generalData, ballData, AIData, player1, player2, "classic", null, data);
 	});
+
+	function isMobileDevice() {
+		return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+	}
+
+	function manageTouchPad(){
+		const leftControls = document.getElementById("left-controls");
+		const rightControls = document.getElementById("right-controls");
+		if (isMobileDevice()) {
+			if (leftControls) leftControls.style.display = "flex";
+			if (!AIData.activate && rightControls)
+				rightControls.style.display = "flex";
+			else if (AIData.activate && rightControls)
+				rightControls.style.display = "none";
+			setupButtonControls();
+		} else {
+			if (leftControls) leftControls.style.display = "none";
+			if (rightControls) rightControls.style.display = "none";
+		}	
+	}
 
 	setOnresize();
 	start();
