@@ -26,9 +26,10 @@ export function createMatch(data) {
         loser_id,
         host,
         is_offline,
+        tournament_id,
         played_at
       )
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?, datetime('now', '+2 hours', 'subsec'))
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, datetime('now', '+2 hours', 'subsec'))
     `;
     const params = [
       data.game,
@@ -45,6 +46,7 @@ export function createMatch(data) {
       data.loser_id,
       data.first_player_alias,
       data.is_offline,
+      0,
     ];
     db.run(sql, params, function (err) {
       if (err) {
