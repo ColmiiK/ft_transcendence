@@ -870,7 +870,7 @@ export function crazyTokensMode(data: GameInfo): void {
     
         const surrenderPl2 = document.getElementById('surrenderPl2');
         if (!surrenderPl2){
-            console.error("surrenderPl2 not found");
+            console.error(getTranslation('game_no_surrender'));
             return Promise.resolve();
         }
         if (player2.AI) surrenderPl2.style.display = 'none';

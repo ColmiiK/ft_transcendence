@@ -256,7 +256,7 @@ export function classicMode(data: GameInfo): void {
 					depth: 5
 				});
 			}).catch(error => {
-				console.warn('AI Worker error:', error);
+				console.warn(getTranslation('game_ai_error'), error);
 				return columnList[Math.floor(Math.random() * columnList.length)].id;
 			});
 			columnToUse = columnList.find(col => col.id === bestColumnId) || null;
@@ -318,7 +318,7 @@ export function classicMode(data: GameInfo): void {
 	
 		const surrenderPl2 = document.getElementById('surrenderPl2');
         if (!surrenderPl2){
-            console.error("surrenderPl2 not found");
+            console.error(getTranslation('game_no_surrender'));
             return Promise.resolve();
         }
         if (player2.AI) surrenderPl2.style.display = 'none';
