@@ -1,6 +1,7 @@
 import { navigateTo } from "../../index.js";
 import { GameInfo } from "../../types.js";
 import { sendRequest } from "../../login-page/login-fetch.js";
+import { getTranslation } from "../../functionalities/transcript.js";
 
 export interface Player {
 	keyPress: boolean;
@@ -76,7 +77,7 @@ export function implementAlias(data: GameInfo){
 	const alias1 = document.getElementById("alias1");
 	const alias2 = document.getElementById("alias2");
 	if (!alias1 || !alias2){
-		console.error("alias element not fount.")
+		console.error(getTranslation('game_not_alias'))
 		return ;
 	}
 	alias1.innerText = data.first_player_alias;
@@ -118,27 +119,27 @@ export function resetBall(generalData: GeneralData, ballData: BallData, player1:
 export function insertWinner(win: string){
 	const endGame = document.getElementById("endGame");
 	if (!endGame){
-		console.error("endGame element not found.");
+		console.error(getTranslation('game_no_endGame'));
 		return ;
 	}
 	const gamesCard = document.getElementById("gamesCard");
     if (!gamesCard){
-        console.error("gamesCard element not found.");
+        console.error(getTranslation('game_no_gamesCard'));
         return ;
     }
 	const gameEl = document.getElementById('game');
 	if (!gameEl){
-		console.error("game element not found.")
+		console.error(getTranslation('game_no_element'))
 		return ;
 	}
 	const pauseBtn = document.getElementById('pauseGame')
 	if (!pauseBtn){
-		console.error("pauseGame element not found.")
+		console.error(getTranslation('game_no_pauseGame'))
 		return Promise.resolve();
 	}
 	const exitBtn = document.getElementById('exitGame')
 	if (!exitBtn){
-		console.error("exitGame element not found.")
+		console.error(getTranslation('game_no_exitGame'))
 		return Promise.resolve();
 	}
 	exitBtn.style.display = 'none';
@@ -149,21 +150,21 @@ export function insertWinner(win: string){
 
 	const winner = document.getElementById("win");
 	if (!winner){
-		console.error("win element not found.");
+		console.error(getTranslation('game_no_winner'));
 		return ;
 	}
 	const loser = document.getElementById("loser");
 	if (!loser){
-		console.error("loser element not found.");
+		console.error(getTranslation('game_no_loser'));
 		return ;
 	}
 	if (win == "Player 1"){
-		winner.innerText = "Player 1 wins!"
-		loser.innerText = "Player 2 loses"
+		winner.innerText = getTranslation('game_player1_wins');
+		loser.innerText = getTranslation('game_player2_loses');
 	}
 	else{
-		winner.innerText = "Player 2 wins!"
-		loser.innerText = "Player 1 loses"
+		winner.innerText = getTranslation('game_player2_wins');
+		loser.innerText = getTranslation('game_player1_loses');
 	}
 }
 
@@ -288,25 +289,25 @@ export function delay(ms: number): Promise<void> {
 export async function countDown(ballData: BallData, start: boolean): Promise<void>{
 	const countDownEl = document.getElementById('countdown')
 	if (!countDownEl){
-		console.error("countdown element not found.")
+		console.error(getTranslation('game_no_countdown'))
 		return Promise.resolve();
 	}
 
 	const gameEl = document.getElementById('game');
 	if (!gameEl){
-		console.error("game element not found.")
+		console.error(getTranslation('game_no_element'));
 		return Promise.resolve();
 	}
 
 	const pauseBtn = document.getElementById('pauseGame')
 	if (!pauseBtn){
-		console.error("pauseGame element not found.")
+		console.error(getTranslation('game_no_pauseGame'));
 		return Promise.resolve();
 	}
 
 	const exitBtn = document.getElementById('exitGame');
 	if (!exitBtn){
-		console.error("exitGame element not found.");
+		console.error(getTranslation('game_no_exitGame'));
 		return Promise.resolve();
 	}
 
@@ -322,7 +323,7 @@ export async function countDown(ballData: BallData, start: boolean): Promise<voi
 		countDownEl.style.animation = 'none'
 		void countDownEl.offsetWidth;
 	}
-	countDownEl.textContent = '¡GO!';
+	countDownEl.textContent = getTranslation('game_go');
 	await delay(1000);
 
 	countDownEl.style.animation = 'fadeOut 0.5s';
@@ -340,25 +341,25 @@ export async function countDown(ballData: BallData, start: boolean): Promise<voi
 export async function pauseGame(generalData: GeneralData, ballData: BallData, powerUpData: PowerUpType | null): Promise<void> {
 	const pauseEl = document.getElementById('pause');
 	if (!pauseEl){
-		console.error("pause element not found.");
+		console.error(getTranslation('game_no_pause'));
 		return Promise.resolve();
 	}
 
 	const gameEl = document.getElementById('game');
 	if (!gameEl){
-		console.error("game element not found.")
+		console.error(getTranslation('game_no_element'))
 		return Promise.resolve();
 	}
 
 	const pauseBtn = document.getElementById('pauseGame')
 	if (!pauseBtn){
-		console.error("pauseGame element not found.")
+		console.error(getTranslation('game_no_pauseGame'))
 		return Promise.resolve();
 	}
 
 	const exitBtn = document.getElementById('exitGame');
 	if (!exitBtn){
-		console.error("exitGame element not found.");
+		console.error(getTranslation('game_no_exitGame'));
 		return Promise.resolve();
 	}
 	exitBtn.style.pointerEvents = 'none';
@@ -412,19 +413,19 @@ function cleanupPowerUps(powerUpData: PowerUpType) {
 export async function returnToGames(generalData: GeneralData, ballData: BallData, AIData: AIData, player1: Player, player2: Player, mode: "classic" | "custom", PowerUpData: PowerUpType | null, data: GameInfo): Promise<void> {
 	const exitBtn = document.getElementById('exitGame');
 	if (!exitBtn){
-		console.error("exitGame element not found.");
+		console.error(getTranslation('game_no_exitGame'));
 		return Promise.resolve();
 	}
 
 	const pauseBtn = document.getElementById('pauseGame')
 	if (!pauseBtn){
-		console.error("pauseGame element not found.")
+		console.error(getTranslation('game_no_pauseGame'))
 		return Promise.resolve();
 	}
 
 	const gameEl = document.getElementById('game');
 	if (!gameEl){
-		console.error("game element not found.")
+		console.error(getTranslation('game_no_element'))
 		return Promise.resolve();
 	}
 
@@ -435,7 +436,7 @@ export async function returnToGames(generalData: GeneralData, ballData: BallData
 
 	const returnEl = document.getElementById('returnToGames');
 	if (!returnEl){
-		console.error("returnToGames element not found.");
+		console.error(getTranslation('game_no_returnToGames'));
 		return Promise.resolve();
 	}
 	returnEl.style.display = 'block';
@@ -491,7 +492,7 @@ async function updateData(data: GameInfo, player1: Player, player2: Player){
 		}
 		const response = await sendRequest("POST", "/matches/end", object);
 		if (!response || response?.error){
-			console.error("Error updating game");
+			console.error(getTranslation('game_update_error'));
 			return ;
 		}
 	}
@@ -506,7 +507,7 @@ async function updateData(data: GameInfo, player1: Player, player2: Player){
 		}
 		const response = await sendRequest("POST", "/matches", object);
 		if (!response || response?.error){
-			console.error("Error updating game");
+			console.error(getTranslation('game_update_error'));
 			return ;
 		}
 	}

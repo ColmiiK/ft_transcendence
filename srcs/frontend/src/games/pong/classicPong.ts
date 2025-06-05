@@ -6,11 +6,12 @@ import {
 
 import { GameInfo } from "../../types.js";
 import { checkLogged } from '../../index.js';
+import { getTranslation } from '../../functionalities/transcript.js';
 
 export function classicPong(data: GameInfo): void{
 	const gameElement = document.getElementById('game');
 	if (!gameElement){
-		throw new Error("HTML 'game' element not found.");
+		throw new Error(getTranslation('game_not_found'));
 	}
 	let width = gameElement.clientWidth;
 	let height = gameElement.clientHeight;

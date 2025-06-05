@@ -5,11 +5,12 @@ import {
 } from './gameEngine.js';
 
 import { GameInfo } from "../../types.js";
+import { getTranslation } from '../../functionalities/transcript.js';
 
 export function chaosPong(data: GameInfo): void {
 	const gameElement = document.getElementById('game');
 	if (!gameElement){
-		throw new Error("HTML 'game' element not found.");
+		throw new Error(getTranslation('game_not_found'));
 	}
 	let width = gameElement.clientWidth;
 	let height = gameElement.clientHeight;

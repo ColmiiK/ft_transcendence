@@ -63,15 +63,15 @@
 					<div id="c71" class="cell"></div>
 				</div>
 			</div>
-			<div id="pauseConnect">PAUSE</div>
+			<div id="pauseConnect" translatekey="game_pause_upper">PAUSE</div>
 			<div id="returnToGamesConnect">
-				<p>Are you sure? Pussy.</p>
-				<button id="continue">Continue</button>
-				<button id="exit">Exit</button>
+				<p translatekey="game_check">Are you sure? Pussy.</p>
+				<button id="continue" translatekey="game_continue">Continue</button>
+				<button id="exit" translatekey="game_exit">Exit</button>
 			</div>
 			<div id="buttomGroup">
-				<button id="pauseGame">Pause</button>
-				<button id="exitGame">Exit</button>
+				<button id="pauseGame" translatekey="game_pause">Pause</button>
+				<button id="exitGame" translatekey="game_exit">Exit</button>
 			</div>
 			<div id="dice-container" class="flex items-center justify-center w-20 h-20 rounded-lg bg-gray-100 shadow-lg transition-all ease-in-out">
 				<span id="dice-icon">⚪</span>
@@ -90,13 +90,13 @@
 			<p id="loser" class="end-paragraph"></p>
 			<img class="end-img" src="../../../resources/img/loser_cat.png" />
 		</div>
-		<button class="end-button" id="exit-end">Exit</button>
+		<button class="end-button" id="exit-end" translatekey="game_exit">Exit</button>
 	</div>
 	<div id="endGameDraw" class="flex flex-col p-4 rounded-[15px] gap-4">
 		<div id="endDraw" class="flex flex-col w-full lg:flex-row gap-4 items-center justify-center">
 			<img class="end-img" src="../../../resources/img/winner_cat.png" />
-			<p class="end-paragraph">Whoaah a tie!</p>
+			<p class="end-paragraph" translatekey="game_tie">Whoaah a tie!</p>
 		</div>
-		<button class="end-button" id="draw-end">Exit</button>
+		<button class="end-button" id="draw-end" translatekey="game_exit">Exit</button>
 	</div>
 </div>
