@@ -72,9 +72,10 @@
 }
 
 .data-user {
+  /* text-indent: ; */
   width: 100%;
   background-color: var(--violet);
-  border-radius: 5px;
+  border-radius: 15px;
   margin: 5px;
   padding: 5px;
 }
