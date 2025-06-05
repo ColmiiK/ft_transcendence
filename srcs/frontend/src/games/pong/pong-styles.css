@@ -29,6 +29,21 @@
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+.touch-area {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  z-index: 10;
+}
+
+.touch-area.left {
+  left: 0;
+}
+
+.touch-area.right {
+  right: 0;
+}
 
 #countdown {
 	position: absolute;
