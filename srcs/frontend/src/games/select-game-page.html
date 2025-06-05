@@ -126,10 +126,10 @@
             <div id="pink-divider" class="w-full"></div>
             <p class="w-full text-start" translatekey="select_player_one">Player 1: <span class="host">Default</span></p>
             <p class="w-full text-start" translatekey="select_player_two">Player 2: <span></span></p>
-            <input id='local-alias' type="text" placeholder="Alias" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
+            <input id='local-alias' type="text" placeholder="Alias" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]" maxlength="16">
             <p translatekey="login_or" >or</p>
-            <input id='local-username' type="text" placeholder="Username" data-placeholder="login_username" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
-            <input id='local-password' type="password" placeholder="Password" data-placeholder="login_password" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
+            <input id='local-username' type="text" placeholder="Username" data-placeholder="login_username" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]" maxlength="16">
+            <input id='local-password' type="password" placeholder="Password" data-placeholder="login_password" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]" maxlength="25">
             <div class="flex items-center gap-2 justify-center">
               <div id='start-classic' class="cursor-pointer w-fit signin-user bg-[var(--dark-pink)] px-2 rounded-full modal-button" translatekey="select_start">Start game</div>
               <p translatekey="login_or">or</p>
@@ -178,10 +178,10 @@
             <div id="pink-divider" class="w-full"></div>
             <p class="w-full text-start" translatekey="select_player_one">Player 1: <span class="host">Default</span></p>
             <p class="w-full text-start" translatekey="select_player_two">Player 2: <span></span></p>
-            <input id='custom-alias' type="text" placeholder="Alias" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
+            <input id='custom-alias' type="text" placeholder="Alias" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]" maxlength="16">
             <p translatekey="login_or">or</p>
-            <input id='custom-username' type="text" placeholder="Username" data-placeholder="login_username" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
-            <input id='custom-password' type="password" placeholder="Password" data-placeholder="login_password"class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
+            <input id='custom-username' type="text" placeholder="Username" data-placeholder="login_username" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]" maxlength="16">
+            <input id='custom-password' type="password" placeholder="Password" data-placeholder="login_password"class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]" maxlength="25">
             <div class="flex items-center gap-2 justify-center">
               <div id='start-custom' class="cursor-pointer w-fit signin-user bg-[var(--dark-pink)] px-2 rounded-full modal-button" translatekey="select_start" >Start game</div>
               <p translatekey="login_or">or</p>
@@ -226,7 +226,7 @@
       </div>
       <div id="pink-divider"></div>
       <form class="flex flex-col gap-4">
-        <input id='tour-title' type="text" placeholder="Tournament Title" data-placeholder="select_tournament_name" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
+        <input id='tour-title' type="text" placeholder="Tournament Title" data-placeholder="select_tournament_name" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]" maxlength="20">
         <div class="grid grid-cols-2 items-center justify-center gap-2">
           <div class="flex items-center gap-2">
             <input type="radio" value="classic-pong" name="game-option" class="game-option accent-[var(--dark-purple)] h-[20px] aspect-square">
@@ -254,8 +254,8 @@
             </svg>
           </div>
           <div id="login-form" class="hidden flex flex-col w-full items-center gap-2 my-2">
-            <input id='username' type="text" placeholder="Username" data-placeholder="login_username" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
-            <input id='password' type="password" placeholder="Password" data-placeholder="login_password" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
+            <input id='username' type="text" placeholder="Username" data-placeholder="login_username" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]" maxlength="16">
+            <input id='password' type="password" placeholder="Password" data-placeholder="login_password" class="w-full rounded-[15px] outline-none indent-2 opacity-80 text-[var(--dark-purple)]" maxlength="25">
             <div class="flex items-center gap-2 justify-center">
               <div id='submit-user' class="cursor-pointer w-fit signin-user bg-[var(--dark-pink)] px-2 rounded-full modal-button" translatekey="login_submit">Submit</div>
               <p translatekey="login_or">or</p>
@@ -281,7 +281,7 @@
           </div>
         </div>
         <div class="flex w-full items-center gap-2">
-          <input id='player-alias' type="text" placeholder="Alias" class="rounded-[15px] w-full h-fit outline-none indent-2 opacity-80 text-[var(--dark-purple)]">
+          <input id='player-alias' type="text" placeholder="Alias" class="rounded-[15px] w-full h-fit outline-none indent-2 opacity-80 text-[var(--dark-purple)]" maxlength="16">
           <svg class="alias-icon fill-[var(--dark-purple)] bg-[var(--accent-pink)] rounded-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
             <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
           </svg>

@@ -71,15 +71,15 @@
 				<form id="change-password-form" class="flex flex-col justify-center gap-4">
 					<div class="flex flex-col items-center">
 						<p class="self-start" translatekey="settings_current_password">Current Password</p>
-						<input id="password" class="data-user outline-none rounded-[15px] indent-2 bg-[#d087ac50]" type="password" placeholder="Current Password" data-placeholder="settings_current_password">
+						<input id="password" class="data-user outline-none rounded-[15px] indent-2 bg-[#d087ac50]" type="password" placeholder="Current Password" data-placeholder="settings_current_password" maxlength="25">
 					</div>
 					<div class="flex flex-col items-center">
 						<p class="self-start" translatekey="settings_new_password">New Password</p>
-						<input id="new-password" class="data-user outline-none rounded-[15px] indent-2 bg-[#d087ac50]" type="password" placeholder="New Password" data-placeholder="settings_new_password">
+						<input id="new-password" class="data-user outline-none rounded-[15px] indent-2 bg-[#d087ac50]" type="password" placeholder="New Password" data-placeholder="settings_new_password" maxlength="25">
 					</div>
 					<div class="flex flex-col items-center">
 						<p class="self-start" translatekey="settings_confirm_password">Confirm New Password</p>
-						<input id="confirm-password" class="data-user outline-none rounded-[15px] indent-2 bg-[#d087ac50]" type="password" placeholder="Confirm New Password" data-placeholder="settings_confirm_password">
+						<input id="confirm-password" class="data-user outline-none rounded-[15px] indent-2 bg-[#d087ac50]" type="password" placeholder="Confirm New Password" data-placeholder="settings_confirm_password" maxlength="25">
 					</div>
 					<button type="submit" class="self-center signin-user rounded-[15px] p-2 bg-[var(--dark-pink)] text-white" translatekey="settings_submit_changes">Submit Changes</button>
 				</form>
@@ -160,11 +160,11 @@
 		  	<div id="pink-divider"></div>
 		  	<form id="delete-account-form" class="flex flex-col justify-center items-center">
 			  <input id="delete-email" type="email" class="text-[var(--dark-purple)] w-full p-1 m-2 rounded-md outline-none"
-			  placeholder="Introduce your email" data-placeholder="settings_email">
+			  placeholder="Introduce your email" data-placeholder="settings_email" maxlength="50">
 			  <input id="delete-password" type="password" class="text-[var(--dark-purple)] w-full p-1 m-2 rounded-md outline-none"
-			  placeholder="Introduce your password" data-placeholder="settings_password">
+			  placeholder="Introduce your password" data-placeholder="settings_password" maxlength="25">
 			  <input id="delete-confirm" type="text" class="text-[var(--dark-purple)] w-full p-1 m-2 rounded-md outline-none"
-			  placeholder="Type 'Delete'" data-placeholder="settings_type_delete">
+			  placeholder="Type 'Delete'" data-placeholder="settings_type_delete" maxlength="25">
 			  <button type="submit" class="signin-user p-1 m-2 rounded-md modal-button" translatekey="login_submit">Submit</button>
 			</form>
 			<div class="flex flex-col justify-center items-center">
