@@ -448,7 +448,17 @@ export async function returnToGames(generalData: GeneralData, ballData: BallData
 		return ;
 	})
 
-	document.getElementById('exit')?.addEventListener('click', () => {
+	document.getElementById('surrenderPl1')?.addEventListener('click', () => {
+		player2.counter = 10;
+		stop(generalData, AIData, ballData, PowerUpData, data, player1, player2);
+		clearGameState(player1, player2, mode);
+		if (mode == "custom" && PowerUpData)
+			cleanupPowerUps(PowerUpData);
+		navigateTo("/games");
+	})
+
+	document.getElementById('surrenderPl2')?.addEventListener('click', () => {
+		player1.counter = 10;
 		stop(generalData, AIData, ballData, PowerUpData, data, player1, player2);
 		clearGameState(player1, player2, mode);
 		if (mode == "custom" && PowerUpData)
