@@ -111,6 +111,7 @@ export function classicMode(data: GameInfo): void {
 		if (exitBtn) exitBtn.style.display = 'none';
 
 		updateData(data, player1, player2);
+		saveGameState("classic", player1, player2, data);
 		return true;
 	}
 
@@ -129,9 +130,9 @@ export function classicMode(data: GameInfo): void {
 		else{
             implementAlias(data);
             await enableClicks();
+			saveGameState("classic", player1, player2, data)
         }
 		handlerEvents();
-		saveGameState("classic", player1, player2, data)
 	}
 
 	function handlerEvents(){
@@ -293,6 +294,7 @@ export function classicMode(data: GameInfo): void {
 
 	document.getElementById('exit-end')?.addEventListener('click', async () => {
         clearGame();
+		localStorage.removeItem(`connect4GameStateclassic`);
 		try {
 			const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
 			if (response)
@@ -307,6 +309,7 @@ export function classicMode(data: GameInfo): void {
 
 	document.getElementById('draw-end')?.addEventListener('click', async () => {
         clearGame();
+		localStorage.removeItem(`connect4GameStateclassic`);
 		try {
 			const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
 			if (response)
@@ -380,10 +383,9 @@ export function classicMode(data: GameInfo): void {
 		document.getElementById('surrenderPl1')?.addEventListener('click', async () => {
 			player2.winner = true;
 			player1.winner = false;
-			saveGameState("classic", player1, player2, data);
 			await updateData(data, player1, player2);
 			clearGame();
-			
+			localStorage.removeItem(`connect4GameStateclassic`);
 			try {
 				const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
 				if (response)
@@ -399,9 +401,9 @@ export function classicMode(data: GameInfo): void {
 		document.getElementById('surrenderPl2')?.addEventListener('click', async () => {
 			player1.winner = true;
 			player2.winner = false;
-			saveGameState("classic", player1, player2, data);
 			await updateData(data, player1, player2);
 			clearGame();
+			localStorage.removeItem(`connect4GameStateclassic`);
 			try {
 				const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
 				if (response)

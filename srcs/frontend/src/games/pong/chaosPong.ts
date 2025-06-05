@@ -841,7 +841,6 @@ export function chaosPong(data: GameInfo): void {
 			if (cont) cont.style.display = "none";
 			if (pauseDiv) pauseDiv.style.display = "none";
 		}
-        saveGameState();
 		await returnToGames(generalData, ballData, AIData, player1, player2, "custom", powerUpData, data);
 	});
 
