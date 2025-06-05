@@ -85,7 +85,7 @@ async function chargeReadyToPlay() {
   try {
     const response = await sendRequest('GET', '/matches/scheduled') as Scheduled[];
     if (!response)
-      throw new Error('Error while fetching matches ready to play');
+      throw new Error(getTranslation('select_fetch_error'));
     if (response.length === 0)
       return ;
     response.forEach((match: Scheduled) => {
@@ -113,7 +113,7 @@ async function chargeReadyToPlay() {
 
 function goToMatch(match: Scheduled) {
   if (localStorage.getItem("username") !== match.host) {
-    showAlert('You are not the host of this match', 'toast-error');
+    showAlert(getTranslation('select_not_host'), 'toast-error');
     return;
   }
 
@@ -351,7 +351,7 @@ async function validateGame(gameType: string, mode: string) {
     let playerName = '';
     if (alias) {
       if (username || password)
-        throw new Error('Choose one option to fill');
+        throw new Error(getTranslation('select_choose_one'));
       const response = await sendRequest('POST', 'verify/alias', { username: alias });
       if (!response || response['error'])
         throw new Error(response['error']);
@@ -423,25 +423,25 @@ async function startTournament() {
   if (!tournamentTitle || !modeInputs || !players) { return ; }
 
   try {
-    if (!tournamentTitle.value) { throw new Error('Missing Tournament title'); }
+    if (!tournamentTitle.value) { throw new Error(getTranslation('select_miss_title')); }
     let gameMode;
     for (let i = 0; i < 4; i++) {
       if (modeInputs[i].checked)
         gameMode = modeInputs[i].value;
       
       if (players[i].innerText === 'Default')
-        throw new Error('Not enough players');
+        throw new Error(getTranslation('select_not_enough'));
       else {
         playersObject[i] = { username: "", isUser: false };
         playersObject[i].username = players[i].innerText;
         playersObject[i].isUser = players[i].classList.contains('user');
       }
     }
-    if (!gameMode) { throw new Error('Select a Game Mode'); }
+    if (!gameMode) { throw new Error(getTranslation('select_need_mode')); }
 
     const response = await sendRequest('POST', '/tournaments', {name: tournamentTitle.value, game_type: gameMode, users: playersObject});
     if (!response)
-      throw new Error('Error while creating tournament');
+      throw new Error(getTranslation('select_tournament_failed'));
     else if (response['error'])
       throw new Error(response['error']);
     navigateTo('/tournament');
@@ -508,7 +508,7 @@ function addPlayer(playerName: string, isUser: boolean) {
   let msg = '';
   if (!players || count > 3 || !playerName) { return (false); }
   for (let i = 0; i < 4; i++)
-    if (playerName === players[i].innerText) { msg = 'Cannot use the same name twice'; }
+    if (playerName === players[i].innerText) { msg = getTranslation('select_name_twice'); }
 
   if (msg === '')
     msg = parsePlayer(playerName);
@@ -529,12 +529,12 @@ function parsePlayer(playerName: string) {
   let msg = '';
   const username = localStorage.getItem('username');
   if (username && username === playerName)
-    msg = 'Cannot use the same name twice'
+    msg = getTranslation('select_name_twice');
   if (playerName.length < 4)
-    msg = 'Player Alias too short';
+    msg = getTranslation('select_alias_short');
   else if (playerName.length > 16)
-    msg = 'Player Alias too long';
+    msg = getTranslation('select_alias_long');
   else if (!/^[a-z0-9]+$/.test(playerName))
-    msg = 'Player Alias can only contain lowercase and digits';
+    msg = getTranslation('select_allowed_chars');
   return (msg);
 }
