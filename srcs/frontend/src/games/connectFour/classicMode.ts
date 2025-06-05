@@ -81,14 +81,16 @@ export function classicMode(data: GameInfo): void {
 			
 			if (!aiColumn && player2.turn && player2.AI && !aiIsThinking && gameActive) {
 				console.log("AI is thinking...");
+				aiIsThinking = true;
+				await disableClicks();
 				aiColumn = await aiToken();
 				console.log("AI chose: ", aiColumn?.id);
 			}
 			
 			if (player2.turn && player2.AI && aiColumn && aiIsThinking && gameActive) {
+				await enableClicks();
 				await aiColumn.click();
-				aiIsThinking = false;
-				aiColumn = null;
+				if (aiIsThinking && !aiColumn) aiIsThinking = false;
 			}
 		}, 1000);
 	}
@@ -148,6 +150,7 @@ export function classicMode(data: GameInfo): void {
 		localStorage.removeItem(`connect4GameStateclassic`);
 		gameActive = false;
 		clearGameEngine(player1, player2, columnList, columnMap, boardMap);
+		
 		if (aiInterval) {
 			clearInterval(aiInterval);
 			aiInterval = null;
@@ -157,7 +160,9 @@ export function classicMode(data: GameInfo): void {
 			aiWorker.terminate();
 			aiWorker = null;
 		}
+
 		aiColumn = null;
+		aiIsThinking = false;
 	}
 
 	async function enableClicks(): Promise<void> {
@@ -169,17 +174,24 @@ export function classicMode(data: GameInfo): void {
 	}
 
 	async function handleColumnClick(column: HTMLElement): Promise<void> {
+		await disableClicks();
+
 		if (!gameActive || player1.winner || player2.winner) {
 			clearGame();
 			return;
 		}
 
-		if (player2.turn && player2.AI && !aiColumn) return ;
+		if (player2.turn && player1.AI && !aiColumn) return ;
+        if (player2.turn && player2.AI && aiColumn){
+            column = aiColumn;
+            aiColumn = null;
+        }
 
 		await placeToken(column);
 		await saveGameState("classic", player1, player2, data);
 
-		if (checkState()) gameActive = false
+		if (checkState()) gameActive = false;
+		await enableClicks();
 	}
 	
 	function insertDivWinner(): void {
@@ -192,6 +204,7 @@ export function classicMode(data: GameInfo): void {
 
 	async function placeToken(column: HTMLElement | null): Promise<void> {
 		await placeTokenEngine(column, player1, player2, columnMap, boardMap, columnList, "classic");
+		if (aiIsThinking && player1.turn && player2.AI) aiIsThinking = false;
 	}
 
 	function checkDraw(): boolean {
@@ -203,9 +216,7 @@ export function classicMode(data: GameInfo): void {
 	}
 
 	async function aiToken(): Promise<HTMLElement | null> {
-		if (!gameActive || !aiWorker || !player2.turn || aiColumn || aiIsThinking)
-			return null;
-		aiIsThinking = true;
+		if (!gameActive || !aiWorker || !player2.turn || aiColumn) return null;
 
 		const winColumns = detectWinOpportunities(player2);
 		if (winColumns.length > 0) {
@@ -217,7 +228,7 @@ export function classicMode(data: GameInfo): void {
 			return threatColumns[0];
 		}
 
-		let columnToUse: HTMLElement | null = Math.random() < 0.2 ? 
+		let columnToUse: HTMLElement | null = Math.random() < 0.3 ? 
 			columnList[Math.floor(Math.random() * columnList.length)] : null;
 
 		if (!columnToUse && aiWorker){
