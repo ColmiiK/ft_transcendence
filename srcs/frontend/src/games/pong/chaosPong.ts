@@ -100,12 +100,14 @@ export function chaosPong(data: GameInfo): void {
 		if (savedState){
 			loadGameState();
             implementAlias(data);
+            manageTouchPad();
             saveGameState();
             if (!checkLost(generalData, ballData, AIData, powerUpData, data, player1, player2, width))
                 await pauseGame(generalData, ballData, powerUpData);
 		}
 		if (!savedState){
             implementAlias(data);
+            manageTouchPad();
 			await countDown(ballData, true);
 			init(generalData, ballData, player1, player2, width);
             saveGameState();
@@ -199,6 +201,58 @@ export function chaosPong(data: GameInfo): void {
 			player1.keyPress = false;
 		if (key === "arrowup" || key === "arrowdown") 
 			player2.keyPress = false;
+	}
+
+    function setupButtonControls() {
+		const btnPl1Up = document.getElementById("btnPl1Up");
+		const btnPl1Down = document.getElementById("btnPl1Down");
+
+		btnPl1Up?.addEventListener("touchstart", () => {
+            if (!player1.keysAffected)
+			    player1.keyCode = "up";
+            else
+                player1.keyCode = "down";
+			player1.keyPress = true;
+		});
+
+		btnPl1Down?.addEventListener("touchstart", () => {
+			if (!player1.keysAffected)
+                player1.keyCode = "down";
+            else
+                player1.keyCode = "up";
+			player1.keyPress = true;
+		});
+
+		const stopPl1 = () => { player1.keyPress = false; };
+
+		btnPl1Up?.addEventListener("touchend", stopPl1);
+		btnPl1Down?.addEventListener("touchend", stopPl1);
+
+		if (!AIData.activate) {
+			const btnPl2Up = document.getElementById("btnPl2Up");
+			const btnPl2Down = document.getElementById("btnPl2Down");
+
+			btnPl2Up?.addEventListener("touchstart", () => {
+				if (!player2.keysAffected)
+                    player2.keyCode = "up";
+                else
+                    player2.keyCode = "down";
+				player2.keyPress = true;
+			});
+
+			btnPl2Down?.addEventListener("touchstart", () => {
+				if (!player2.keysAffected)
+                    player2.keyCode = "down";
+                else
+                    player2.keyCode = "up";
+				player2.keyPress = true;
+			});
+
+			const stopPl2 = () => { player2.keyPress = false; };
+
+			btnPl2Up?.addEventListener("touchend", stopPl2);
+			btnPl2Down?.addEventListener("touchend", stopPl2);
+		}
 	}
 
 	/* PowerUp setup */
@@ -591,6 +645,7 @@ export function chaosPong(data: GameInfo): void {
 			ballData.ball.style.top = `${height - ballData.ball.clientHeight}px`;
 			ballData.velY = -Math.abs(ballData.velY);
 		}
+        manageTouchPad();
         saveGameState();
 	}
 
@@ -789,6 +844,26 @@ export function chaosPong(data: GameInfo): void {
         saveGameState();
 		await returnToGames(generalData, ballData, AIData, player1, player2, "custom", powerUpData, data);
 	});
+
+    function isMobileDevice() {
+		return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+	}
+
+	function manageTouchPad(){
+		const leftControls = document.getElementById("left-controls");
+		const rightControls = document.getElementById("right-controls");
+		if (isMobileDevice()) {
+			if (leftControls) leftControls.style.display = "flex";
+			if (!AIData.activate && rightControls)
+				rightControls.style.display = "flex";
+			else if (AIData.activate && rightControls)
+				rightControls.style.display = "none";
+			setupButtonControls();
+		} else {
+			if (leftControls) leftControls.style.display = "none";
+			if (rightControls) rightControls.style.display = "none";
+		}	
+	}
 
 	setOnresize();
 	start();
