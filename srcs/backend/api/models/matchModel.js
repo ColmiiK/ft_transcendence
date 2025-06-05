@@ -26,9 +26,10 @@ export function createMatch(data) {
         loser_id,
         host,
         is_offline,
+        tournament_id,
         played_at
       )
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?, datetime('now', '+2 hours', 'subsec'))
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, datetime('now', '+2 hours', 'subsec'))
     `;
     const params = [
       data.game,
@@ -45,6 +46,7 @@ export function createMatch(data) {
       data.loser_id,
       data.first_player_alias,
       data.is_offline,
+      0,
     ];
     db.run(sql, params, function (err) {
       if (err) {
@@ -560,14 +562,19 @@ export function finishMatch(match, first_player_score, second_player_score) {
       WHERE
         id = ?
     `;
-    const winner_id =
-      first_player_score > second_player_score
-        ? match.first_player_id
-        : match.second_player_id;
-    const loser_id =
-      first_player_score < second_player_score
-        ? match.first_player_id
-        : match.second_player_id;
+    let winner_id;
+    let loser_id;
+    if (first_player_score > second_player_score) {
+      winner_id = match.first_player_id;
+      if (match.first_player_id !== match.second_player_id)
+        loser_id = match.second_player_id;
+      else loser_id = null;
+    } else {
+      if (match.first_player_id !== match.second_player_id)
+        winner_id = match.second_player_id;
+      else winner_id = null;
+      loser_id = match.first_player_id;
+    }
     const params = [
       first_player_score,
       second_player_score,
@@ -580,8 +587,8 @@ export function finishMatch(match, first_player_score, second_player_score) {
         console.error("Error updating match:", err.message);
         return reject(err);
       }
-      increaseWins(winner_id);
-      increaseLosses(loser_id);
+      if (winner_id) increaseWins(winner_id);
+      if (loser_id) increaseLosses(loser_id);
       resolve({ success: "Match successfully finished" });
     });
   });

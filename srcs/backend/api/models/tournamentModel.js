@@ -637,6 +637,10 @@ export async function determineSecondBracket(tournament) {
     });
   }
   const [custom_mode, game_type] = tournament.game_type.split("-");
+  for (let i = 0; i < winners.length; i++) {
+    if (!winners[i].id) winners[i].id = losers[i].id;
+    if (!losers[i].id) losers[i].id = winners[i].id;
+  }
   const matches = await Promise.all([
     scheduleMatch({
       game_type: game_type,
