@@ -72,6 +72,17 @@ export interface PowerUpType {
 	isPaused: boolean;
 }
 
+export function implementAlias(data: GameInfo){
+	const alias1 = document.getElementById("alias1");
+	const alias2 = document.getElementById("alias2");
+	if (!alias1 || !alias2){
+		console.error("alias element not fount.")
+		return ;
+	}
+	alias1.innerText = data.first_player_alias;
+	alias2.innerText = data.second_player_alias;
+}
+
 export function init(generalData: GeneralData, ballData: BallData, player1: Player, player2: Player, width: number): void {
 	resetBall(generalData, ballData, player1, player2, width);
 }
@@ -104,12 +115,17 @@ export function resetBall(generalData: GeneralData, ballData: BallData, player1:
 	ballData.velY = width * generalData.speed * Math.sin(ballData.angle);
 }
 
-export function insertWinner(winner: string){
-	const winnerDiv = document.getElementById("winnerPong");
-	if (!winnerDiv){
-		console.error("winnerPong element not found.");
+export function insertWinner(win: string){
+	const endGame = document.getElementById("endGame");
+	if (!endGame){
+		console.error("endGame element not found.");
 		return ;
 	}
+	const gamesCard = document.getElementById("gamesCard");
+    if (!gamesCard){
+        console.error("gamesCard element not found.");
+        return ;
+    }
 	const gameEl = document.getElementById('game');
 	if (!gameEl){
 		console.error("game element not found.")
@@ -120,10 +136,35 @@ export function insertWinner(winner: string){
 		console.error("pauseGame element not found.")
 		return Promise.resolve();
 	}
+	const exitBtn = document.getElementById('exitGame')
+	if (!exitBtn){
+		console.error("exitGame element not found.")
+		return Promise.resolve();
+	}
+	exitBtn.style.display = 'none';
 	pauseBtn.style.display = 'none';
-	winnerDiv.style.display = 'block';
-	winnerDiv.innerText = `${winner} wins !`
+	endGame.style.display = 'flex';
+	gamesCard.style.display = 'flex';
 	gameEl.style.animation = "mediumOpacity";
+
+	const winner = document.getElementById("win");
+	if (!winner){
+		console.error("win element not found.");
+		return ;
+	}
+	const loser = document.getElementById("loser");
+	if (!loser){
+		console.error("loser element not found.");
+		return ;
+	}
+	if (win == "Player 1"){
+		winner.innerText = "Player 1 wins!"
+		loser.innerText = "Player 2 loses"
+	}
+	else{
+		winner.innerText = "Player 2 wins!"
+		loser.innerText = "Player 1 loses"
+	}
 }
 
 export function checkLost(generalData: GeneralData, ballData: BallData, AIData: AIData, PowerUpData: PowerUpType | null, data: GameInfo, player1: Player, player2: Player, width: number): boolean {
@@ -414,15 +455,21 @@ export async function returnToGames(generalData: GeneralData, ballData: BallData
 			cleanupPowerUps(PowerUpData);
 		navigateTo("/games");
 	})
+}
 
-	function clearGameState(player1: Player, player2: Player, mode: "classic" | "custom"){
-		localStorage.removeItem(`gameState${mode}`);
-		player1.counter = 0;
-		player2.counter = 0;
-		document.getElementById('counter1')!.innerText = '0';
-		document.getElementById('counter2')!.innerText = '0';
-	}
-	
+export async function exitGame(mode: "classic" | "custom", player1: Player, player2: Player, powerUpData: PowerUpType | null){
+	clearGameState(player1, player2, mode);
+	if (mode == "custom" && powerUpData)
+		cleanupPowerUps(powerUpData);
+	navigateTo("/games");
+}
+
+function clearGameState(player1: Player, player2: Player, mode: "classic" | "custom"){
+	localStorage.removeItem(`gameState${mode}`);
+	player1.counter = 0;
+	player2.counter = 0;
+	document.getElementById('counter1')!.innerText = '0';
+	document.getElementById('counter2')!.innerText = '0';
 }
 
 async function updateData(data: GameInfo, player1: Player, player2: Player){

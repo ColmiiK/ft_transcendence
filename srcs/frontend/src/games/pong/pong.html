@@ -1,8 +1,8 @@
 <div class="screen-set">
 	<div id="games-page" class="flex standard-purple-card justify-center items-center">
 		<div id="players">
-            <h1 >Player 1</h1>
-            <h1>Player 2</h1>
+            <h1 id="alias1"></h1>
+            <h1 id="alias2"></h1>
         </div>
 		<div id="game">
 			<div id="counter1" class="counter">0</div>
@@ -27,16 +27,16 @@
 	</div>
 </div>
 
-<div class="screen-set absolute">
-	<div id="endPong" class="flex flex-col p-4 rounded-[15px] gap-4">
-		<div id="endPlayer1" class="flex flex-col w-full lg:flex-row gap-4 items-center justify-center">
+<div id="gamesCard" class="screen-set absolute">
+	<div id="endGame" class="flex flex-col p-4 rounded-[15px] gap-4">
+		<div id="endWinner" class="flex flex-col w-full lg:flex-row gap-4 items-center justify-center">
 			<img class="end-img" src="../../../resources/img/winner_cat.png" />
-			<p class="end-paragraph">Player1 wins !</p>
+			<p id="win" class="end-paragraph"></p>
 		</div>
-		<div id="endPlayer2" class="flex flex-col w-full lg:flex-row gap-4 items-center justify-center">
-			<p class="end-paragraph">Player2 losses !</p>
+		<div id="endLoser" class="flex flex-col w-full lg:flex-row gap-4 items-center justify-center">
+			<p id="loser" class="end-paragraph"></p>
 			<img class="end-img" src="../../../resources/img/loser_cat.png" />
 		</div>
-		<button>Exit</button>
+		<button class="end-button" id="exit-end">Exit</button>
 	</div>
 </div>

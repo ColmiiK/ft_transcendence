@@ -176,6 +176,19 @@ const locales = [
 			select_tournament_player_four: 'Player 4: <span class="player">Default</span>',
 			select_start_tournament: 'Start Tournament',
 			select_tournament_name: 'Tournament name',
+			// Tournaments
+			tournament_page: 'Tournament',
+			tournament_semifinals: 'Semifinals',
+			tournament_final: 'Final',
+			tournament_unknown: 'Unknown',
+			tournament_winner: 'Winner',
+			tournament_consolation_final: 'Consolation Final',
+			tournament_third: 'Third',
+			tournament_standings: 'Final Standings',
+			tournament_next_match: 'Next Match',
+			tournament_cancel: 'Cancel Tournament',
+			tournament_error_fetching: 'Error while fetching current tournament',
+			tournament_cancel_problem: 'Problem cancelling the tournament',
 
 			// 404
 			page_404: '404 Page Not Found',
@@ -364,6 +377,20 @@ const locales = [
 			select_tournament_player_four: 'Jugador 4: <span class="player">Por defecto</span>',
 			select_start_tournament: 'Comenzar Torneo',
 			select_tournament_name: 'Nombre del torneo',
+			// Torneos
+			tournament_page: 'Torneo',
+			tournament_semifinals: 'Semifinales',
+			tournament_final: 'Final',
+			tournament_unknown: 'Sin Datos',
+			tournament_winner: 'Ganador',
+			tournament_consolation_final: 'Final de Consolación',
+			tournament_third: 'Tercero',
+			tournament_standings: 'Resultados Finales',
+			tournament_next_match: 'Siguiente Partida',
+			tournament_cancel: 'Cancelar Torneo',
+			tournament_error_fetching: 'Error al obtener el torneo actual',
+			tournament_cancel_problem: 'Problema al cancelar el torneo',
+
 			// 404
 			page_404: '404 Página No Encontrada',
 			// Recover password
@@ -553,7 +580,19 @@ const locales = [
 			reset_success: 'Mot de passe changé avec succès. Vous pouvez maintenant revenir à la page de connexion !',
 			twofa_validate: 'Valider 2FA',
 			invalid_code: 'Code invalide',
-
+			// Tournois
+			tournament_page: 'Tournoi',
+			tournament_semifinals: 'Demi-finales',
+			tournament_final: 'Finale',
+			tournament_unknown: 'Aucune donnée',
+			tournament_winner: 'Vainqueur',
+			tournament_consolation_final: 'Finale de consolation',
+			tournament_third: 'Troisième',
+			tournament_standings: 'Classement final',
+			tournament_next_match: 'Prochaine partie',
+			tournament_cancel: 'Annuler le tournoi',
+			tournament_error_fetching: 'Erreur lors de la récupération du tournoi actuel',
+			tournament_cancel_problem: 'Problème lors de l’annulation du tournoi',
 		}
 	},
 ];

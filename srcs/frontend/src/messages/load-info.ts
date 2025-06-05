@@ -202,18 +202,18 @@ async function displayFirstChat(data: MessageObject) {
 
 	// Opens the most recent chat when navigated to messages page
 	try {
+    if (Object.keys(data).length !== 0){
+      chargeChat(data.chat_id, data.friend_username, data.friend_avatar);
+      return;
+    }
 		const recentChats = await sendRequest('GET', 'chats/last');
     console.log('recentChats:', recentChats)
 		if (!recentChats)
 			throw new Error("Error displaying the first chat");
 
 		const recentChatsTyped = recentChats as LastMessage[];
-		if (recentChatsTyped.length > 0) {
-			if (Object.keys(data).length !== 0)
-				chargeChat(data.chat_id, data.friend_username, data.friend_avatar);
-			else
-				chargeChat(recentChatsTyped[0].chat_id, recentChatsTyped[0].friend_username, recentChatsTyped[0].friend_avatar);
-		}
+		if (recentChatsTyped.length > 0)
+      chargeChat(recentChatsTyped[0].chat_id, recentChatsTyped[0].friend_username, recentChatsTyped[0].friend_avatar);
 	}
 	catch (error) {
 		console.error(error);

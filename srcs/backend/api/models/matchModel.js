@@ -26,9 +26,10 @@ export function createMatch(data) {
         loser_id,
         host,
         is_offline,
+        tournament_id,
         played_at
       )
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?, datetime('now', '+2 hours', 'subsec'))
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, datetime('now', '+2 hours', 'subsec'))
     `;
     const params = [
       data.game,
@@ -45,6 +46,7 @@ export function createMatch(data) {
       data.loser_id,
       data.first_player_alias,
       data.is_offline,
+      0,
     ];
     db.run(sql, params, function (err) {
       if (err) {
@@ -617,5 +619,32 @@ export function cancelTournamentMatches(tournament) {
   tournament.tournament_matches.forEach((match) => {
     if (match.match_status === "scheduled")
       patchMatch(match.match_id, { status: "cancelled" });
+  });
+}
+
+/**
+ * Returns true or false if the match is in a tournament
+ * @param {Number} match_id - ID of the match
+ * @returns {Boolean} - True or false if it is in a tournament, null if there is no match
+ */
+export function getMatchInTournament(match_id) {
+  assert(match_id !== undefined, "match_id must exist");
+  return new Promise((resolve, reject) => {
+    const sql = `
+      SELECT
+        tournament_id
+      FROM
+        matches
+      WHERE
+        id = $match_id
+    `;
+    db.get(sql, { $match_id: match_id }, function (err, row) {
+      if (err) {
+        console.error("Error getting matches:", err.message);
+        return reject(err);
+      }
+      if (!row) return resolve(null);
+      resolve(row.tournament_id !== null);
+    });
   });
 }

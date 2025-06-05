@@ -142,7 +142,7 @@ async function messageInChat(data, userId) {
 						game_type = "connect_four"
 					else
 						game_type = game[1];
-					await scheduleMatch({ game_type: game_type, custom_mode: is_custom, first_player_id: data.receiver_id, first_player_alias: receiver_username, second_player_alias: username, second_player_id: data.sender_id, host: receiver_username, tournament_id: null, phase: null });
+					await scheduleMatch({ game_type: game_type, custom_mode: is_custom, first_player_id: data.receiver_id, first_player_alias: receiver_username, second_player_alias: username, second_player_id: data.sender_id, host: receiver_username, tournament_id: 0, phase: null });
 				}
 				else if (socketsChat.has(sender_id) && socketsChat.has(receiver_id) && data.info === "reject") {
 					const invitation = await createMessage({
@@ -308,7 +308,7 @@ async function handleGameInvitation(data, sender_id) {
 				game_type = "connect_four"
 			else
 				game_type = game[1];
-			await scheduleMatch({ game_type: game_type, custom_mode: is_custom, second_player_id: data.receiver_id, second_player_alias: receiver_username, first_player_id: data.sender_id, first_player_alias: username, host: username, tournament_id: null, phase: null });
+			await scheduleMatch({ game_type: game_type, custom_mode: is_custom, second_player_id: data.receiver_id, second_player_alias: receiver_username, first_player_id: data.sender_id, first_player_alias: username, host: username, tournament_id: 0, phase: null });
 		}
 		else if (socketsChat.has(sender_id) && data.info === "reject") {
 			const invitation = await createMessage({

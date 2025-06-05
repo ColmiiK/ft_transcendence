@@ -33,6 +33,7 @@ export interface GameState {
   boardData: Record<string, { player: number, emoji: string | null }[]>;
   player1: PlayerState;
   player2: PlayerState;
+  Data: GameInfo;
 }
 
 export let columnMap: Map<string, HTMLElement[]> = new Map();
@@ -44,6 +45,17 @@ export let columnList: HTMLElement[] = [];
 export let boardMap: Map<string, number[]> = new Map();
 
 export let crazyTokens: string[] = ["🌀", "🌫️", "💣", "🔒", "👻", "🎲"];
+
+export function implementAlias(data: GameInfo){
+	const alias1 = document.getElementById("alias1");
+	const alias2 = document.getElementById("alias2");
+	if (!alias1 || !alias2){
+		console.error("alias element not fount.")
+		return ;
+	}
+	alias1.innerText = data.first_player_alias;
+	alias2.innerText = data.second_player_alias;
+}
 
 export function setArray(num: string) {
 	let array = new Array();
@@ -107,24 +119,55 @@ export	function clearGame(player1: Player, player2: Player, columnList: HTMLElem
 }
 
 export function insertDivWinner(player1: Player, player2: Player, columnList: HTMLElement[]): void {
-		const winner = document.getElementById("winner");
-		const playerWinner = player1.winner ? `${player1.color}` : `${player2.color}`;
-		const player = player1.winner ? "Player 1" : "Player 2";
-		if (winner){
-			winner.classList.add(playerWinner);
-			winner.style.display = "block";
-			winner.innerHTML = `¡Player <span>${player}</span> wins!`;
-		}
-        console.log("Player: ", player, " wins.");
-		disableClicks(columnList);
+    const endGame = document.getElementById("endGame");
+    if (!endGame){
+        console.error("endGame element not found.");
+        return ;
+    }
+    const gamesCard = document.getElementById("gamesCard");
+    if (!gamesCard){
+        console.error("gamesCard element not found.");
+        return ;
+    }
+    gamesCard.style.display = 'flex';
+    endGame.style.display = 'flex';
+
+    const winner = document.getElementById("win");
+	if (!winner){
+		console.error("win element not found.");
+		return ;
+	}
+	const loser = document.getElementById("loser");
+	if (!loser){
+		console.error("loser element not found.");
+		return ;
+	}
+    const win =  player1.winner ? "Player 1" : "Player 2";
+    if (win == "Player 1"){
+		winner.innerText = "Player 1 wins!"
+		loser.innerText = "Player 2 loses"
+	}
+	else{
+		winner.innerText = "Player 2 wins!"
+		loser.innerText = "Player 1 loses"
+	}
+    disableClicks(columnList);
 }
 
 export function insertDivDraw(columnList: HTMLElement[]): void {
-	const draw = document.getElementById("draw");
-	if (!draw) return;
+	const draw = document.getElementById("endGameDraw");
+	if (!draw){
+        console.error("endGameDraw element not found.");
+        return ;
+    }
 
-	draw.innerText = `¡Draw!`;
-	draw.style.display = "block";
+    const gamesCard = document.getElementById("gamesCard");
+    if (!gamesCard){
+        console.error("gamesCard element not found.");
+        return ;
+    }
+    gamesCard.style.display = 'flex';
+	draw.style.display = "inline-flex";
 	disableClicks(columnList);
 }
 
@@ -406,7 +449,7 @@ export function setPlayerState(player: Player, state: PlayerState) {
     player.turnAffected = state.turnAffected;
 }
 
-export  function saveGameState(mode: "classic" | "custom", player1: Player, player2: Player): void {
+export  function saveGameState(mode: "classic" | "custom", player1: Player, player2: Player, data: GameInfo): void {
     const boardData: Record<string, { player: number, emoji: string | null }[]> = {};
 
     for (const [colId, colData] of boardMap.entries()) {
@@ -432,6 +475,7 @@ export  function saveGameState(mode: "classic" | "custom", player1: Player, play
         boardData,
         player1: getPlayerState(player1),
         player2: getPlayerState(player2),
+        data
     };
 
     localStorage.setItem(`connect4GameState${mode}`, JSON.stringify(gameState));
@@ -445,7 +489,7 @@ export function loadGameState(mode: "classic" | "custom"): GameState | null {
     return state;
 }
 
-export function renderBoardFromState(gameState: GameState, player1: Player, player2: Player): void {
+export function renderBoardFromState(gameState: GameState, data: GameInfo, player1: Player, player2: Player): void {
     setPlayerState(player1, gameState.player1);
     setPlayerState(player2, gameState.player2);
 
@@ -498,6 +542,12 @@ export function renderBoardFromState(gameState: GameState, player1: Player, play
                 cell.classList.remove('red-hover', 'yellow-hover');
             }
         });
+
+        data.first_player_alias = gameState.Data.first_player_alias
+        data.second_player_alias = gameState.Data.second_player_alias
+        data.game_mode = gameState.Data.game_mode
+        data.is_custom = gameState.Data.is_custom;
+        data.match_id = gameState.Data.match_id;
     }
 
     let blindTkn = Array.from(document.getElementsByClassName("blindToken"));

@@ -42,7 +42,7 @@ export function parseSessionForm(
 			msg = getTranslation('username_too_short');
 		else if (username.length > 16)
 			msg = getTranslation('username_too_long');
-		else if (!/^[a-z0-9]+$/.test(username))
+		else if (!/^[a-z0-9_]+$/.test(username))
 			msg = getTranslation('username_allowed_chars');
 		else if (password !== confirmPassword)
 			msg = getTranslation('passwords_not_match');
@@ -209,7 +209,7 @@ export async function sendRequest(method: string, endpoint: string, body: object
 			response = await fetch(`https://${window.location.hostname}:8443/api/${endpoint}`, {
 				method,
 				credentials: 'include',
-				headers: {
+			 headers: {
 					'Content-Type': 'application/json',
 					...header
 				},

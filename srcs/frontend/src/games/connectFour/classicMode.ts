@@ -6,6 +6,7 @@ import {
 	columnClickHandlers,
 	pauseGame,
 	delay,
+	implementAlias,
 	saveGameState,
     loadGameState,
     renderBoardFromState,
@@ -103,8 +104,8 @@ export function classicMode(data: GameInfo): void {
 		const pauseBtn = document.getElementById('pauseGame')
 		if (pauseBtn) pauseBtn.style.display = 'none';
 
-		const cnt = document.getElementById("continue");
-		if (cnt) cnt.style.display = "none";
+		const exitBtn = document.getElementById('exitGame')
+		if (exitBtn) exitBtn.style.display = 'none';
 
 		updateData(data, player1, player2);
 		return true;
@@ -114,15 +115,16 @@ export function classicMode(data: GameInfo): void {
 		const savedState = loadGameState("classic");
 		init();
 		if (savedState){
-			renderBoardFromState(savedState, player1, player2)
+			renderBoardFromState(savedState, data, player1, player2)
 			if (player2.AI)
 				initAI();
 			gameActive = false;
             if (!checkState()) await pauseGame();
 		}
 		else await enableClicks();
+		implementAlias(data);
 		handlerEvents();
-		saveGameState("classic", player1, player2)
+		saveGameState("classic", player1, player2, data)
 	}
 
 	function handlerEvents(){
@@ -170,7 +172,7 @@ export function classicMode(data: GameInfo): void {
 		if (player2.turn && player2.AI && !aiColumn) return ;
 
 		await placeToken(column);
-		await saveGameState("classic", player1, player2);
+		await saveGameState("classic", player1, player2, data);
 
 		if (checkState()) gameActive = false
 	}
@@ -273,6 +275,16 @@ export function classicMode(data: GameInfo): void {
 		await pauseGame();
 	})
 
+	document.getElementById('exit-end')?.addEventListener('click', async () => {
+        clearGame();
+        navigateTo("/games");
+    });
+
+	document.getElementById('draw-end')?.addEventListener('click', async () => {
+        clearGame();
+        navigateTo("/games");
+    });
+	
 	document.getElementById('exitGame')?.addEventListener('click', async () => {
 		const exitBtn = document.getElementById('exitGame');
 		if (!exitBtn){

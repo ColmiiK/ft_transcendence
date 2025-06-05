@@ -1,3 +1,4 @@
+import { getTranslation } from "../functionalities/transcript.js";
 import { navigateTo } from "../index.js";
 import { sendRequest } from "../login-page/login-fetch.js";
 import { showAlert } from "../toast-alert/toast-alert.js";
@@ -12,7 +13,7 @@ export async function initTournamentFetches() {
 		}
 		const response = await sendRequest('GET', `/tournaments/${data.id}`) as Tournament;
 		if (!response)
-			throw new Error('Error while fetching current tournament');
+			throw new Error(getTranslation('tournament_error_fetching'));
 
 		const tournamentTitle = document.getElementById('tournament-title') as HTMLSpanElement;
 		if (tournamentTitle) { tournamentTitle.innerText = response.name };
@@ -65,7 +66,7 @@ async function cancelTournament(tournamentId: number) {
 	try {
 		const response = await sendRequest('PATCH', '/tournaments/end', { tournament_id: tournamentId });
 		if (!response || response['error'])
-			throw new Error('Problem cancelling the tournament')
+			throw new Error(getTranslation('tournament_cancel_problem'));
 		navigateTo('/games');
 	}
 	catch (error) {
