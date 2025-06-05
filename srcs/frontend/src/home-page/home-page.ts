@@ -69,12 +69,12 @@ async function navigateProfileOptions(option: string) {
 	const profileOptions = [
 		{ key: 'modifyProfile', label: '/modify-profile' },
 		{ key: 'settings', label: '/settings' },
-		{ key: 'logOut', label: '/login' },
+		{ key: 'logOut', label: '/' },
 	];
 
 	const profileOption = profileOptions.find((elem) => elem.key == option);
 	if (profileOption) {
-		if (profileOption.label === '/login') {
+		if (profileOption.label === '/') {
 			localStorage.clear();
 			sendRequest("GET", "/logout");
 		}

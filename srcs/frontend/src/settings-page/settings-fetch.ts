@@ -116,7 +116,7 @@ function displayDeletedAccount() {
 	logOutButton.onclick = async () => {
     	localStorage.clear();
     	await sendRequest("GET", "/logout");
-    	navigateTo('/login');
+    	navigateTo('/');
  	};
 }
 

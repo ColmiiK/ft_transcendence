@@ -14,7 +14,7 @@ function moveToLogin() {
 		return;
 
 	homeButton.addEventListener("click", () => {
-		navigateTo("/login");
+		navigateTo("/");
 	});
 }
 

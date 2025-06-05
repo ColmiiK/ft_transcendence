@@ -119,7 +119,7 @@ export	function clearGame(player1: Player, player2: Player, columnList: HTMLElem
     if (diceDiv) diceDiv.style.display = "none";
 }
 
-export function insertDivWinner(player1: Player, player2: Player, columnList: HTMLElement[]): void {
+export function insertDivWinner(data: GameInfo, player1: Player, player2: Player, columnList: HTMLElement[]): void {
     const endGame = document.getElementById("endGame");
     if (!endGame){
         console.error(getTranslation('game_no_endGame'));
@@ -145,12 +145,12 @@ export function insertDivWinner(player1: Player, player2: Player, columnList: HT
 	}
     const win =  player1.winner ? "Player 1" : "Player 2";
     if (win == "Player 1"){
-		winner.innerText = getTranslation('game_player1_wins')
-		loser.innerText = getTranslation('game_player2_loses')
+		winner.innerText = data.first_player_alias + getTranslation('game_player_wins');
+		loser.innerText = data.second_player_alias + getTranslation('game_player_loses');
 	}
 	else{
-		winner.innerText = getTranslation('game_player2_wins')
-		loser.innerText = getTranslation('game_player1_loses')
+		winner.innerText = data.second_player_alias + getTranslation('game_player_wins');
+		loser.innerText = data.first_player_alias + getTranslation('game_player_loses');
 	}
     disableClicks(columnList);
 }

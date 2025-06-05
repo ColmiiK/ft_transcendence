@@ -23,9 +23,12 @@
 .signin-user {
 	background-color: var(--dark-pink);
 	width: fit-content;
-	border-radius: 5px;
+	border-radius: 15px;
 	margin: 5px;
-	padding: 5px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
 	transition: 350ms ease-in-out;
 }
 

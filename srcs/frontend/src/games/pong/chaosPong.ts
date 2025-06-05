@@ -776,7 +776,7 @@ export function chaosPong(data: GameInfo): void {
     });
 
     document.getElementById('exit-end')?.addEventListener('click', async () => {
-        await exitGame("custom", player1, player2, powerUpData)
+        await exitGame("custom", player1, player2, powerUpData, data)
     });
 
 	document.getElementById('exitGame')?.addEventListener('click', async () => {

@@ -35,8 +35,8 @@ export default function createTournamentRoutes(fastify) {
               return res.code(400).send({
                 error: `Username ${user.username} belongs to an existing user`,
               });
-            const isInvited = await getCurrentTournament(user.id);
-            if (isInvited)
+            const currentTournament = await getCurrentTournament(user.id);
+            if (currentTournament && currentTournament.is_current)
               return res.code(400).send({
                 error: `User ${user.username} is already in a tournament`,
               });
