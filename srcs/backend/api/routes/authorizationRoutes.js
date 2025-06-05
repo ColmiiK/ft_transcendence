@@ -122,6 +122,10 @@ export default function createAuthRoutes(fastify) {
           return;
         if (req.body.password != req.body.confirm_password)
           return res.code(400).send({ error: "Passwords don't match" });
+        const user_email = await getUser(req.body.email);
+        if (user_email) return res.code(400).send({ error: "email in use" });
+        const user_username = await getUser(req.body.username);
+        if (user_username) return res.code(400).send({ error: "username in use" });
         const result = await registerUser(req.body);
         setJWT(res, result);
         return res.code(201).send(result);
