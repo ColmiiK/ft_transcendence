@@ -105,9 +105,9 @@ export async function verifyGoogleUser(credential) {
   const payload = ticket.getPayload();
   const email = payload["email"];
   let user = await getUser(email, true);
-  if (!user) {
-    return { error: "User not found" };
-  }
+  if (!user) return { error: "User not found" };
+  if (!user.google_id)
+    return { error: "No Google account linked to this user" };
   return { id: user.id, username: user.username };
 }
 
