@@ -2539,6 +2539,14 @@ video {
   white-space: nowrap;
 }
 
+.text-wrap {
+  text-wrap: wrap;
+}
+
+.break-all {
+  word-break: break-all;
+}
+
 .rounded-\[15px\] {
   border-radius: 15px;
 }
