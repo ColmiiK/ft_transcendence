@@ -25,7 +25,6 @@ if (!localStorage.getItem('whichGame'))
 
 const routes = [
 	{
-		// Create an init page
 		path: "/",
 		url: "../src/login-page/login-page.html",
 		accesible: true,
@@ -33,14 +32,14 @@ const routes = [
 			initLoginEvents()
 		}
 	},
-	{
-		path: "/login",
-		url: "../src/login-page/login-page.html",
-		accesible: true,
-		event: () => {
-			initLoginEvents()
-		}
-	},
+	// {
+	// 	path: "/login",
+	// 	url: "../src/login-page/login-page.html",
+	// 	accesible: true,
+	// 	event: () => {
+	// 		initLoginEvents()
+	// 	}
+	// },
 	{
 		path: "/home",
 		url: "../src/home-page/home-page.html",
@@ -171,14 +170,14 @@ export function navigateTo(path: string, data: object = {}) {
 
           setTimeout(() => {
             history.pushState({}, "", path);
-            if (socketToast && path === "/login")
+            if (socketToast && path === "/")
               socketToast.close();
             loadContent(path, data);
           }, 150); 
         } 
         else {
           history.pushState({}, "", path);
-          if (socketToast && path === "/login")
+          if (socketToast && path === "/")
             socketToast.close();
           loadContent(path, data);
         }
@@ -243,7 +242,7 @@ window.onpopstate = async () => {
 	
 	const validRoute = routes.find(r => r.path === currentPath);
 	if ((!validRoute?.accesible && !(await checkLogged()))
-		|| (await checkLogged() && currentPath === "/login")) 
+		|| (await checkLogged() && currentPath === "/")) 
 		return ;
 	loadContent(currentPath);
 };
@@ -267,10 +266,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   } 
   else {
 	if (!validRoute.accesible && !(await checkLogged())) 
-		currentPath = "/login";
-	if (await checkLogged() && currentPath === "/login")
+		currentPath = "/";
+	if (await checkLogged() && currentPath === "/")
 		currentPath = "/home";
-    if (currentPath !== "/login")
+    if (currentPath !== "/")
       createsocketToastConnection();
 	if (localStorage.getItem('inGame') === 'true')
 		currentPath = '/' + localStorage.getItem('whichGame');
