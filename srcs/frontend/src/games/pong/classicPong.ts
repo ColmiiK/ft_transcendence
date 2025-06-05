@@ -78,14 +78,16 @@ export function classicPong(data: GameInfo): void{
 		const savedState = localStorage.getItem("gameStateclassic");
 		if (savedState){
 			loadGameState();
+			implementAlias(data);
+			saveGameState();
 			if (!checkLost(generalData, ballData, AIData, null, data, player1, player2, width))
 				await pauseGame(generalData, ballData, null);
 		}
-		implementAlias(data);
-		saveGameState();
 		if (!savedState){
+			implementAlias(data);
 			await countDown(ballData, true);
 			init(generalData, ballData, player1, player2, width);
+			saveGameState();
 		}
 		generalData.controlGame = setInterval(play, generalData.time);
 		if (AIData.activate) 
