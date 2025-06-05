@@ -197,3 +197,8 @@ export interface GameInfo {
 	first_player_alias: string,
 	second_player_alias: string,
 }
+
+export interface ResetPassword {
+	token: string,
+	id: string,
+}
