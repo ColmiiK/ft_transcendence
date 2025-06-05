@@ -3058,6 +3058,14 @@ h1 {
   transition: 250ms ease-in-out;
 }
 
+.info-icon {
+  background-image: url("../resources/img/info_icon.svg");
+  width: 30px;
+  height: 30px;
+  background-size: cover;
+  transition: 250ms ease-in-out;
+}
+
 .edit-icon {
   fill: var(--accent-pink);
   min-height: 24px;
@@ -3204,6 +3212,11 @@ h1 {
 .toast-success {
   background-color: var(--success) !important;
   box-shadow: var(--accent-success) 0px 0px 10px !important;
+}
+
+.toast-info {
+  background-color: var(--dark-pink) !important;
+  box-shadow: var(--accent-pink) 0px 0px 10px !important;
 }
 
 /* --> DIVIDERS <-- */
