@@ -63,7 +63,7 @@ export async function clickFriendProfile(e: Event | null, data: User | null) {
 			return;
 		
 		friendProfileDiv.innerHTML = ` 
-				<div id="friend-data" class="flex flex-col-reverse lg:flex-row justify-between items-center gap-4 w-full p-2.5">
+				<div id="friend-data-${friendId}" class="flex flex-col-reverse lg:flex-row justify-between items-center gap-4 w-full p-2.5">
 					<div class="flex flex-col lg:ml-4">
 						<p class="font-bold text-center lg:text-start">${getTranslation('modify_username')}<span id="friend-name" class="font-thin">${friendProfileTyped.username}</span></p>
 						<p class="font-bold text-center lg:text-start">${getTranslation('modify_nick')}<span id="friend-nick" class="font-thin">${friendProfileTyped.alias}</span></p>
@@ -107,7 +107,7 @@ export async function clickFriendProfile(e: Event | null, data: User | null) {
 	}
 }
 
-async function deleteFriend(friendId: string) {
+export async function deleteFriend(friendId: string) {
 	try {
 		const response = await sendRequest('PATCH', 'users/friends', {friend_id: friendId});
 		if (!response)
@@ -318,7 +318,6 @@ export async function displayInvitations() {
 		const invitationsList = await sendRequest('GET', '/users/invitations') as InvitationList[];
 		if (!invitationsList)
 			throw new Error("Error during invitation list fetch");
-
 		invitationsList.forEach((invitation) => {
 			const card = document.createElement("div");
 			card.setAttribute("id", "invitation-id");
