@@ -843,8 +843,6 @@ export function getCurrentTournament(user_id) {
       JOIN
         tournament_participants tp ON t.id = tp.tournament_id
       WHERE
-        t.status != 'finished'
-      AND
         t.status != 'cancelled'
       AND
         tp.user_id = $user_id
@@ -854,7 +852,9 @@ export function getCurrentTournament(user_id) {
         console.error("Error getting tournament", err.message);
         return reject(err);
       }
-      if (!row) resolve(null);
+      if (!row) return resolve(null);
+      if (row.status === "in_progress") row["is_current"] = true;
+      else row["is_current"] = false;
       resolve(row);
     });
   });
