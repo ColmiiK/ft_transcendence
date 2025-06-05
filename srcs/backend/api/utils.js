@@ -149,16 +149,20 @@ export async function saveAvatar(user_id, data) {
   assert(data !== undefined, "data must exist");
 
   const buffer = await data.toBuffer();
-  const metadata = await sharp(buffer).metadata();
-  const base64Image = buffer.toString("base64");
-  const dataUrl = `data:${buffer.mimetype};base64,${base64Image}`;
+  const resizedBuffer = await sharp(buffer)
+    .resize(256, 256, { fit: "cover", position: "center" })
+    .webp({ quality: 85 })
+    .toBuffer();
+  const base64Image = resizedBuffer.toString("base64");
+  const dataUrl = `data:image/webp;base64,${base64Image}`;
   await patchUser(user_id, { avatar: dataUrl });
   return {
     message: "Avatar uploaded successfully",
     data_url: dataUrl,
     user_id: user_id,
     originalName: data.filename,
-    mimetype: data.mimetype,
-    size: buffer.length,
+    mimetype: "image/webp",
+    size: resizedBuffer.length,
+    originalSize: buffer.length,
   };
 }
