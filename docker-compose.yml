@@ -1,29 +1,22 @@
 services:
   frontend:
     build:
-      context: frontend
+      context: srcs/frontend
     container_name: front
     ports:
       - "8000:80"
       - "8443:443"
-    volumes:
-      - ./frontend:/usr/share/nginx/html
     networks:
       - transcendence
   backend:
     build:
-      context: backend
+      context: srcs/backend
     container_name: back
     environment:
       HOSTNAME: "${HOSTNAME_FQDN}"
     env_file:
       - .env
-    volumes:
-      - ./backend:/usr/transcendence
     networks:
       - transcendence
-volumes:
-  frontend:
-  backend:
 networks:
   transcendence:
