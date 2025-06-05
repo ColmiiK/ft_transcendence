@@ -30,8 +30,14 @@ export async function createUser(data) {
   assert(data !== undefined, "data must exist");
   data.password = await bcrypt.hash(data.password, 10);
   return new Promise((resolve, reject) => {
-    const sql = `INSERT INTO users (username, email, password, language) VALUES (?,?,?,?)`;
-    const params = [data.username, data.email, data.password, data.language];
+    const sql = `INSERT INTO users (username, alias, email, password, language) VALUES (?,?,?,?,?)`;
+    const params = [
+      data.username,
+      data.username,
+      data.email,
+      data.password,
+      data.language,
+    ];
     db.run(sql, params, function (err) {
       if (err) {
         console.error("Error inserting user:", err.message);
@@ -55,8 +61,8 @@ export async function createUser(data) {
 export function createGoogleUser(data) {
   assert(data !== undefined, "data must exist");
   return new Promise((resolve, reject) => {
-    const sql = `INSERT INTO users (username, email, google_id) VALUES (?,?,?)`;
-    const params = [data.username, data.email, data.googleId];
+    const sql = `INSERT INTO users (username, alias, email, google_id) VALUES (?,?,?,?)`;
+    const params = [data.username, data.username, data.email, data.googleId];
     db.run(sql, params, function (err) {
       if (err) {
         console.error("Error inserting user:", err.message);
