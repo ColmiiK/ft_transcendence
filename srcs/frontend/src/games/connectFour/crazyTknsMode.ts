@@ -11,6 +11,7 @@ import {
     loadGameState,
     updateDice,
     updateData,
+    getDataSate,
     renderBoardFromState,
     init as initEngine,
     clearGame as clearGameEngine,
@@ -58,7 +59,7 @@ export function crazyTokensMode(data: GameInfo): void {
 	let aiIsThinking: boolean = false;
 	let aiWorker: Worker | null = null;
 	let aiColumn: HTMLElement | null = null;
-	let aiInterval: NodeJS.Timeout | null = null;
+	let aiInterval: NodeJS.Timeout | number | null = null;
 
     /* Initialization Functionality */
 
@@ -128,14 +129,18 @@ export function crazyTokensMode(data: GameInfo): void {
         const savedState = loadGameState("custom");
 		init();
 		if (savedState){
-			renderBoardFromState(savedState, data, player1, player2)
+            getDataSate(savedState, data);
+            implementAlias(data);
+			renderBoardFromState(savedState, player1, player2)
 			if (player2.AI)
 				initAI();
 			gameActive = false;
             if (!checkState()) await pauseGame();
 		}
-		else await enableClicks();
-        implementAlias(data);
+		else{
+            implementAlias(data);
+            await enableClicks();
+        }
 		handlerEvents();
         saveGameState("custom", player1, player2, data)
     }
@@ -863,6 +868,13 @@ export function crazyTokensMode(data: GameInfo): void {
             return Promise.resolve();
         }
     
+        const surrenderPl2 = document.getElementById('surrenderPl2');
+        if (!surrenderPl2){
+            console.error("surrenderPl2 not found");
+            return Promise.resolve();
+        }
+        if (player2.AI) surrenderPl2.style.display = 'none';
+
         await disableClicks();
         diceEl.style.pointerEvents = 'none';
         exitBtn.style.pointerEvents = 'none';
@@ -890,20 +902,20 @@ export function crazyTokensMode(data: GameInfo): void {
         })
     
         document.getElementById('surrenderPl1')?.addEventListener('click', async () => {
-			clearGame();
 			player2.winner = true;
 			player1.winner = false;
 			saveGameState("custom", player1, player2, data);
 			await updateData(data, player1, player2);
+            clearGame();
 			navigateTo("/games");
 		})
 
 		document.getElementById('surrenderPl2')?.addEventListener('click', async () => {
-			clearGame();
 			player1.winner = true;
 			player2.winner = false;
 			saveGameState("custom", player1, player2, data);
 			await updateData(data, player1, player2);
+            clearGame();
 			navigateTo("/games");
 		})
 	})

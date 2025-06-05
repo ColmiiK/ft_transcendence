@@ -30,11 +30,11 @@ export interface PlayerState {
 }
 
 export interface GameState {
-  mode: "classic" | "custom";
-  boardData: Record<string, { player: number, emoji: string | null }[]>;
-  player1: PlayerState;
-  player2: PlayerState;
-  Data: GameInfo;
+    mode: "classic" | "custom";
+    boardData: Record<string, { player: number, emoji: string | null }[]>;
+    player1: PlayerState;
+    player2: PlayerState;
+    dataState: GameInfo
 }
 
 export let columnMap: Map<string, HTMLElement[]> = new Map();
@@ -476,7 +476,13 @@ export  function saveGameState(mode: "classic" | "custom", player1: Player, play
         boardData,
         player1: getPlayerState(player1),
         player2: getPlayerState(player2),
-        data
+        dataState: {
+            game_mode: data.first_player_alias,
+	        is_custom: data.is_custom,
+	        match_id: data.match_id,
+	        first_player_alias: data.first_player_alias,
+	        second_player_alias: data.second_player_alias,
+        }
     };
 
     localStorage.setItem(`connect4GameState${mode}`, JSON.stringify(gameState));
@@ -490,7 +496,15 @@ export function loadGameState(mode: "classic" | "custom"): GameState | null {
     return state;
 }
 
-export function renderBoardFromState(gameState: GameState, data: GameInfo, player1: Player, player2: Player): void {
+export function getDataSate(gameState: GameState, data: GameInfo): void{
+    data.first_player_alias = gameState.dataState.first_player_alias
+    data.second_player_alias = gameState.dataState.second_player_alias
+    data.game_mode = gameState.dataState.game_mode
+    data.is_custom = gameState.dataState.is_custom;
+    data.match_id = gameState.dataState.match_id;
+}
+
+export function renderBoardFromState(gameState: GameState, player1: Player, player2: Player): void {
     setPlayerState(player1, gameState.player1);
     setPlayerState(player2, gameState.player2);
 
@@ -543,12 +557,6 @@ export function renderBoardFromState(gameState: GameState, data: GameInfo, playe
                 cell.classList.remove('red-hover', 'yellow-hover');
             }
         });
-
-        data.first_player_alias = gameState.Data.first_player_alias
-        data.second_player_alias = gameState.Data.second_player_alias
-        data.game_mode = gameState.Data.game_mode
-        data.is_custom = gameState.Data.is_custom;
-        data.match_id = gameState.Data.match_id;
     }
 
     let blindTkn = Array.from(document.getElementsByClassName("blindToken"));
