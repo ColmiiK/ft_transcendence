@@ -8,6 +8,7 @@ let toastTimeout: NodeJS.Timeout;
 const toastFeatures = [
 	{ type: "toast-error", icon: "error-icon" },
 	{ type: "toast-success", icon: "check-icon" },
+	{ type: "toast-info", icon: "info-icon" },
 ];
 
 const updateFriendsList = debounce(() => {
