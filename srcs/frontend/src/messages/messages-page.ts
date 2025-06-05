@@ -1,10 +1,8 @@
 import { getChatInfo, actual_chat_id, recentChats, loadInfo } from "./load-info.js"
 import { navigateTo } from "../index.js";
-import { Message, MessageObject, Tournament } from "../types.js";
+import { Message, MessageObject } from "../types.js";
 import { sendRequest } from "../login-page/login-fetch.js";
 import { showAlert } from "../toast-alert/toast-alert.js";
-//import { createSocketTournamentConnection } from "../tournament/tournament.js";
-//let activeTournament: Tournament | null = null;
 
 export let socketChat: WebSocket | null = null;
 
@@ -78,8 +76,6 @@ function createSocketConnection() {
 export function displayMessage(data: Message) {
   if (actual_chat_id !== data.chat_id && data.type === "message")
     showAlert(`You have a message from ${data.sender_username}`, "toast-success");
-  else if (actual_chat_id !== data.chat_id && data.type === "tournament")
-    showAlert(`You have a tournament inivitation from ${data.sender_username}`, "toast-success");
   if (data.type === "message") {
     let messageContainer = document.getElementById("message-history");
     if (!messageContainer)

@@ -220,21 +220,6 @@ async function friendRequest(data, sender_id, receiver_id) {
 	}
 }
 
-async function tournamentHandle(data,) {
-	socketsToast.forEach((clientSocket, clientId) => {
-		try{
-			if (clientId !== data.sender_id){
-				clientSocket.send(JSON.stringify({
-
-				}));
-			}
-		}
-		catch(error){
-			console.error("Error updating tournament page:", error);
-		}
-	})
-}
-
 async function handleAvatarChange(data) {
 	let username = await getUsername(data.sender_id)
 	socketsToast.forEach((clientSocket, clientId) => {
@@ -246,13 +231,32 @@ async function handleAvatarChange(data) {
 					receiver_id: clientId,
 					avatar_url: data.avatar,
 					username: username,
-				}))
+				}));
 			}
 		}
 		catch (error) {
 			console.error("Error while changing avatar:", error);
 		}
-	})
+	});
+}
+
+async function handleProfileUpdate(data){
+	let username = await getUsername(data.sender_id);
+	socketsToast.forEach((clientSocket, clientId) => {
+		try {
+			if (clientId !== data.sender_id){
+				clientSocket.send(JSON.stringify({
+					type: "profile_update",
+					sender_id: data.sender_id,
+					receiver_id: clientId,
+					username: username,
+				}));
+			}
+		}
+		catch (error){
+			console.error("Error while updating profile:", error);
+		}
+	});
 }
 
 async function handleGameInvitation(data, sender_id) {
@@ -427,12 +431,12 @@ export default function createWebSocketsRoutes(fastify) {
 						const receiver_id = parseInt(data.receiver_id);
 						if (data.type === "friendRequest")
 							friendRequest(data, sender_id, receiver_id);
-						else if (data.type === "tournament")
-							tournamentHandle(data, sender_id, receiver_id);
 						else if (data.type === "change_avatar")
 							handleAvatarChange(data)
 						else if (data.type === "game")
 							await handleGameInvitation(data, sender_id, receiver_id, fastify);
+						else if (data.type === "profile_update")
+							await handleProfileUpdate(data);
 					}
 				})
 				socket.on("close", async () => {
