@@ -889,14 +889,24 @@ export function crazyTokensMode(data: GameInfo): void {
             return ;
         })
     
-        document.getElementById('exit')?.addEventListener('click', async () => {
-            clearGame();
-            await updateData(data, player1, player2);
-            navigateTo("/games");
-        })
-	})
+        document.getElementById('surrenderPl1')?.addEventListener('click', async () => {
+			clearGame();
+			player2.winner = true;
+			player1.winner = false;
+			saveGameState("custom", player1, player2, data);
+			await updateData(data, player1, player2);
+			navigateTo("/games");
+		})
 
-    
+		document.getElementById('surrenderPl2')?.addEventListener('click', async () => {
+			clearGame();
+			player1.winner = true;
+			player2.winner = false;
+			saveGameState("custom", player1, player2, data);
+			await updateData(data, player1, player2);
+			navigateTo("/games");
+		})
+	})
     
     start();
 }
