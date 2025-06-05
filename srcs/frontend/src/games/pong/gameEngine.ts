@@ -429,6 +429,13 @@ export async function returnToGames(generalData: GeneralData, ballData: BallData
 		return Promise.resolve();
 	}
 
+	const surrenderPl2 = document.getElementById('surrenderPl2');
+	if (!surrenderPl2){
+		console.error(getTranslation('game_no_surrender'));
+		return Promise.resolve();
+    }
+    if (AIData.activate) surrenderPl2.style.display = 'none';
+
 	exitBtn.style.pointerEvents = 'none';
 	pauseBtn.style.pointerEvents = 'none';
 	gameEl.style.animation = "mediumOpacity 0.25s ease forwards";

@@ -240,6 +240,10 @@ const locales = [
 			game_undefined_ColumnData: "ColumnData is undefined for column ID: ",
 			game_no_rows: "No rows left in column: ",
 			game_no_pauseConnect: "PauseConnect element not found.",
+			game_no_surrender: "SurrenderPl2 not found",
+			game_surrender_pl1: 'Surrender Pl1',
+			game_surrender_pl2: 'Surrender Pl2',
+			game_surrender: 'Surrender',
 			// 404
 			page_404: '404 Page Not Found',
 			// Recover password
@@ -491,6 +495,10 @@ const locales = [
 			game_undefined_ColumnData: "ColumnData no está definida para el ID de columna: ",
 			game_no_rows: "No quedan filas en la columna: ",
 			game_no_pauseConnect: "Elemento 'pauseConnect' no encontrado.",
+			game_no_surrender: "Elemento 'SurrenderPl2' no encontrado",
+			game_surrender_pl1: 'Rendirse Pl1',
+			game_surrender_pl2: 'Rendirse Pl2',
+			game_surrender: 'Rendirse',
 			// 404
 			page_404: '404 Página No Encontrada',
 			// Recover password
@@ -724,6 +732,10 @@ const locales = [
 			game_undefined_ColumnData: "ColumnData non défini pour l’ID de colonne : ",
 			game_no_rows: "Plus de lignes dans la colonne : ",
 			game_no_pauseConnect: "Élément 'pauseConnect' introuvable.",
+			game_no_surrender: "Élément 'SurrenderPl2' introuvable",
+			game_surrender_pl1: 'Abandon Pl1',
+			game_surrender_pl2: 'Abandon Pl2',
+			game_surrender: 'Abandon',
 			// 404
 			page_404: '404 Page non trouvée',
 			// Reset Password

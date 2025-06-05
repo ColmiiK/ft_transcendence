@@ -9,6 +9,7 @@ import {
 	implementAlias,
 	saveGameState,
     loadGameState,
+	getDataSate,
     renderBoardFromState,
 	init as initEngine,
 	clearGame as clearGameEngine,
@@ -52,7 +53,7 @@ export function classicMode(data: GameInfo): void {
 	let aiIsThinking: boolean = false;
 	let aiWorker: Worker | null = null;
 	let aiColumn: HTMLElement | null = null;
-	let aiInterval: NodeJS.Timeout | null = null;
+	let aiInterval: NodeJS.Timeout | number |  null = null;
 	
 
 	function init(): void {
@@ -116,14 +117,18 @@ export function classicMode(data: GameInfo): void {
 		const savedState = loadGameState("classic");
 		init();
 		if (savedState){
-			renderBoardFromState(savedState, data, player1, player2)
+			getDataSate(savedState, data);
+            implementAlias(data);
+			renderBoardFromState(savedState, player1, player2)
 			if (player2.AI)
 				initAI();
 			gameActive = false;
             if (!checkState()) await pauseGame();
 		}
-		else await enableClicks();
-		implementAlias(data);
+		else{
+            implementAlias(data);
+            await enableClicks();
+        }
 		handlerEvents();
 		saveGameState("classic", player1, player2, data)
 	}
@@ -251,7 +256,7 @@ export function classicMode(data: GameInfo): void {
 					depth: 5
 				});
 			}).catch(error => {
-				console.warn('AI Worker error:', error);
+				console.warn(getTranslation('game_ai_error'), error);
 				return columnList[Math.floor(Math.random() * columnList.length)].id;
 			});
 			columnToUse = columnList.find(col => col.id === bestColumnId) || null;
@@ -311,6 +316,13 @@ export function classicMode(data: GameInfo): void {
 			return Promise.resolve();
 		}
 	
+		const surrenderPl2 = document.getElementById('surrenderPl2');
+        if (!surrenderPl2){
+            console.error(getTranslation('game_no_surrender'));
+            return Promise.resolve();
+        }
+        if (player2.AI) surrenderPl2.style.display = 'none';
+		
 		await disableClicks();
 		diceEl.style.pointerEvents = 'none';
 		exitBtn.style.pointerEvents = 'none';
@@ -337,9 +349,21 @@ export function classicMode(data: GameInfo): void {
 			return ;
 		})
 	
-		document.getElementById('exit')?.addEventListener('click', async () => {
-			clearGame();
+		document.getElementById('surrenderPl1')?.addEventListener('click', async () => {
+			player2.winner = true;
+			player1.winner = false;
+			saveGameState("classic", player1, player2, data);
 			await updateData(data, player1, player2);
+			clearGame();
+			navigateTo("/games");
+		})
+
+		document.getElementById('surrenderPl2')?.addEventListener('click', async () => {
+			player1.winner = true;
+			player2.winner = false;
+			saveGameState("classic", player1, player2, data);
+			await updateData(data, player1, player2);
+			clearGame();
 			navigateTo("/games");
 		})
 	})
