@@ -169,7 +169,8 @@ async function displayTerms() {
 		if (!termsPage.style.display || termsPage.style.display === "none") {
 			settingsPage.style.display = "none";
 			termsPage.style.display = "flex";
-			termsButton.innerText = "Settings";
+			termsButton.setAttribute('translatekey', 'settings_title');
+			termsButton.innerText = getTranslation('settings_title');
 
 			changePassword.classList.add('hidden');
 			twoFactor.classList.add('hidden');
@@ -178,6 +179,7 @@ async function displayTerms() {
 		else {
 			settingsPage.style.display = "flex";
 			termsPage.style.display = "none";
+			termsButton.setAttribute('translatekey', 'terms_policy');
 			termsButton.innerText = getTranslation('terms_policy');
 
 			changePassword.classList.remove('hidden');

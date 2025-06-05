@@ -431,7 +431,7 @@ export async function returnToGames(generalData: GeneralData, ballData: BallData
 
 	const surrenderPl2 = document.getElementById('surrenderPl2');
 	if (!surrenderPl2){
-		console.error("surrenderPl2 not found");
+		console.error(getTranslation('game_no_surrender'));
 		return Promise.resolve();
     }
     if (AIData.activate) surrenderPl2.style.display = 'none';
