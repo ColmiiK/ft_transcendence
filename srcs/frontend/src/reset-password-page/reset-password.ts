@@ -2,10 +2,16 @@ import { showAlert } from "../toast-alert/toast-alert.js";
 import { parseSessionForm, sendRequest } from "../login-page/login-fetch.js";
 import { navigateTo } from "../index.js";
 import { getTranslation } from "../functionalities/transcript.js";
+import { ResetPassword } from "../types.js";
 
-export function initResetPasswordEvents() {
+export function initResetPasswordEvents(data: ResetPassword) {
 	moveToLogin();
-	recoverPasswordFetches();
+	if (data && data.token && data.id) {
+		recoverPasswordFetches(data);
+	} else {
+		showAlert(getTranslation('missing_reset_params') || 'Missing reset password parameters', "toast-error");
+		setTimeout(() => navigateTo("/"), 3000);
+	}
 }
 
 function moveToLogin() {
@@ -18,17 +24,18 @@ function moveToLogin() {
 	});
 }
 
-function recoverPasswordFetches() {
+function recoverPasswordFetches(data: ResetPassword) {
 	const resetPasswordSubmit = document.getElementById("reset-password-form");
 	if (resetPasswordSubmit)
-		resetPasswordSubmit.addEventListener("submit", resetPassword);
+		resetPasswordSubmit.addEventListener("submit", (e) => resetPassword(e, data));
 }
 
-async function resetPassword(e: Event) {
+async function resetPassword(e: Event | null, data: ResetPassword) {
+	if (!e || !data)
+		return;
 	e.preventDefault();
-	const params = new URLSearchParams(document.location.search);
-	const token = params.get("token");
-	const id = params.get("id");
+	const token = data.token;
+	const id = data.id;
 	const passwordField = document.getElementById("first-password-recovery") as HTMLInputElement;
 	const repeatPasswordField = document.getElementById("second-password-recovery") as HTMLInputElement;
 	if (!passwordField || !repeatPasswordField)

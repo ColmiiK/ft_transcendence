@@ -6,7 +6,7 @@ import { initResetPasswordEvents } from "./reset-password-page/reset-password.js
 import { initTwoFactorEvents } from "./two-factor-page/two-factor.js";
 import { initFriendsEvents } from "./friends/friends-page.js"
 import { initSettingsEvents } from "./settings-page/settings-page.js"
-import { LoginObject, MessageObject, User, GameInfo } from "./types.js";
+import { LoginObject, MessageObject, User, GameInfo, ResetPassword } from "./types.js";
 import { displayToast, createsocketToastConnection, socketToast } from "./toast-alert/toast-alert.js";
 import { classicPong } from "./games/pong/classicPong.js"
 import { chaosPong } from "./games/pong/chaosPong.js";
@@ -44,8 +44,8 @@ const routes = [
 		path: "/reset-password",
 		url: "../src/reset-password-page/reset-password.html",
 		accesible: true,
-		event: () => {
-			initResetPasswordEvents()
+		event: (data: object) => {
+			initResetPasswordEvents(data as ResetPassword);
 		}
 	},
 	{
@@ -257,6 +257,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 	}
   } 
   else {
+    let data = {};
+    if (currentPath === "/reset-password") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+      const id = urlParams.get('id');
+      if (token && id) {
+        data = { token, id };
+      }
+    }
+    
 	if (!validRoute.accesible && !(await checkLogged())) 
 		currentPath = "/";
 	if (await checkLogged() && currentPath === "/")
@@ -269,7 +279,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		currentPath = '/games';
 	
 	history.pushState({}, "", currentPath);
-    loadContent(currentPath);
+    loadContent(currentPath, data);
   }
 });
 
