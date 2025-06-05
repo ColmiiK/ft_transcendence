@@ -837,6 +837,7 @@ export function getCurrentTournament(user_id) {
         t.name,
         t.id,
         t.game_type,
+        t.started_at,
         t.status
       FROM
         tournaments t
@@ -846,16 +847,19 @@ export function getCurrentTournament(user_id) {
         t.status != 'cancelled'
       AND
         tp.user_id = $user_id
+      ORDER BY
+        t.started_at DESC
+      LIMIT 1
     `;
-    db.get(sql, { $user_id: user_id }, function (err, row) {
+    db.all(sql, { $user_id: user_id }, function (err, rows) {
       if (err) {
         console.error("Error getting tournament", err.message);
         return reject(err);
       }
-      if (!row) return resolve(null);
-      if (row.status === "in_progress") row["is_current"] = true;
-      else row["is_current"] = false;
-      resolve(row);
+      if (!rows) return resolve(null);
+      if (rows[0].status === "in_progress") rows[0]["is_current"] = true;
+      else rows[0]["is_current"] = false;
+      resolve(rows[0]);
     });
   });
 }

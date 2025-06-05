@@ -137,7 +137,8 @@ async function checkExistingTournament() {
   if (!createTournament || !viewTournament) { return ; }
   try {
     const response = await sendRequest('GET', '/tournaments/current');
-    if (!response)
+    console.log(response);
+    if (!response || !response.is_current)
       return ;
     else {
       createTournament.classList.add('hidden');
