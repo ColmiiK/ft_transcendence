@@ -13,8 +13,12 @@ import { getMessagesOfUser } from "../models/messageModel.js";
 import { getChatsOfUser } from "../models/chatModel.js";
 import { checkCurrentPassword } from "../passwordReset.js";
 import { checkNewPassword } from "../passwordReset.js";
-// import { getMatchesOfUser } from "../models/matchModel.js";
-// import { getTournamentsOfUser } from "../models/tournamentModel.js";
+import {
+  getCurrentTournament,
+  cancelTournament,
+  getTournamentByID,
+} from "../models/tournamentModel.js";
+import { cancelTournamentMatches } from "../models/matchModel.js";
 
 export default function createUserRoutes(fastify) {
   return [
@@ -141,6 +145,15 @@ export default function createUserRoutes(fastify) {
           return res.code(403).send({ error: "Password does not match" });
         if (user.id !== req.userId)
           return res.code(400).send({ error: "Invalid user" });
+        let tournament = await getCurrentTournament(req.userId);
+        tournament = await getTournamentByID(tournament.id);
+        if (tournament) {
+          const result = await cancelTournament(
+            tournament.tournament_id,
+            tournament.creator_id,
+          );
+          await cancelTournamentMatches(tournament);
+        }
         await deleteUser(req.userId);
         return res.code(200).send({ success: "User successfully deleted" });
       }),
