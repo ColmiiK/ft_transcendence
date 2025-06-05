@@ -128,7 +128,6 @@ export default function createMatchRoutes(fastify) {
             const matches = await determineSecondBracket(tour);
           }
         }
-        //TODO: figure out if splitting the endpoint is needed + what to return
         return res.code(200).send(result);
       }),
     },

@@ -90,6 +90,7 @@ export async function loginGoogleUser(credential) {
     delete user.google_id;
   }
   await patchUser(user.id, { is_online: 1 });
+  user = await getUser(user.id);
   const result = Object.assign({}, user, { success: true });
   return result;
 }
@@ -107,7 +108,7 @@ export async function verifyGoogleUser(credential) {
   if (!user) {
     return { error: "User not found" };
   }
-  return {id: user.id, username: user.username};
+  return { id: user.id, username: user.username };
 }
 
 /**

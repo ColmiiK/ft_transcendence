@@ -70,22 +70,9 @@ async function handleLogin(e: Event) {
 	const password = passwordField.value;
 
 	try {
-    // DEBUG USER BYPASS
-    const debugUsers = [ 
-      "albagar4", "2albagar4",
-      "alvegag", "2alvegag",
-      "escastel", "2escastel",
-      "ncruzg", "2ncruzg", ];
-    if (!debugUsers.includes(username)) {
-      const msg = parseSessionForm(username, password);
-      if (msg !== "Ok")
-        throw new Error(msg);
-    }
-    //TODO: REMOVE WHEN DEV IS DONE !!!
-
-    // const msg = parseSessionForm(username, password);
-    // if (msg !== "Ok")
-    //   throw new Error(msg);
+    const msg = parseSessionForm(username, password);
+    if (msg !== "Ok")
+      throw new Error(msg);
 		const response = await sendRequest('POST', 'login', { username, password });
 		if (!response["id"]) {
 			if (response["twoFactor"] === "2FA is enabled, TOTP code required") {
