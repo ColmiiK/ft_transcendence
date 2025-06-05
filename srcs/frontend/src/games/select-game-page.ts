@@ -440,6 +440,7 @@ async function startTournament() {
     if (!gameMode) { throw new Error(getTranslation('select_need_mode')); }
 
     const response = await sendRequest('POST', '/tournaments', {name: tournamentTitle.value, game_type: gameMode, users: playersObject});
+    console.log(response);
     if (!response)
       throw new Error(getTranslation('select_tournament_failed'));
     else if (response['error'])

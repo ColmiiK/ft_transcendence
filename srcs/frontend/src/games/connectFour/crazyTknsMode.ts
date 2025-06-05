@@ -30,7 +30,7 @@ import {
 
 import { GameInfo } from "../../types.js";
 import { navigateTo } from "../../index.js";
-import { updateDescription } from '../../modify-profile/modify-fetch.js';
+import { sendRequest } from "../../login-page/login-fetch.js";
 import { getTranslation } from '../../functionalities/transcript.js';
 
 export function crazyTokensMode(data: GameInfo): void {
@@ -252,7 +252,7 @@ export function crazyTokensMode(data: GameInfo): void {
 
     function insertDivWinner(): void {
         document.getElementById("dice-container")!.style.pointerEvents = 'none';
-        insertDivWinnerEngine(player1, player2, columnList);
+        insertDivWinnerEngine(data, player1, player2, columnList);
     }
 
     function insertDivDraw(): void {
@@ -835,12 +835,30 @@ export function crazyTokensMode(data: GameInfo): void {
 
 	document.getElementById('exit-end')?.addEventListener('click', async () => {
         clearGame();
-        navigateTo("/games");
+        try {
+            const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
+            if (response)
+                navigateTo("/tournament");
+            else
+                navigateTo("/games");
+        }
+        catch (error) {
+            console.error(error);
+        }
     });
 
 	document.getElementById('draw-end')?.addEventListener('click', async () => {
         clearGame();
-        navigateTo("/games");
+        try {
+            const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
+            if (response)
+                navigateTo("/tournament");
+            else
+                navigateTo("/games");
+        }
+        catch (error) {
+            console.error(error);
+        }
     });
 
 	document.getElementById('exitGame')?.addEventListener('click', async () => {
@@ -907,7 +925,16 @@ export function crazyTokensMode(data: GameInfo): void {
 			saveGameState("custom", player1, player2, data);
 			await updateData(data, player1, player2);
             clearGame();
-			navigateTo("/games");
+			try {
+                const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
+                if (response)
+                    navigateTo("/tournament");
+                else
+                    navigateTo("/games");
+            }
+            catch (error) {
+                console.error(error);
+            }
 		})
 
 		document.getElementById('surrenderPl2')?.addEventListener('click', async () => {
@@ -916,7 +943,16 @@ export function crazyTokensMode(data: GameInfo): void {
 			saveGameState("custom", player1, player2, data);
 			await updateData(data, player1, player2);
             clearGame();
-			navigateTo("/games");
+			try {
+                const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
+                if (response)
+                    navigateTo("/tournament");
+                else
+                    navigateTo("/games");
+            }
+            catch (error) {
+                console.error(error);
+            }
 		})
 	})
     
