@@ -480,7 +480,6 @@ export function crazyTokensMode(data: GameInfo): void {
 
     async function rollDice(): Promise<void> {
         if (!gameActive) return ;
-        await disableClicks();
         const currentPlayer = player1.turn ? player1 : player2;
         
         const diceContainer = document.getElementById("dice-container");
@@ -514,7 +513,6 @@ export function crazyTokensMode(data: GameInfo): void {
 
         diceContainer.classList.remove("rolling");
         saveGameState("custom", player1, player2, data);
-        await enableClicks();
         diceContainer.style.pointerEvents = 'auto';
     }
 
