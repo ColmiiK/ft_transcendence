@@ -103,7 +103,7 @@ export function displayMessage(data: Message) {
     el.scrollIntoView({ behavior: 'smooth' });
     recentChats();
   }
-  else if (data.type === "game") {
+  else if (data.type === "game" && actual_chat_id == data.chat_id) {
     let messageContainer = document.getElementById("message-history");
     if (!messageContainer) return;
     let el = document.createElement("div");
