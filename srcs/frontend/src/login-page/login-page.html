@@ -8,8 +8,8 @@
       <div id="divider"></div>
       <section id="sign-in">
         <form id="login-form" class="flex flex-col items-center">
-          <input type="text" id="login-username" placeholder="Username" autocomplete="username" class="data-user outline-none" data-placeholder="login_username" maxlength="16">
-          <input type="password" id="password" placeholder="Password" autocomplete="current-password" class="data-user outline-none" data-placeholder="login_password" maxlength="25">
+          <input type="text" id="login-username" placeholder="Username" autocomplete="username" class="data-user outline-none indent-2" data-placeholder="login_username" maxlength="16">
+          <input type="password" id="password" placeholder="Password" autocomplete="current-password" class="data-user outline-none indent-2" data-placeholder="login_password" maxlength="25">
           <button type="submit" class="signin-user" translatekey="login_sign_in">Sign in</button>
         </form>
       </section>
@@ -51,13 +51,13 @@
       <section id="sign-up">
         <form id="signup-form" class="flex flex-col items-center">
           <p class="flex justify-start w-full" translatekey="login_username">Username</p>
-          <input type="text" id="username" placeholder="username-example123" autocomplete="username" class="data-user outline-none" data-placeholder="login_example_username" maxlength="16">
+          <input type="text" id="username" placeholder="username-example123" autocomplete="username" class="data-user outline-none indent-2" data-placeholder="login_example_username" maxlength="16">
           <p class="flex justify-start w-full mt-5">Email</p>
-          <input type="email" id="signup-email" placeholder="example@email.com" autocomplete="email" class="data-user outline-none" data-placeholder="login_example_email" maxlength="50">
+          <input type="email" id="signup-email" placeholder="example@email.com" autocomplete="email" class="data-user outline-none indent-2" data-placeholder="login_example_email" maxlength="50">
           <p class="flex justify-start w-full mt-5" translatekey="login_password">Password</p>
-          <input type="password" id="new-password" placeholder="Password" autocomplete="new-password" class="data-user outline-none" data-placeholder="login_password" maxlength="25">
+          <input type="password" id="new-password" placeholder="Password" autocomplete="new-password" class="data-user outline-none indent-2" data-placeholder="login_password" maxlength="25">
           <p class="flex justify-start w-full mt-5" translatekey="login_repeat_password">Repeat the password</p>
-          <input type="password" id="confirm-password" placeholder="Password" autocomplete="new-password" class="data-user outline-none" data-placeholder="login_password" maxlength="25">
+          <input type="password" id="confirm-password" placeholder="Password" autocomplete="new-password" class="data-user outline-none indent-2" data-placeholder="login_password" maxlength="25">
           <div class="flex flex-col justify-center items-center m-2.5 p-2.5">
             <button type="submit" class="signin-user" translatekey="login_create">Create account</button>
             <div class="flex flex-row">
@@ -124,7 +124,7 @@
       </div>
       <div id="pink-divider"></div>
       <form id="recover-password-form" class="flex justify-center items-center">
-        <input type="email" id="email-password-recovery" class="text-[var(--dark-purple)] w-2/3 p-1 m-2 rounded-md outline-none"
+        <input type="email" id="email-password-recovery" class="text-[var(--dark-purple)] w-2/3 p-1 m-2 rounded-md outline-none indent-2"
           placeholder="Introduce your email" data-placeholder="login_email" maxlength="50">
         <button type="submit" class="signin-user p-1 m-2 rounded-md modal-button" translatekey="login_submit">Submit</button>
       </form>
