@@ -25,43 +25,9 @@ export default function createUserRoutes(fastify) {
     {
       preHandler: [fastify.authenticate],
       method: "GET",
-      url: "/users/list",
-      handler: asyncHandler(async (req, res) => {
-        const users = await getUsers();
-        return res.code(200).send(users);
-      }),
-    },
-    {
-      preHandler: [fastify.authenticate],
-      method: "GET",
       url: "/users/profile",
       handler: asyncHandler(async (req, res) => {
         const user = await getProfileOfUser(req.userId);
-        return res.code(200).send(user);
-      }),
-    },
-    {
-      preHandler: [fastify.authenticate],
-      method: "POST",
-      url: "/users",
-      handler: asyncHandler(async (req, res) => {
-        if (!validateInput(req, res, ["username", "password", "email"])) return;
-        const user = await createUser(req.body);
-        return res.code(201).send({
-          success: true,
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          // token: token,
-        });
-      }),
-    },
-    {
-      preHandler: [fastify.authenticate],
-      method: "GET",
-      url: "/users",
-      handler: asyncHandler(async (req, res) => {
-        const user = await getUser(req.userId);
         return res.code(200).send(user);
       }),
     },
@@ -73,26 +39,6 @@ export default function createUserRoutes(fastify) {
         if (!validateInput(req, res, ["username"])) return;
         const user = await getUser(req.body.username);
         return res.code(200).send({ user_id: user.id });
-      }),
-    },
-    {
-      preHandler: [fastify.authenticate],
-      method: "PUT",
-      url: "/users",
-      handler: asyncHandler(async (req, res) => {
-        if (!validateInput(req, res, ["username", "password", "email"])) return;
-        const user = await putUser(req.userId, req.body);
-        return res.code(200).send(user);
-      }),
-    },
-    {
-      preHandler: [fastify.authenticate],
-      method: "PATCH",
-      url: "/users",
-      handler: asyncHandler(async (req, res) => {
-        if (!validateInput(req, res, [])) return;
-        const user = await patchUser(req.userId, req.body);
-        return res.code(200).send(user);
       }),
     },
     {
@@ -156,21 +102,6 @@ export default function createUserRoutes(fastify) {
         }
         await deleteUser(req.userId);
         return res.code(200).send({ success: "User successfully deleted" });
-      }),
-    },
-    {
-      preHandler: [fastify.authenticate],
-      method: "GET",
-      url: "/users/:str",
-      handler: asyncHandler(async (req, res) => {
-        const table = req.params.str;
-        var data;
-        if (table == "messages") data = await getMessagesOfUser(req.userId);
-        else if (table == "chats") data = await getChatsOfUser(req.userId);
-        else if (table == "matches") data = await getMatchesOfUser(req.userId);
-        else if (table == "tournaments")
-          data = await getTournamentsOfUser(req.userId);
-        return res.code(200).send(data);
       }),
     },
     {
