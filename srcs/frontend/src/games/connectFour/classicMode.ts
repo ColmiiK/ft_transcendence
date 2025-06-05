@@ -28,6 +28,7 @@ import {
 import { GameInfo } from "../../types.js";
 import { navigateTo } from "../../index.js";
 import { updateDescription } from '../../modify-profile/modify-fetch.js';
+import { getTranslation } from '../../functionalities/transcript.js';
 
 export function classicMode(data: GameInfo): void {
 	class PlayerClass implements Player {
@@ -227,12 +228,12 @@ export function classicMode(data: GameInfo): void {
 			
 			const bestColumnId = await new Promise<string>((resolve, reject) => {
 				if (!aiWorker || !gameActive) {
-					reject('Worker not available or game not active');
+					reject(getTranslation('game_no_worker'));
 					return;
 				}
 
 				const timeout = setTimeout(() => {
-					reject('AI timeout');
+					reject(getTranslation('game_ai_timeout'));
 				}, 5000);
 
 				aiWorker.onmessage = (e) => {
@@ -242,7 +243,7 @@ export function classicMode(data: GameInfo): void {
 
 				aiWorker.onerror = () => {
 					clearTimeout(timeout);
-					reject('Worker error');
+					reject(getTranslation('game_worker_error'));
 				};
 
 				aiWorker.postMessage({ 
@@ -288,25 +289,25 @@ export function classicMode(data: GameInfo): void {
 	document.getElementById('exitGame')?.addEventListener('click', async () => {
 		const exitBtn = document.getElementById('exitGame');
 		if (!exitBtn){
-			console.error("exitGame element not found.");
+			console.error(getTranslation('game_no_exitGame'));
 			return Promise.resolve();
 		}
 	
 		const pauseBtn = document.getElementById('pauseGame')
 		if (!pauseBtn){
-			console.error("pauseGame element not found.")
+			console.error(getTranslation('game_no_pauseGame'))
 			return Promise.resolve();
 		}
 	
 		const boardEl = document.getElementById('board');
 		if (!boardEl){
-			console.error("board element not found.")
+			console.error(getTranslation('game_no_boardElement'))
 			return Promise.resolve();
 		}
 	
 		const diceEl = document.getElementById('dice-container');
 		if (!diceEl){
-			console.error("dice-container element not found.")
+			console.error(getTranslation('game_no_dice'))
 			return Promise.resolve();
 		}
 	
@@ -320,7 +321,7 @@ export function classicMode(data: GameInfo): void {
 	
 		const returnEl = document.getElementById('returnToGamesConnect');
 		if (!returnEl){
-			console.error("returnToGamesConnect element not found.");
+			console.error(getTranslation('game_return_connect'));
 			return Promise.resolve();
 		}
 		returnEl.style.display = 'block';

@@ -1,5 +1,6 @@
 import { GameInfo } from "../../types.js";
 import { sendRequest } from "../../login-page/login-fetch.js";
+import { getTranslation } from "../../functionalities/transcript.js";
 
 export interface Player {
     color: string;
@@ -50,7 +51,7 @@ export function implementAlias(data: GameInfo){
 	const alias1 = document.getElementById("alias1");
 	const alias2 = document.getElementById("alias2");
 	if (!alias1 || !alias2){
-		console.error("alias element not fount.")
+		console.error(getTranslation('game_not_alias'))
 		return ;
 	}
 	alias1.innerText = data.first_player_alias;
@@ -121,12 +122,12 @@ export	function clearGame(player1: Player, player2: Player, columnList: HTMLElem
 export function insertDivWinner(player1: Player, player2: Player, columnList: HTMLElement[]): void {
     const endGame = document.getElementById("endGame");
     if (!endGame){
-        console.error("endGame element not found.");
+        console.error(getTranslation('game_no_endGame'));
         return ;
     }
     const gamesCard = document.getElementById("gamesCard");
     if (!gamesCard){
-        console.error("gamesCard element not found.");
+        console.error(getTranslation('game_no_gamesCard'));
         return ;
     }
     gamesCard.style.display = 'flex';
@@ -134,22 +135,22 @@ export function insertDivWinner(player1: Player, player2: Player, columnList: HT
 
     const winner = document.getElementById("win");
 	if (!winner){
-		console.error("win element not found.");
+		console.error(getTranslation('game_no_winner'));
 		return ;
 	}
 	const loser = document.getElementById("loser");
 	if (!loser){
-		console.error("loser element not found.");
+		console.error(getTranslation('game_no_loser'));
 		return ;
 	}
     const win =  player1.winner ? "Player 1" : "Player 2";
     if (win == "Player 1"){
-		winner.innerText = "Player 1 wins!"
-		loser.innerText = "Player 2 loses"
+		winner.innerText = getTranslation('game_player1_wins')
+		loser.innerText = getTranslation('game_player2_loses')
 	}
 	else{
-		winner.innerText = "Player 2 wins!"
-		loser.innerText = "Player 1 loses"
+		winner.innerText = getTranslation('game_player2_wins')
+		loser.innerText = getTranslation('game_player1_loses')
 	}
     disableClicks(columnList);
 }
@@ -157,13 +158,13 @@ export function insertDivWinner(player1: Player, player2: Player, columnList: HT
 export function insertDivDraw(columnList: HTMLElement[]): void {
 	const draw = document.getElementById("endGameDraw");
 	if (!draw){
-        console.error("endGameDraw element not found.");
+        console.error(getTranslation('game_no_endGameDraw'));
         return ;
     }
 
     const gamesCard = document.getElementById("gamesCard");
     if (!gamesCard){
-        console.error("gamesCard element not found.");
+        console.error(getTranslation('game_no_gamesCard'));
         return ;
     }
     gamesCard.style.display = 'flex';
@@ -234,27 +235,27 @@ export async function placeToken(column: HTMLElement | null, player1: Player, pl
     await disableClicks(columnList);
     if (!column || !column.id) {
         await enableClicks(columnList);
-        console.error("Column or column ID is invalid: ", column);
+        console.error(getTranslation('game_invalid_column'), column);
         return;
     }
 
     const cells = columnMap.get(column.id);
     if (!cells) {
         await enableClicks(columnList);
-        console.error("Cells are undefined for column ID: ", column.id);
+        console.error(getTranslation('game_undefined_cells'), column.id);
         return;
     }
     const columnData = boardMap.get(column.id);
     if (!columnData) {
         await enableClicks(columnList);
-        console.error("ColumnData is undefined for column ID: ", column.id, boardMap);
+        console.error(getTranslation('game_undefined_ColumnData'), column.id, boardMap);
         return;
     }    
 
     const row = columnData.findIndex(cell => cell === 0);
     if (row === -1){
         await enableClicks(columnList);
-        console.error("No rows left in column: ", column);
+        console.error(getTranslation('game_no_rows'), column);
         return ;
     }
 
@@ -375,31 +376,31 @@ export function delay(ms: number): Promise<void> {
 export async function pauseGame(): Promise<void> {
     const pauseEl = document.getElementById('pauseConnect');
     if (!pauseEl){
-        console.error("pauseConnect element not found.");
+        console.error(getTranslation('game_no_pauseConnect'));
         return Promise.resolve();
     }
 
     const boardEl = document.getElementById('board');
     if (!boardEl){
-        console.error("board element not found.")
+        console.error(getTranslation('game_no_boardElement'))
         return Promise.resolve();
     }
 
     const pauseBtn = document.getElementById('pauseGame')
     if (!pauseBtn){
-        console.error("pauseGame element not found.")
+        console.error(getTranslation('game_no_pauseGame'))
         return Promise.resolve();
     }
 
     const exitBtn = document.getElementById('exitGame');
     if (!exitBtn){
-        console.error("exitGame element not found.");
+        console.error(getTranslation('game_no_exitGame'));
         return Promise.resolve();
     }
 
     const diceEl = document.getElementById('dice-container');
     if (!diceEl){
-        console.error("dice-container element not found.")
+        console.error(getTranslation('game_no_dice'))
         return Promise.resolve();
     }
 
@@ -572,7 +573,7 @@ export async function updateData(data: GameInfo, player1: Player, player2: Playe
         }
         const response = await sendRequest("POST", "/matches/end", object);
         if (!response || response?.error){
-            console.error("Error updating game");
+            console.error(getTranslation('game_update_error'));
             return ;
         }
     }
@@ -587,7 +588,7 @@ export async function updateData(data: GameInfo, player1: Player, player2: Playe
 		}
 		const response = await sendRequest("POST", "/matches", object);
 		if (!response || response?.error){
-			console.error("Error updating game");
+			console.error(getTranslation('game_update_error'));
 			return ;
 		}
 	}
