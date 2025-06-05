@@ -177,7 +177,7 @@ export function crazyTokensMode(data: GameInfo): void {
         player2.diceUses = 3;
     }
 
-    function clearGame(): void {
+    async function clearGame(): Promise<void> {
         localStorage.removeItem(`connect4GameStatecustom`);
         gameActive = false;
         clearGameEngine(player1, player2, columnList, columnMap, boardMap);
@@ -842,7 +842,7 @@ export function crazyTokensMode(data: GameInfo): void {
     })
 
 	document.getElementById('exit-end')?.addEventListener('click', async () => {
-        clearGame();
+        await clearGame();
         localStorage.removeItem(`connect4GameStatecustom`);
         try {
             const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
@@ -857,7 +857,7 @@ export function crazyTokensMode(data: GameInfo): void {
     });
 
 	document.getElementById('draw-end')?.addEventListener('click', async () => {
-        clearGame();
+        await clearGame();
         localStorage.removeItem(`connect4GameStatecustom`);
         try {
             const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
@@ -933,7 +933,7 @@ export function crazyTokensMode(data: GameInfo): void {
 			player2.winner = true;
 			player1.winner = false;
 			await updateData(data, player1, player2);
-            clearGame();
+            await clearGame();
             localStorage.removeItem(`connect4GameStatecustom`);
 			try {
                 const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
@@ -951,7 +951,7 @@ export function crazyTokensMode(data: GameInfo): void {
 			player1.winner = true;
 			player2.winner = false;
 			await updateData(data, player1, player2);
-            clearGame();
+            await clearGame();
             localStorage.removeItem(`connect4GameStatecustom`);
 			try {
                 const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})

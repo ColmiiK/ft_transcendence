@@ -382,7 +382,7 @@ export async function pauseGame(generalData: GeneralData, ballData: BallData, po
 	return Promise.resolve();
 }
 
-function cleanupPowerUps(powerUpData: PowerUpType) {
+async function cleanupPowerUps(powerUpData: PowerUpType) {
 	if (powerUpData.timeout) {
 		clearTimeout(powerUpData.timeout);
 		powerUpData.timeout = 6000;
@@ -459,10 +459,10 @@ export async function returnToGames(generalData: GeneralData, ballData: BallData
 
 	document.getElementById('surrenderPl1')?.addEventListener('click', async () => {
 		player2.counter = 10;
-		stop(generalData, AIData, ballData, PowerUpData, data, player1, player2);
-		clearGameState(player1, player2, mode, data);
+		await stop(generalData, AIData, ballData, PowerUpData, data, player1, player2);
+		await clearGameState(player1, player2, mode, data);
 		if (mode == "custom" && PowerUpData)
-			cleanupPowerUps(PowerUpData);
+			await cleanupPowerUps(PowerUpData);
 		localStorage.removeItem(`gameState${mode}`);
 		try {
 			const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
@@ -478,10 +478,10 @@ export async function returnToGames(generalData: GeneralData, ballData: BallData
 
 	document.getElementById('surrenderPl2')?.addEventListener('click', async () => {
 		player1.counter = 10;
-		stop(generalData, AIData, ballData, PowerUpData, data, player1, player2);
-		clearGameState(player1, player2, mode, data);
+		await stop(generalData, AIData, ballData, PowerUpData, data, player1, player2);
+		await clearGameState(player1, player2, mode, data);
 		if (mode == "custom" && PowerUpData)
-			cleanupPowerUps(PowerUpData);
+			await cleanupPowerUps(PowerUpData);
 		localStorage.removeItem(`gameState${mode}`);
 		try {
 			const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
@@ -497,9 +497,9 @@ export async function returnToGames(generalData: GeneralData, ballData: BallData
 }
 
 export async function exitGame(mode: "classic" | "custom", player1: Player, player2: Player, powerUpData: PowerUpType | null, data: GameInfo){
-	clearGameState(player1, player2, mode, data);
+	await clearGameState(player1, player2, mode, data);
 	if (mode == "custom" && powerUpData)
-		cleanupPowerUps(powerUpData);
+		await cleanupPowerUps(powerUpData);
 	localStorage.removeItem(`gameState${mode}`);
 	try {
 		const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
@@ -513,7 +513,7 @@ export async function exitGame(mode: "classic" | "custom", player1: Player, play
 	}
 }
 
-function clearGameState(player1: Player, player2: Player, mode: "classic" | "custom", data: GameInfo){
+async function clearGameState(player1: Player, player2: Player, mode: "classic" | "custom", data: GameInfo){
 	localStorage.removeItem(`gameState${mode}`);
 	player1.counter = 0;
 	player2.counter = 0;
