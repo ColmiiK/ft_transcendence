@@ -30,6 +30,7 @@ import {
 import { GameInfo } from "../../types.js";
 import { navigateTo } from "../../index.js";
 import { updateDescription } from '../../modify-profile/modify-fetch.js';
+import { getTranslation } from '../../functionalities/transcript.js';
 
 export function crazyTokensMode(data: GameInfo): void {
     class PlayerClass {
@@ -318,12 +319,12 @@ export function crazyTokensMode(data: GameInfo): void {
                 
                 const bestColumnId = await new Promise<string>((resolve, reject) => {
                     if (!aiWorker || !gameActive) {
-                        reject('Worker not available or game not active');
+                        reject(getTranslation('game_no_worker'));
                         return;
                     }
 
                     const timeout = setTimeout(() => {
-                        reject('AI timeout');
+                        reject(getTranslation('game_ai_timeout'));
                     }, 5000);
 
                     aiWorker.onmessage = (e) => {
@@ -333,7 +334,7 @@ export function crazyTokensMode(data: GameInfo): void {
 
                     aiWorker.onerror = () => {
                         clearTimeout(timeout);
-                        reject('Worker error');
+                        reject(getTranslation('game_worker_error'));
                     };
 
                     aiWorker.postMessage({ 
@@ -341,12 +342,12 @@ export function crazyTokensMode(data: GameInfo): void {
                         depth: 5
                     });
                 }).catch(error => {
-                    console.warn('AI Worker error:', error);
+                    console.warn(getTranslation('game_ai_error'), error);
                     return columnList[Math.floor(Math.random() * columnList.length)].id;
                 });
                 columnToUse = columnList.find(col => col.id === bestColumnId) || null;
             } catch (error) {
-                console.warn('AI Worker failed, using fallback:', error);
+                console.warn(getTranslation('game_ai_fallback'), error);
                 const playableColumns = columnList.filter(col => isColumnPlayable(col));
                 columnToUse = playableColumns.length > 0 ? 
                          playableColumns[Math.floor(Math.random() * playableColumns.length)] : null;
@@ -840,25 +841,25 @@ export function crazyTokensMode(data: GameInfo): void {
 	document.getElementById('exitGame')?.addEventListener('click', async () => {
         const exitBtn = document.getElementById('exitGame');
         if (!exitBtn){
-            console.error("exitGame element not found.");
+            console.error(getTranslation('game_no_exitGame'));
             return Promise.resolve();
         }
     
         const pauseBtn = document.getElementById('pauseGame')
         if (!pauseBtn){
-            console.error("pauseGame element not found.")
+            console.error(getTranslation('game_no_pauseGame'))
             return Promise.resolve();
         }
     
         const boardEl = document.getElementById('board');
         if (!boardEl){
-            console.error("board element not found.")
+            console.error(getTranslation('game_no_boardElement'))
             return Promise.resolve();
         }
     
         const diceEl = document.getElementById('dice-container');
         if (!diceEl){
-            console.error("dice-container element not found.")
+            console.error(getTranslation('game_no_dice'))
             return Promise.resolve();
         }
     
@@ -872,7 +873,7 @@ export function crazyTokensMode(data: GameInfo): void {
     
         const returnEl = document.getElementById('returnToGamesConnect');
         if (!returnEl){
-            console.error("returnToGamesConnect element not found.");
+            console.error(getTranslation('game_return_connect'));
             return Promise.resolve();
         }
         returnEl.style.display = 'block';

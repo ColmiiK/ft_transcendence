@@ -5,11 +5,12 @@ import {
 } from './gameEngine.js';
 
 import { GameInfo } from "../../types.js";
+import { getTranslation } from '../../functionalities/transcript.js';
 
 export function chaosPong(data: GameInfo): void {
 	const gameElement = document.getElementById('game');
 	if (!gameElement){
-		throw new Error("HTML 'game' element not found.");
+		throw new Error(getTranslation('game_not_found'));
 	}
 	let width = gameElement.clientWidth;
 	let height = gameElement.clientHeight;
@@ -98,14 +99,16 @@ export function chaosPong(data: GameInfo): void {
 		const savedState = localStorage.getItem("gameStatecustom");
 		if (savedState){
 			loadGameState();
+            implementAlias(data);
+            saveGameState();
             if (!checkLost(generalData, ballData, AIData, powerUpData, data, player1, player2, width))
                 await pauseGame(generalData, ballData, powerUpData);
 		}
-        implementAlias(data);
-        saveGameState();
 		if (!savedState){
+            implementAlias(data);
 			await countDown(ballData, true);
 			init(generalData, ballData, player1, player2, width);
+            saveGameState();
 		}
 		generalData.controlGame = setInterval(play, generalData.time);
 

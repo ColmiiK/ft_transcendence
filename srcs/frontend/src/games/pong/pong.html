@@ -13,16 +13,21 @@
 			<div id="line"></div>
 			<div id="powerUp"></div>
 		</div>
-		<div id="pause">PAUSE</div>
+		<div id="pause" translatekey="game_pause_upper">PAUSE</div>
 		<div id="countdown">3</div>
 		<div id="returnToGames">
-			<p>Are you sure? Pussy.</p>
-			<button id="continue">Continue</button>
-			<button id="exit">Exit</button>
+			<p translatekey="game_check">Are you sure?</p>
+			<svg id="continue" translatekey="game_continue" class="close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#3B0034">
+          		<path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+        	</svg>
+			<div class="surrender-players">
+				<button id="surrenderPl1">Surrender Pl1</button>
+				<button id="surrenderPl2">Surrender Pl2</button>
+			</div>
 		</div>
 		<div id="buttomGroup">
-			<button id="pauseGame">Pause</button>
-			<button id="exitGame">Exit</button>
+			<button id="pauseGame" translatekey="game_pause">Pause</button>
+			<button id="exitGame" translatekey="game_exit">Surrender</button>
 		</div>
 	</div>
 </div>
@@ -37,6 +42,6 @@
 			<p id="loser" class="end-paragraph"></p>
 			<img class="end-img" src="../../../resources/img/loser_cat.png" />
 		</div>
-		<button class="end-button" id="exit-end">Exit</button>
+		<button class="end-button" id="exit-end" translatekey="game_exit">Exit</button>
 	</div>
 </div>

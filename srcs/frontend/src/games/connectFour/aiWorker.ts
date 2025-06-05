@@ -1,3 +1,5 @@
+import { getTranslation } from "../../functionalities/transcript";
+
 interface BoardState {
     boardMap: { [key: string]: number[] };
     columnIds: string[];
@@ -27,7 +29,7 @@ self.onmessage = (e: MessageEvent) => {
         const result = findBestMove(boardStateCopy, depth);
         self.postMessage(result);
     } catch (error) {
-        console.error('Error in AI Worker:', error);
+        console.error(getTranslation('game_aiworker_error'), error);
         const randomColumn = getRandomPlayableColumn(boardState);
         self.postMessage(randomColumn);
     } finally {
