@@ -73,7 +73,7 @@ export async function clickFriendProfile(e: Event | null, data: User | null) {
 							`<p>${getTranslation('friends_offline')}</p><img src="../../resources/img/offline.svg" alt="Offline status">`
 							}
 						</div>
-						<p class="font-bold text-center lg:text-start">${getTranslation('modify_description')}<span id="friend-description" class="italic font-thin">${friendProfileTyped.status}</span></p>
+						<p class="font-bold text-center lg:text-start">${getTranslation('modify_description')}<span id="friend-description" class="italic font-thin break-all">${friendProfileTyped.status}</span></p>
 						<div class="flex justify-center gap-10 my-4">
 							<button id="delete-friend" class="button p-2.5 rounded-[15px]">${getTranslation('friends_delete')}</button>
 							<button id="block-friend" class="button p-2.5 rounded-[15px] bg-[var(--alert)]">${getTranslation('friends_block')}</button>
@@ -287,10 +287,10 @@ export async function displayFriends() {
 							<img id="friend-avatar" class="card-avatar rounded-full m-1.5" src="${friend.avatar}" alt="Avatar">
 							<div class="flex flex-col">
 								<h3>${friend.username}</h3>
-								<p class="opacity-50 text-sm">${friend.status}</p>
+								<p class="opacity-50 text-sm break-all">${friend.status}</p>
 							</div>
 						</div>
-						<div id="friend-status" class="flex gap-2 px-4">
+						<div id="friend-status" class="flex gap-2 px-4 mx-2">
 							${friend.is_online === 1 ?
 								`<p>${getTranslation('friends_online')}</p><img src="../../resources/img/online.svg" alt="Online status">` :
 								`<p>${getTranslation('friends_offline')}</p><img src="../../resources/img/offline.svg" alt="Offline status">`
