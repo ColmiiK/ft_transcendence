@@ -90,6 +90,7 @@ export function crazyTokensMode(data: GameInfo): void {
 		aiWorker = new Worker(new URL('./aiWorker.js', import.meta.url));
 		aiInterval = setInterval(async () => {
             if (!gameActive) return ;
+
 			if (player2.turn && player2.AI && !aiColumn && !aiIsThinking && gameActive) {
 				console.log("AI is thinking...");
                 aiIsThinking = true;
@@ -189,6 +190,7 @@ export function crazyTokensMode(data: GameInfo): void {
 			aiWorker.terminate();
 			aiWorker = null;
 		}
+
 		aiColumn = null;
         aiIsThinking = false;
     }
@@ -361,6 +363,7 @@ export function crazyTokensMode(data: GameInfo): void {
 
         if (columnToUse && !isColumnPlayable(columnToUse))
            columnToUse = columnList.find((column) => isColumnPlayable(column)) || null;
+        
         return columnToUse;
     }
     
