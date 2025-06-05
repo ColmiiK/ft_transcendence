@@ -63,17 +63,6 @@ export default function createChatRoutes(fastify) {
     },
     {
       preHandler: [fastify.authenticate],
-      method: "PUT",
-      url: "/chats/:id",
-      handler: asyncHandler(async (req, res) => {
-        if (!validateInput(req, res, ["first_user_id", "second_user_id"]))
-          return;
-        const chat = await putChat(req.params.id, req.body);
-        return res.code(200).send(chat);
-      }),
-    },
-    {
-      preHandler: [fastify.authenticate],
       method: "PATCH",
       url: "/chats/:id",
       handler: asyncHandler(async (req, res) => {
