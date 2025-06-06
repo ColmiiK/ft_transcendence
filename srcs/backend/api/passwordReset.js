@@ -29,7 +29,8 @@ export async function resetUserPassword(user) {
   const resetToken = crypto.randomBytes(32).toString("hex");
   const hash = await bcrypt.hash(resetToken, 10);
   await patchUser(user.id, { reset_token: hash });
-  const link = `https://${process.env.HOSTNAME}:8443/reset-password?token=${resetToken}&id=${user.id}`;
+  const host = process.env.HOSTNAME || "localhost";
+  const link = `https://${host}:8443/reset-password?token=${resetToken}&id=${user.id}`;
   const template = await fs.promises.readFile(
     path.resolve(__dirname, "./templates/passwordReset.html"),
     "utf-8",

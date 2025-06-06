@@ -1,23 +1,23 @@
 all:
-		@HOSTNAME_FQDN=$$(hostname -f) docker compose -f ./srcs/docker-compose.yml up --build -d
+		@HOSTNAME_FQDN=$$(hostname -f) docker compose -f ./docker-compose.yml up --build -d
 
 attach:
-		@docker compose -f ./srcs/docker-compose.yml up --build
+		@docker compose -f ./docker-compose.yml up --build
 
 front:
-		@docker compose -f ./srcs/docker-compose.yml up frontend --build -d
+		@docker compose -f ./docker-compose.yml up frontend --build -d
 
 back:
-		@docker compose -f ./srcs/docker-compose.yml up backend --build -d
+		@docker compose -f ./docker-compose.yml up backend --build -d
 
 build:
-		@docker compose -f ./srcs/docker-compose.yml build
+		@docker compose -f ./docker-compose.yml build
 
 down:
-		@docker compose -f ./srcs/docker-compose.yml down -t 1
+		@docker compose -f ./docker-compose.yml down -t 1
 
 stop:
-		@docker compose -f ./srcs/docker-compose.yml stop -t 1
+		@docker compose -f ./docker-compose.yml stop -t 1
 
 clean: down
 		@docker system prune -a -f
@@ -34,7 +34,7 @@ db:
 
 reset:
 		@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ]
-		@docker compose -f ./srcs/docker-compose.yml stop -t 1 backend
+		@docker compose -f ./docker-compose.yml stop -t 1 backend
 		@rm -f ./srcs/backend/transcendence.db
 		@find ./srcs/backend/api/avatars/ ! -name 'default.jpg' -type f -exec rm -f {} +
 		@echo -n "Repopulate with mockup data? [y/N] " && read ans && [ $${ans:-N} = y ]

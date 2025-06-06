@@ -76,6 +76,8 @@ export async function loginGoogleUser(credential) {
   const googleId = payload["sub"];
   const email = payload["email"];
   const name = parseUsername(email);
+  const user_name = await getUser(name);
+  if (user_name) return { error: "Username is already taken" };
   let user = await getUser(email, true);
   if (!user) {
     user = await createGoogleUser({
@@ -90,6 +92,7 @@ export async function loginGoogleUser(credential) {
     delete user.google_id;
   }
   await patchUser(user.id, { is_online: 1 });
+  user = await getUser(user.id);
   const result = Object.assign({}, user, { success: true });
   return result;
 }
@@ -104,10 +107,10 @@ export async function verifyGoogleUser(credential) {
   const payload = ticket.getPayload();
   const email = payload["email"];
   let user = await getUser(email, true);
-  if (!user) {
-    return { error: "User not found" };
-  }
-  return {id: user.id, username: user.username};
+  if (!user) return { error: "User not found" };
+  if (!user.google_id)
+    return { error: "No Google account linked to this user" };
+  return { id: user.id, username: user.username };
 }
 
 /**
