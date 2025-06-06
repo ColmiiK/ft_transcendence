@@ -71,7 +71,6 @@ export default function createTournamentRoutes(fastify) {
       url: "/tournaments/:id",
       handler: asyncHandler(async (req, res) => {
         const tournament = await getTournamentByID(req.params.id);
-        console.log("tournament:", tournament);
         if (!tournament)
           return res.code(400).send({ error: "No tournament found" });
         return res.code(200).send(tournament);
