@@ -92,11 +92,11 @@ export function crazyTokensMode(data: GameInfo): void {
             if (!gameActive) return ;
 
 			if (player2.turn && player2.AI && !aiColumn && !aiIsThinking && gameActive) {
-				console.log("AI is thinking...");
+				/* console.log("AI is thinking..."); */
                 aiIsThinking = true;
                 await disableClicks();
 				aiColumn = await aiToken();
-				console.log("AI chose: ", aiColumn?.id);
+				/* console.log("AI chose: ", aiColumn?.id); */
 			}
 			else if (player2.turn && player2.AI && aiColumn && aiIsThinking && gameActive) {
                 await enableClicks();
@@ -292,7 +292,7 @@ export function crazyTokensMode(data: GameInfo): void {
         if (!gameActive || !aiWorker || !player2.turn || aiColumn) return null;
 
 		if (player2.affected && player2.affected === "🌫️"){
-			console.log("AI is blind");
+			/* console.log("AI is blind"); */
             const randomCol = columnList[Math.floor(Math.random() * columnList.length)];
             return isColumnPlayable(randomCol) ? randomCol : 
                columnList.find(col => isColumnPlayable(col)) || null;

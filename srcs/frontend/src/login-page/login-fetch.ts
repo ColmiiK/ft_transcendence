@@ -291,7 +291,7 @@ async function displayTerms() {
 			throw new Error(data["error"]);
 	}
 	catch (error) {
-		console.log(error);
+		console.error(error);
 	}
 }
 

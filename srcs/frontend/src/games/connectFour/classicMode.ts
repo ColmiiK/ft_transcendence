@@ -80,11 +80,11 @@ export function classicMode(data: GameInfo): void {
 			if (!gameActive) return;
 			
 			if (!aiColumn && player2.turn && player2.AI && !aiIsThinking && gameActive) {
-				console.log("AI is thinking...");
+				/* console.log("AI is thinking..."); */
 				aiIsThinking = true;
 				await disableClicks();
 				aiColumn = await aiToken();
-				console.log("AI chose: ", aiColumn?.id);
+				/* console.log("AI chose: ", aiColumn?.id); */
 			}
 			
 			if (player2.turn && player2.AI && aiColumn && aiIsThinking && gameActive) {
