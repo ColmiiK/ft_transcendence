@@ -61,7 +61,7 @@ function findBestMove(boardState: BoardState, depth: number): string {
 
     for (const columnId of boardState.columnIds) {
         if (Date.now() - calculationStartTime > maxTime) {
-            console.log('AI calculation timeout, using current best or random');
+            /* console.log('AI calculation timeout, using current best or random'); */
             break;
         }
 

@@ -35,7 +35,6 @@ export default function createChatRoutes(fastify) {
       }),
     },
     {
-      //TODO: Finish the pagination (make it so it gives the messages in descending order?)
       preHandler: [fastify.authenticate],
       method: "GET",
       url: "/chats/:id",

@@ -216,7 +216,7 @@ export async function updateTurnIndicator(player1: Player, player2: Player, colu
         });
         if (mode == "crazy") 
             await updateDice(player1, player2);
-        console.log(`Turn: ${currentPlayer.num}, color: ${currentPlayer.color}`);
+        /* console.log(`Turn: ${currentPlayer.num}, color: ${currentPlayer.color}`); */
 }
 
 

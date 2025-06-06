@@ -92,11 +92,11 @@ export function crazyTokensMode(data: GameInfo): void {
             if (!gameActive) return ;
 
 			if (player2.turn && player2.AI && !aiColumn && !aiIsThinking && gameActive) {
-				console.log("AI is thinking...");
+				/* console.log("AI is thinking..."); */
                 aiIsThinking = true;
                 await disableClicks();
 				aiColumn = await aiToken();
-				console.log("AI chose: ", aiColumn?.id);
+				/* console.log("AI chose: ", aiColumn?.id); */
 			}
 			else if (player2.turn && player2.AI && aiColumn && aiIsThinking && gameActive) {
                 await enableClicks();
@@ -122,7 +122,8 @@ export function crazyTokensMode(data: GameInfo): void {
         const exitBtn = document.getElementById('exitGame')
 		if (exitBtn) exitBtn.style.display = 'none';
 
-        updateData(data, player1, player2)
+        updateData(data, player1, player2);
+        saveGameState("custom", player1, player2, data);
 		return true;
 	}
 
@@ -141,9 +142,9 @@ export function crazyTokensMode(data: GameInfo): void {
 		else{
             implementAlias(data);
             await enableClicks();
+            saveGameState("custom", player1, player2, data);
         }
 		handlerEvents();
-        saveGameState("custom", player1, player2, data)
     }
 
     function handlerEvents(){
@@ -291,7 +292,7 @@ export function crazyTokensMode(data: GameInfo): void {
         if (!gameActive || !aiWorker || !player2.turn || aiColumn) return null;
 
 		if (player2.affected && player2.affected === "🌫️"){
-			console.log("AI is blind");
+			/* console.log("AI is blind"); */
             const randomCol = columnList[Math.floor(Math.random() * columnList.length)];
             return isColumnPlayable(randomCol) ? randomCol : 
                columnList.find(col => isColumnPlayable(col)) || null;
@@ -478,14 +479,17 @@ export function crazyTokensMode(data: GameInfo): void {
     /* Special Tokens Functionality */
 
     async function rollDice(): Promise<void> {
+        if (!gameActive) return ;
         const currentPlayer = player1.turn ? player1 : player2;
         
         const diceContainer = document.getElementById("dice-container");
         const diceIcon = document.getElementById("dice-icon");
 		if (!diceContainer || !diceIcon) return;
     
+        diceContainer.style.pointerEvents = 'none';
         if (currentPlayer.diceUses <= 0 && !currentPlayer.specialToken) {
             diceIcon.innerText = "❌";
+            diceContainer.style.pointerEvents = 'auto';
             return;
         }
 
@@ -494,7 +498,7 @@ export function crazyTokensMode(data: GameInfo): void {
             diceContainer.classList.add("usingDice");
             await delay(1000);
             diceContainer.classList.remove("usingDice");
-            diceContainer.style.pointerEvents = 'none'
+            diceContainer.style.pointerEvents = 'auto';
             return ;
         }
 
@@ -509,6 +513,7 @@ export function crazyTokensMode(data: GameInfo): void {
 
         diceContainer.classList.remove("rolling");
         saveGameState("custom", player1, player2, data);
+        diceContainer.style.pointerEvents = 'auto';
     }
 
     /* Disable Effects */
@@ -838,6 +843,7 @@ export function crazyTokensMode(data: GameInfo): void {
 
 	document.getElementById('exit-end')?.addEventListener('click', async () => {
         clearGame();
+        localStorage.removeItem(`connect4GameStatecustom`);
         try {
             const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
             if (response)
@@ -852,6 +858,7 @@ export function crazyTokensMode(data: GameInfo): void {
 
 	document.getElementById('draw-end')?.addEventListener('click', async () => {
         clearGame();
+        localStorage.removeItem(`connect4GameStatecustom`);
         try {
             const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
             if (response)
@@ -925,9 +932,9 @@ export function crazyTokensMode(data: GameInfo): void {
         document.getElementById('surrenderPl1')?.addEventListener('click', async () => {
 			player2.winner = true;
 			player1.winner = false;
-			saveGameState("custom", player1, player2, data);
 			await updateData(data, player1, player2);
             clearGame();
+            localStorage.removeItem(`connect4GameStatecustom`);
 			try {
                 const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
                 if (response)
@@ -943,9 +950,9 @@ export function crazyTokensMode(data: GameInfo): void {
 		document.getElementById('surrenderPl2')?.addEventListener('click', async () => {
 			player1.winner = true;
 			player2.winner = false;
-			saveGameState("custom", player1, player2, data);
 			await updateData(data, player1, player2);
             clearGame();
+            localStorage.removeItem(`connect4GameStatecustom`);
 			try {
                 const response = await sendRequest('POST', '/matches/istournamentmatch', {match_id: data.match_id})
                 if (response)

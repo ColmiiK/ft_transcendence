@@ -110,7 +110,6 @@ export function validateInput(req, res, requiredFields) {
     const users = req.body.users;
     const usernames = users.map((user) => user.username);
     const isUnique = new Set(usernames).size === usernames.length;
-    console.log("isUnique:", isUnique);
     if (!isUnique) {
       res.code(400).send({ error: "Usernames are not all unique" });
       return;

@@ -20,7 +20,6 @@ export default function createRelationRoutes(fastify) {
       url: "/users/friends",
       handler: asyncHandler(async (req, res) => {
         if (!validateInput(req, res, ["friend_id"])) return;
-        //TODO: Check what happens on mutiple invitation send
         const data = await addUserFriendPending(req.userId, req.body.friend_id);
         return res.code(200).send(data);
       }),
@@ -31,7 +30,6 @@ export default function createRelationRoutes(fastify) {
       url: "/users/friends/confirm",
       handler: asyncHandler(async (req, res) => {
         if (!validateInput(req, res, ["friend_id"])) return;
-        //TODO: Check what happens on mutiple invitation send
         const data = await acceptUserFriend(req.userId, req.body.friend_id);
         return res.code(200).send(data);
       }),
@@ -56,7 +54,7 @@ export default function createRelationRoutes(fastify) {
         return res.code(200).send(data);
       }),
     },
-     {
+    {
       preHandler: [fastify.authenticate],
       method: "POST",
       url: "/users/isfriends",

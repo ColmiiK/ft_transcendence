@@ -17,23 +17,12 @@ import {
 } from "../passwordReset.js";
 import { getUser, patchUser } from "../models/userModel.js";
 
-// TODO: Remove when done
-import { isDebugUser } from "../dev/dummy.js";
-
 export default function createAuthRoutes(fastify) {
   return [
     {
       method: "POST",
       url: "/login",
       handler: asyncHandler(async (req, res) => {
-        //TODO: DEBUG USER BYPASS, REMOVE ME WHEN DEV IS DONE !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        if (isDebugUser(req.body)) {
-          const user = await getUser(req.body.username, true);
-          await patchUser(user.id, { is_online: 1 });
-          user.is_online = 1;
-          setJWT(res, user);
-          return res.code(200).send(user);
-        }
         if (!validateInput(req, res, ["username", "password"])) return;
         let user = await getUser(req.body.username, true);
         if (!user) return res.code(404).send({ error: "User not found" });
@@ -86,7 +75,6 @@ export default function createAuthRoutes(fastify) {
       method: "GET",
       url: "/logout",
       handler: asyncHandler(async (req, res) => {
-        console.log("Logging out user", req.userId);
         res.clearCookie("token", { path: "/" });
         return res.code(200).send({ success: "User successfully logged out" });
       }),
@@ -121,12 +109,6 @@ export default function createAuthRoutes(fastify) {
       method: "POST",
       url: "/register",
       handler: asyncHandler(async (req, res) => {
-        //TODO: DEBUG USER BYPASS, REMOVE ME WHEN DEV IS DONE !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        if (isDebugUser(req.body)) {
-          const result = await registerUser(req.body);
-          setJWT(res, result);
-          return res.code(201).send(result);
-        }
         if (
           !validateInput(req, res, [
             "username",
@@ -139,7 +121,11 @@ export default function createAuthRoutes(fastify) {
           return;
         if (req.body.password != req.body.confirm_password)
           return res.code(400).send({ error: "Passwords don't match" });
-        // TODO: if user already exists, handle it nicely
+        const user_email = await getUser(req.body.email);
+        if (user_email) return res.code(400).send({ error: "email in use" });
+        const user_username = await getUser(req.body.username);
+        if (user_username)
+          return res.code(400).send({ error: "username in use" });
         const result = await registerUser(req.body);
         setJWT(res, result);
         return res.code(201).send(result);
