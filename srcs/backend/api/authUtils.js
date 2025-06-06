@@ -76,6 +76,8 @@ export async function loginGoogleUser(credential) {
   const googleId = payload["sub"];
   const email = payload["email"];
   const name = parseUsername(email);
+  const user_name = await getUser(name);
+  if (user_name) return { error: "Username is already taken" };
   let user = await getUser(email, true);
   if (!user) {
     user = await createGoogleUser({
