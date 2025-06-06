@@ -102,8 +102,8 @@ export default function createUserRoutes(fastify) {
         if (user.id !== req.userId)
           return res.code(400).send({ error: "Invalid user" });
         let tournament = await getCurrentTournament(req.userId);
-        tournament = await getTournamentByID(tournament.id);
         if (tournament) {
+          tournament = await getTournamentByID(tournament.id);
           const result = await cancelTournament(
             tournament.tournament_id,
             tournament.creator_id,
