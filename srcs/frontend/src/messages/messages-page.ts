@@ -75,7 +75,7 @@ function createSocketConnection() {
 
 export function displayMessage(data: Message) {
   if (actual_chat_id !== data.chat_id && data.type === "message")
-    showAlert(`You have a message from ${data.sender_username}`, "toast-success");
+    showAlert(`You have a message from ${data.sender_username}`, "toast-info");
   if (data.type === "message") {
     let messageContainer = document.getElementById("message-history");
     if (!messageContainer)
