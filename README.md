@@ -100,7 +100,7 @@ There are several security concerns we must be aware of and address:
 - There must be validation mechanisms for any input form, either on the base page, on the server-side, if applicable, or both.
 - If creating an API, ensure your routes are protected. The security of the website remains critical.
 
-# Modules
+# Major Modules
 
 As explained before, a minimum of 7 modules is required to achieve a successful grade.
 We can ensure a better grade by choosing to do more modules, having them as backup in case
@@ -114,3 +114,78 @@ First, we will look at the major modules we included in our project.
 Use a specific framework to build the backend, in this case **Node.js** with **Fastify**.
 
 ## Standard User Management
+
+Develop a way of authenticating users across multiple tournaments and play sessions.
+Users should be able to securely subscribe to the website, log in, select a unique display name,
+update their information, upload an avatar with default options, add other users as friends and view their online status
+and finally see their stats, like wins, losses and a match history.
+
+## Remote Authentication
+
+Implement an authentication system through **Google Sign-in**.
+This should allow users to securely log in and register, with a focus on the ease of use for the user and superb security.
+
+## Another game
+
+The goal of this module is to add another complete game, with all of the features of Pong, such as tournaments and other
+features added by other modules as well.
+
+## Live Chat
+
+With this module, we will provide our users with a chat where they will be able to send direct messages, talk, and invite them to play games.
+In addition, users should be able to block other users, preventing them from seeing their messages.
+
+## Introduce an AI opponent
+
+Incorporate an AI player into the game. The AI opponent provides a challenging experience without the need for other users.
+This AI must replicate human behaviour, simulating keyboard input just like a user. Notably, this AI must not use the [A\* Algorithm](https://en.wikipedia.org/wiki/A*_search_algorithm).
+
+## Two-Factor Authentication and JSON Web Tokens
+
+The goal of this module is to enhance security through the use of Two-Factor Authentication (2FA) and JSON Web Tokens (JWT).
+2FA provides an additional layer of security for the user through the use of 2FA apps, SMS or email-based verification.
+JWT are a secure method for authenticating and authorizing the user, ensuring that user sessions and resources are managed safely.
+
+# Minor Modules
+
+That concludes the major modules found in our project.
+Now, we will look at the minor modules included.
+It is important to remember that 2 minor modules are counted as one major module for evaluation purposes.
+
+## Frontend Framework
+
+Use a specific framework or toolkit to build the frontend, in this case **Tailwind CSS**.
+
+## Use a database for the backend
+
+We must use a database to safely store information about our webpage and users. To achieve this, we must use **SQLite**.
+
+## Game customization options
+
+The goal of this module is to provide the user with different and exciting gaming challenges.
+This could be achieved in a number of different ways, like adding maps or power-ups.
+Users should still be able to play classic modes of the games.
+
+## User and Game Stats Dashboards
+
+In this module, we will provide the user a place to examine and visualize their data.
+
+## GDPR Compliance
+
+We will ensure compliance with the [GDPR](https://en.wikipedia.org/wiki/General_Data_Protection_Regulation),
+maintaining a clear, streamlined process for users to request the deletion of their data,
+in addition to having a clear, transparent communication about the users and their rights.
+
+## Support on all devices
+
+With this module, we focus on making sure that our website works seamlessly on all types of devices.
+We must maintain a responsive website in all situations, and also provide the users with touch controls if needed.
+
+## Expanding Browser Compatibility
+
+Here, we will add support to another browser of our choice, in our case **Google Chrome**.
+
+## Multiple Language Support
+
+Through the clever use of a key-value pair system, we ensure that our website remains accessible for a diverse group of users.
+In our case, this means translating the webpage to Spanish and French, in addition to the native English.
